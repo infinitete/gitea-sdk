@@ -14,7 +14,7 @@ serde_json = "1"
 thiserror = "2"
 semver = { version = "1", features = ["serde"] }
 parking_lot = "0.12"
-tokio = { version = "1", features = ["sync"], optional = true }
+tokio = { version = "1", features = ["sync"] }
 hmac = "0.12"
 sha2 = "0.10"
 subtle = "2"
@@ -33,4 +33,4 @@ serde_test = "1"
 default = ["rustls-tls"]
 rustls-tls = []
 native-tls = ["reqwest/native-tls"]
-stream = ["tokio"]
+stream = []

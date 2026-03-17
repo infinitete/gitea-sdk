@@ -63,7 +63,7 @@ struct ClientInner {
     /// Pre-set version supplied via [`ClientBuilder::gitea_version`].
     preset_version: Option<semver::Version>,
     /// Guards against concurrent `load_server_version` fetches.
-    version_loading: parking_lot::Mutex<()>,
+    version_loading: tokio::sync::Mutex<()>,
 }
 
 /// A thread-safe Gitea API client.
@@ -187,8 +187,8 @@ impl Client {
         self.inner.config.read().ignore_version
     }
 
-    pub(crate) fn version_loading_lock(&self) -> parking_lot::MutexGuard<'_, ()> {
-        self.inner.version_loading.lock()
+    pub(crate) async fn version_loading_lock(&self) -> tokio::sync::MutexGuard<'_, ()> {
+        self.inner.version_loading.lock().await
     }
 }
 
@@ -208,6 +208,7 @@ pub struct ClientBuilder<'a> {
     user_agent: Option<String>,
     debug: bool,
     ignore_version: bool,
+    raw_preset_version: Option<String>,
     preset_version: Option<semver::Version>,
     http_client: Option<reqwest::Client>,
 }
@@ -224,6 +225,7 @@ impl std::fmt::Debug for ClientBuilder<'_> {
             .field("user_agent", &self.user_agent)
             .field("debug", &self.debug)
             .field("ignore_version", &self.ignore_version)
+            .field("raw_preset_version", &self.raw_preset_version)
             .field("preset_version", &self.preset_version)
             .field("http_client", &self.http_client)
             .finish()
@@ -245,6 +247,7 @@ impl<'a> ClientBuilder<'a> {
             user_agent: None,
             debug: false,
             ignore_version: false,
+            raw_preset_version: None,
             preset_version: None,
             http_client: None,
         }
@@ -287,22 +290,16 @@ impl<'a> ClientBuilder<'a> {
     ///   checks (equivalent to Go's `SetGiteaVersion("")`).
     /// * **Non-empty string** — parsed as a semantic version and used in
     ///   place of the version discovered from the server.
-    ///
-    /// # Panics
-    ///
-    /// Panics if `version` is non-empty but cannot be parsed by
-    /// [`semver::Version::parse`]. Use [`build()`](Self::build) to get a
-    /// proper [`Error::Version`] instead.
     pub fn gitea_version(mut self, version: &str) -> Self {
         if version.is_empty() {
             self.ignore_version = true;
+            self.raw_preset_version = None;
             self.preset_version = None;
-        } else if let Ok(v) = version.parse::<semver::Version>() {
-            self.preset_version = Some(v);
+        } else {
             self.ignore_version = false;
+            self.raw_preset_version = Some(version.to_string());
+            self.preset_version = version.parse::<semver::Version>().ok();
         }
-        // Silently ignore unparseable versions here; build() will catch
-        // the case where a preset_version is expected but not set.
         self
     }
 
@@ -326,6 +323,7 @@ impl<'a> ClientBuilder<'a> {
     ///
     /// * [`Error::Url`] — `base_url` is not a valid URL.
     /// * [`Error::Validation`] — `base_url` does not use `http` or `https`.
+    /// * [`Error::Version`] — `gitea_version` was provided but is not valid semver.
     pub fn build(self) -> crate::Result<Client> {
         // Validate URL.
         let parsed = url::Url::parse(self.base_url)?;
@@ -337,6 +335,14 @@ impl<'a> ClientBuilder<'a> {
                     "base_url must use http or https, got: {other}"
                 )));
             }
+        }
+
+        if let Some(raw_version) = self.raw_preset_version.as_deref()
+            && self.preset_version.is_none()
+        {
+            return Err(Error::Version(format!(
+                "invalid Gitea version '{raw_version}'"
+            )));
         }
 
         // Strip trailing slash to match Go SDK behaviour.
@@ -362,7 +368,7 @@ impl<'a> ClientBuilder<'a> {
                 config: RwLock::new(config),
                 server_version: OnceLock::new(),
                 preset_version: self.preset_version,
-                version_loading: parking_lot::Mutex::new(()),
+                version_loading: tokio::sync::Mutex::new(()),
             }),
         })
     }
@@ -519,14 +525,14 @@ mod tests {
 
     #[test]
     fn test_client_gitea_version_invalid_string() {
-        // An invalid version string should be silently ignored by gitea_version()
-        // (it returns self unchanged). build() should still succeed.
-        let client = Client::builder("https://example.com")
+        let err = Client::builder("https://example.com")
             .gitea_version("not-a-version")
             .build()
-            .unwrap();
-        assert!(client.preset_version().is_none());
-        assert!(!client.ignore_version());
+            .unwrap_err();
+        match err {
+            Error::Version(message) => assert!(message.contains("not-a-version")),
+            other => panic!("expected Error::Version, got: {other}"),
+        }
     }
 
     #[test]

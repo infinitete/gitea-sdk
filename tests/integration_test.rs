@@ -60,6 +60,23 @@ async fn test_version_cached_wiremock() {
 }
 
 #[tokio::test]
+async fn test_version_concurrent_single_flight_wiremock() {
+    let server = MockServer::start().await;
+    Mock::given(method("GET"))
+        .and(path("/api/v1/version"))
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})))
+        .expect(1)
+        .mount(&server)
+        .await;
+
+    let client = create_client(&server);
+    let (first, second) = tokio::join!(client.server_version(), client.server_version());
+
+    assert_eq!(first.unwrap(), "1.22.0");
+    assert_eq!(second.unwrap(), "1.22.0");
+}
+
+#[tokio::test]
 async fn test_version_preset_wiremock() {
     let server = MockServer::start().await;
     Mock::given(method("GET"))
@@ -76,6 +93,24 @@ async fn test_version_preset_wiremock() {
         .build()
         .unwrap();
     assert_eq!(client.server_version().await.unwrap(), "1.22.0");
+}
+
+#[test]
+fn test_version_invalid_preset_rejected_at_build() {
+    let err = Client::builder("https://example.com")
+        .gitea_version("not-a-version")
+        .build()
+        .unwrap_err();
+
+    match err {
+        Error::Version(msg) => {
+            assert!(
+                msg.contains("not-a-version"),
+                "expected invalid version in message: {msg}"
+            );
+        }
+        other => panic!("expected Error::Version, got: {other}"),
+    }
 }
 
 // ── Version Constraint Checks ──────────────────────────────────────
@@ -182,6 +217,21 @@ async fn test_version_invalid_constraint_wiremock() {
         }
         other => panic!("expected Error::Version, got: {other}"),
     }
+}
+
+#[tokio::test]
+async fn test_check_version_primes_cache_wiremock() {
+    let server = MockServer::start().await;
+    Mock::given(method("GET"))
+        .and(path("/api/v1/version"))
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})))
+        .expect(1)
+        .mount(&server)
+        .await;
+
+    let client = create_client(&server);
+    client.check_version().await.unwrap();
+    assert_eq!(client.server_version().await.unwrap(), "1.22.0");
 }
 
 // ── Error Handling ─────────────────────────────────────────────────

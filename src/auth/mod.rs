@@ -42,10 +42,7 @@ mod tests {
         mac.update(payload);
         let expected_hex = hex::encode(mac.finalize().into_bytes());
 
-        assert_eq!(
-            verify_webhook_signature(secret, &expected_hex, payload).unwrap(),
-            true
-        );
+        assert!(verify_webhook_signature(secret, &expected_hex, payload).unwrap());
     }
 
     #[test]
@@ -54,10 +51,7 @@ mod tests {
         let payload = b"test-payload";
         let wrong_sig = "0000000000000000000000000000000000000000000000000000000000000000";
 
-        assert_eq!(
-            verify_webhook_signature(secret, wrong_sig, payload).unwrap(),
-            false
-        );
+        assert!(!verify_webhook_signature(secret, wrong_sig, payload).unwrap());
     }
 
     #[test]
@@ -71,10 +65,7 @@ mod tests {
         let secret = "secret";
         let payload = b"payload";
         let wrong_sig = "abcd";
-        assert_eq!(
-            verify_webhook_signature(secret, wrong_sig, payload).unwrap(),
-            false
-        );
+        assert!(!verify_webhook_signature(secret, wrong_sig, payload).unwrap());
     }
 
     #[test]
@@ -85,9 +76,6 @@ mod tests {
         mac.update(payload);
         let expected_hex = hex::encode(mac.finalize().into_bytes());
 
-        assert_eq!(
-            verify_webhook_signature("", &expected_hex, payload).unwrap(),
-            true
-        );
+        assert!(verify_webhook_signature("", &expected_hex, payload).unwrap());
     }
 }

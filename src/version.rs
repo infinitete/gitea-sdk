@@ -68,11 +68,9 @@ impl Client {
             return Ok(v.clone());
         }
 
-        {
-            let _guard = self.version_loading_lock();
-            if self.server_version_lock().get().is_some() {
-                return Ok(self.server_version_lock().get().unwrap().clone());
-            }
+        let _guard = self.version_loading_lock().await;
+        if let Some(v) = self.server_version_lock().get() {
+            return Ok(v.clone());
         }
 
         let (data, _resp) = self
@@ -101,6 +99,15 @@ impl Client {
     pub async fn server_version(&self) -> crate::Result<String> {
         let v = self.load_server_version().await?;
         Ok(v.to_string())
+    }
+
+    /// Trigger lazy version loading and cache the result.
+    ///
+    /// This lets callers verify server compatibility before issuing other
+    /// API requests.
+    pub async fn check_version(&self) -> crate::Result<()> {
+        let _ = self.load_server_version().await?;
+        Ok(())
     }
 
     /// Check a semver version constraint against the server version.
