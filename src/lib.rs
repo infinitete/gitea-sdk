@@ -12,4 +12,8 @@ pub use response::{PageLinks, Response};
 mod pagination;
 pub use pagination::{ListOptions, PaginationOptions, QueryEncode};
 
+mod client;
+pub use client::{Client, ClientBuilder};
+
 mod internal;
+mod version;

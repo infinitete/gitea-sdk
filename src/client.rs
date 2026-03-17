@@ -1,0 +1,519 @@
+// Copyright 2026 The Gitea Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
+use std::sync::{Arc, OnceLock};
+
+use parking_lot::RwLock;
+
+use crate::Error;
+
+/// Configuration fields that can be mutated at runtime via setters on [`Client`].
+#[derive(Debug, Clone)]
+pub(crate) struct ClientConfig {
+    /// Base URL of the Gitea server (trailing slash stripped).
+    pub(crate) base_url: String,
+    /// Bearer token for API authentication.
+    pub(crate) access_token: String,
+    /// Username for basic authentication.
+    pub(crate) username: String,
+    /// Password for basic authentication.
+    pub(crate) password: String,
+    /// One-time password for 2FA.
+    pub(crate) otp: String,
+    /// Username to impersonate via the Sudo header.
+    pub(crate) sudo: String,
+    /// User-Agent header sent with every request.
+    pub(crate) user_agent: String,
+    /// Whether debug logging is enabled.
+    pub(crate) debug: bool,
+    /// When `true`, skip all server-version compatibility checks.
+    pub(crate) ignore_version: bool,
+}
+
+struct ClientInner {
+    http: RwLock<reqwest::Client>,
+    /// Mutable configuration protected by a reader-writer lock.
+    config: RwLock<ClientConfig>,
+    /// Server version discovered lazily (populated by the first version check).
+    server_version: OnceLock<semver::Version>,
+    /// Pre-set version supplied via [`ClientBuilder::gitea_version`].
+    preset_version: Option<semver::Version>,
+}
+
+/// A thread-safe Gitea API client.
+///
+/// The client wraps an [`Arc<ClientInner>`] so it can be freely cloned and
+/// shared across threads. Mutable configuration fields (token, credentials,
+/// etc.) are protected by a `parking_lot::RwLock` and can be changed at
+/// runtime through the setter methods.
+///
+/// # Examples
+///
+/// ```ignore
+/// use gitea_sdk::{Client, ClientBuilder};
+///
+/// let client = Client::builder("https://gitea.example.com")
+///     .token("my-secret-token")
+///     .build()?;
+/// ```
+pub struct Client {
+    inner: Arc<ClientInner>,
+}
+
+impl std::fmt::Debug for Client {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Client")
+            .field("base_url", &self.inner.config.read().base_url)
+            .finish()
+    }
+}
+
+// ── Constructors ────────────────────────────────────────────────────
+
+impl Client {
+    /// Create a new [`ClientBuilder`] anchored to `base_url`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Error::Url`] if `base_url` cannot be parsed.
+    pub fn builder(base_url: &str) -> ClientBuilder<'_> {
+        ClientBuilder::new(base_url)
+    }
+}
+
+// ── Mutable setters (Go-compatible) ─────────────────────────────────
+
+impl Client {
+    /// Replace the access token.
+    pub fn set_token(&self, token: impl Into<String>) {
+        let mut cfg = self.inner.config.write();
+        cfg.access_token = token.into();
+        // Clear basic auth when switching to token auth.
+        cfg.username.clear();
+        cfg.password.clear();
+    }
+
+    /// Set username and password for basic authentication.
+    pub fn set_basic_auth(&self, username: impl Into<String>, password: impl Into<String>) {
+        let mut cfg = self.inner.config.write();
+        cfg.username = username.into();
+        cfg.password = password.into();
+        cfg.access_token.clear();
+    }
+
+    /// Set the one-time password for 2FA.
+    pub fn set_otp(&self, otp: impl Into<String>) {
+        self.inner.config.write().otp = otp.into();
+    }
+
+    /// Set the username to impersonate via the Sudo header.
+    pub fn set_sudo(&self, sudo: impl Into<String>) {
+        self.inner.config.write().sudo = sudo.into();
+    }
+
+    /// Set the User-Agent header sent with every request.
+    pub fn set_user_agent(&self, agent: impl Into<String>) {
+        self.inner.config.write().user_agent = agent.into();
+    }
+
+    pub fn set_http_client(&self, client: reqwest::Client) {
+        *self.inner.http.write() = client;
+    }
+
+    /// Return the configured base URL (trailing slash stripped).
+    pub fn base_url(&self) -> String {
+        self.inner.config.read().base_url.clone()
+    }
+}
+
+// ── Internal helpers (crate-visible) ────────────────────────────────
+
+impl Client {
+    #[allow(private_interfaces)]
+    pub(crate) fn read_config(&self) -> parking_lot::RwLockReadGuard<'_, ClientConfig> {
+        self.inner.config.read()
+    }
+
+    /// Acquire a write lock on the configuration.
+    fn write_config(&self) -> parking_lot::RwLockWriteGuard<'_, ClientConfig> {
+        self.inner.config.write()
+    }
+
+    pub(crate) fn http_client(&self) -> reqwest::Client {
+        self.inner.http.read().clone()
+    }
+
+    /// Borrow the [`OnceLock`] that will hold the server version once
+    /// discovered.
+    pub(crate) fn server_version_lock(&self) -> &OnceLock<semver::Version> {
+        &self.inner.server_version
+    }
+
+    /// The version pre-set via [`ClientBuilder::gitea_version`], if any.
+    pub(crate) fn preset_version(&self) -> &Option<semver::Version> {
+        &self.inner.preset_version
+    }
+
+    /// Whether version compatibility checks should be skipped entirely.
+    pub(crate) fn ignore_version(&self) -> bool {
+        self.inner.config.read().ignore_version
+    }
+}
+
+// ── ClientBuilder ───────────────────────────────────────────────────
+
+/// Fluent builder for constructing a [`Client`].
+///
+/// Call [`Client::builder`] to obtain an instance, chain setter methods, and
+/// finalize with [`.build()`](ClientBuilder::build).
+pub struct ClientBuilder<'a> {
+    base_url: &'a str,
+    access_token: Option<String>,
+    username: Option<String>,
+    password: Option<String>,
+    otp: Option<String>,
+    sudo: Option<String>,
+    user_agent: Option<String>,
+    debug: bool,
+    ignore_version: bool,
+    preset_version: Option<semver::Version>,
+    http_client: Option<reqwest::Client>,
+}
+
+impl std::fmt::Debug for ClientBuilder<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("ClientBuilder")
+            .field("base_url", &self.base_url)
+            .field("access_token", &self.access_token)
+            .field("username", &self.username)
+            .field("password", &"***")
+            .field("otp", &"***")
+            .field("sudo", &self.sudo)
+            .field("user_agent", &self.user_agent)
+            .field("debug", &self.debug)
+            .field("ignore_version", &self.ignore_version)
+            .field("preset_version", &self.preset_version)
+            .field("http_client", &self.http_client)
+            .finish()
+    }
+}
+
+impl<'a> ClientBuilder<'a> {
+    /// Create a new builder for the given `base_url`.
+    ///
+    /// The URL is validated eagerly with [`url::Url::parse`].
+    pub fn new(base_url: &'a str) -> Self {
+        Self {
+            base_url,
+            access_token: None,
+            username: None,
+            password: None,
+            otp: None,
+            sudo: None,
+            user_agent: None,
+            debug: false,
+            ignore_version: false,
+            preset_version: None,
+            http_client: None,
+        }
+    }
+
+    /// Set the bearer access token.
+    pub fn token(mut self, token: impl Into<String>) -> Self {
+        self.access_token = Some(token.into());
+        self
+    }
+
+    /// Set username and password for basic authentication.
+    pub fn basic_auth(mut self, username: impl Into<String>, password: impl Into<String>) -> Self {
+        self.username = Some(username.into());
+        self.password = Some(password.into());
+        self
+    }
+
+    /// Set the one-time password for 2FA.
+    pub fn otp(mut self, otp: impl Into<String>) -> Self {
+        self.otp = Some(otp.into());
+        self
+    }
+
+    /// Set the username to impersonate via the Sudo header.
+    pub fn sudo(mut self, sudo: impl Into<String>) -> Self {
+        self.sudo = Some(sudo.into());
+        self
+    }
+
+    /// Set the User-Agent header sent with every request.
+    pub fn user_agent(mut self, agent: impl Into<String>) -> Self {
+        self.user_agent = Some(agent.into());
+        self
+    }
+
+    /// Configure the assumed Gitea server version.
+    ///
+    /// * **Empty string** — tells the SDK to skip all version compatibility
+    ///   checks (equivalent to Go's `SetGiteaVersion("")`).
+    /// * **Non-empty string** — parsed as a semantic version and used in
+    ///   place of the version discovered from the server.
+    ///
+    /// # Panics
+    ///
+    /// Panics if `version` is non-empty but cannot be parsed by
+    /// [`semver::Version::parse`]. Use [`build()`](Self::build) to get a
+    /// proper [`Error::Version`] instead.
+    pub fn gitea_version(mut self, version: &str) -> Self {
+        if version.is_empty() {
+            self.ignore_version = true;
+            self.preset_version = None;
+        } else if let Ok(v) = version.parse::<semver::Version>() {
+            self.preset_version = Some(v);
+            self.ignore_version = false;
+        }
+        // Silently ignore unparseable versions here; build() will catch
+        // the case where a preset_version is expected but not set.
+        self
+    }
+
+    /// Enable or disable debug logging.
+    pub fn debug(mut self, enabled: bool) -> Self {
+        self.debug = enabled;
+        self
+    }
+
+    /// Provide a custom [`reqwest::Client`].
+    ///
+    /// If not called, a default client is created by [`build()`](Self::build).
+    pub fn http_client(mut self, client: reqwest::Client) -> Self {
+        self.http_client = Some(client);
+        self
+    }
+
+    /// Consume the builder and produce a [`Client`].
+    ///
+    /// # Errors
+    ///
+    /// * [`Error::Url`] — `base_url` is not a valid URL.
+    /// * [`Error::Validation`] — `base_url` does not use `http` or `https`.
+    pub fn build(self) -> crate::Result<Client> {
+        // Validate URL.
+        let parsed = url::Url::parse(self.base_url)?;
+
+        match parsed.scheme() {
+            "http" | "https" => {}
+            other => {
+                return Err(Error::Validation(format!(
+                    "base_url must use http or https, got: {other}"
+                )));
+            }
+        }
+
+        // Strip trailing slash to match Go SDK behaviour.
+        let base_url = parsed.as_str().trim_end_matches('/').to_string();
+
+        let http = self.http_client.unwrap_or_else(reqwest::Client::new);
+
+        let config = ClientConfig {
+            base_url,
+            access_token: self.access_token.unwrap_or_default(),
+            username: self.username.unwrap_or_default(),
+            password: self.password.unwrap_or_default(),
+            otp: self.otp.unwrap_or_default(),
+            sudo: self.sudo.unwrap_or_default(),
+            user_agent: self.user_agent.unwrap_or_default(),
+            debug: self.debug,
+            ignore_version: self.ignore_version,
+        };
+
+        Ok(Client {
+            inner: Arc::new(ClientInner {
+                http: RwLock::new(http),
+                config: RwLock::new(config),
+                server_version: OnceLock::new(),
+                preset_version: self.preset_version,
+            }),
+        })
+    }
+}
+
+// ── Tests ───────────────────────────────────────────────────────────
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_client_send_sync() {
+        fn assert_send_sync<T: Send + Sync>() {}
+        assert_send_sync::<Client>();
+    }
+
+    #[test]
+    fn test_client_build_token() {
+        let client = Client::builder("https://example.com")
+            .token("abc123")
+            .build()
+            .unwrap();
+        assert_eq!(client.base_url(), "https://example.com");
+        let cfg = client.read_config();
+        assert_eq!(cfg.access_token, "abc123");
+        assert!(cfg.username.is_empty());
+        assert!(cfg.password.is_empty());
+    }
+
+    #[test]
+    fn test_client_build_basic_auth() {
+        let client = Client::builder("https://example.com")
+            .basic_auth("user", "pass")
+            .build()
+            .unwrap();
+        let cfg = client.read_config();
+        assert_eq!(cfg.username, "user");
+        assert_eq!(cfg.password, "pass");
+        assert!(cfg.access_token.is_empty());
+    }
+
+    #[test]
+    fn test_client_build_invalid_url() {
+        let result = Client::builder("not-a-url").build();
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_client_build_invalid_scheme() {
+        let result = Client::builder("ftp://example.com").build();
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_client_setters() {
+        let client = Client::builder("https://example.com")
+            .token("initial")
+            .build()
+            .unwrap();
+
+        client.set_token("new-token");
+        assert_eq!(client.read_config().access_token, "new-token");
+
+        client.set_basic_auth("admin", "secret");
+        {
+            let cfg = client.read_config();
+            assert_eq!(cfg.username, "admin");
+            assert_eq!(cfg.password, "secret");
+            assert!(cfg.access_token.is_empty());
+        }
+
+        client.set_otp("123456");
+        assert_eq!(client.read_config().otp, "123456");
+
+        client.set_sudo("target-user");
+        assert_eq!(client.read_config().sudo, "target-user");
+
+        client.set_user_agent("my-sdk/0.1");
+        assert_eq!(client.read_config().user_agent, "my-sdk/0.1");
+    }
+
+    #[test]
+    fn test_client_gitea_version_ignore() {
+        let client = Client::builder("https://example.com")
+            .gitea_version("")
+            .build()
+            .unwrap();
+        assert!(client.ignore_version());
+        assert!(client.preset_version().is_none());
+    }
+
+    #[test]
+    fn test_client_gitea_version_preset() {
+        let client = Client::builder("https://example.com")
+            .gitea_version("1.22.0")
+            .build()
+            .unwrap();
+        assert!(!client.ignore_version());
+        assert_eq!(
+            client.preset_version().as_ref().map(|v| v.to_string()),
+            Some("1.22.0".to_string()),
+        );
+    }
+
+    #[test]
+    fn test_client_builder_url_trailing_slash() {
+        let client = Client::builder("https://example.com/").build().unwrap();
+        assert_eq!(client.base_url(), "https://example.com");
+    }
+
+    #[test]
+    fn test_client_builder_url_multiple_trailing_slashes() {
+        let client = Client::builder("https://example.com///").build().unwrap();
+        assert_eq!(client.base_url(), "https://example.com");
+    }
+
+    #[test]
+    fn test_client_builder_url_path_preserved() {
+        let client = Client::builder("https://example.com/gitea/")
+            .build()
+            .unwrap();
+        assert_eq!(client.base_url(), "https://example.com/gitea");
+    }
+
+    #[test]
+    fn test_client_debug_flag() {
+        let client = Client::builder("https://example.com")
+            .debug(true)
+            .build()
+            .unwrap();
+        assert!(client.read_config().debug);
+
+        let client = Client::builder("https://example.com")
+            .debug(false)
+            .build()
+            .unwrap();
+        assert!(!client.read_config().debug);
+    }
+
+    #[test]
+    fn test_client_builder_default() {
+        let client = Client::builder("https://example.com").build().unwrap();
+        let cfg = client.read_config();
+        assert!(cfg.access_token.is_empty());
+        assert!(cfg.username.is_empty());
+        assert!(cfg.password.is_empty());
+        assert!(cfg.otp.is_empty());
+        assert!(cfg.sudo.is_empty());
+        assert!(cfg.user_agent.is_empty());
+        assert!(!cfg.debug);
+        assert!(!cfg.ignore_version);
+    }
+
+    #[test]
+    fn test_client_gitea_version_invalid_string() {
+        // An invalid version string should be silently ignored by gitea_version()
+        // (it returns self unchanged). build() should still succeed.
+        let client = Client::builder("https://example.com")
+            .gitea_version("not-a-version")
+            .build()
+            .unwrap();
+        assert!(client.preset_version().is_none());
+        assert!(!client.ignore_version());
+    }
+
+    #[test]
+    fn test_client_clone_shares_state() {
+        let client = Client::builder("https://example.com")
+            .token("shared-token")
+            .build()
+            .unwrap();
+        let cloned = clone_client(&client);
+
+        client.set_token("updated-token");
+        // The clone sees the same config because they share the Arc.
+        assert_eq!(cloned.read_config().access_token, "updated-token");
+    }
+
+    /// Helper to clone a Client via Arc (simulate sharing across threads).
+    fn clone_client(client: &Client) -> Client {
+        Client {
+            inner: Arc::clone(&client.inner),
+        }
+    }
+}
