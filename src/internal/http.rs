@@ -174,6 +174,83 @@ impl Client {
         let value: T = serde_json::from_slice(&data)?;
         Ok((value, response))
     }
+
+    /// Layer 5: Send a multipart request, check for errors, and deserialize JSON.
+    ///
+    /// Returns `(T, Response)` on success.
+    /// Used for file upload endpoints (e.g. release attachments).
+    pub(crate) async fn get_parsed_response_multipart<T: serde::de::DeserializeOwned>(
+        &self,
+        method: reqwest::Method,
+        path: &str,
+        headers: Option<&HeaderMap>,
+        form: reqwest::multipart::Form,
+    ) -> crate::Result<(T, Response)> {
+        let http_client = self.http_client();
+
+        let (base_url, access_token, otp, username, password, sudo, user_agent, debug) = {
+            let config = self.read_config();
+            (
+                config.base_url.clone(),
+                config.access_token.clone(),
+                config.otp.clone(),
+                config.username.clone(),
+                config.password.clone(),
+                config.sudo.clone(),
+                config.user_agent.clone(),
+                config.debug,
+            )
+        };
+
+        let url = format!("{base_url}/api/v1{path}");
+
+        let mut req = http_client
+            .request(method.clone(), &url)
+            .header("Accept", "application/json");
+
+        // Auth header injection — exact order from Go SDK doRequest.
+        if !access_token.is_empty() {
+            req = req.header("Authorization", format!("token {access_token}"));
+        }
+        if !otp.is_empty() {
+            req = req.header("X-GITEA-OTP", &otp);
+        }
+        if !username.is_empty() {
+            req = req.basic_auth(&username, Some(&password));
+        }
+        if !sudo.is_empty() {
+            req = req.header("Sudo", &sudo);
+        }
+        if !user_agent.is_empty() {
+            req = req.header("User-Agent", &user_agent);
+        }
+
+        if let Some(hdrs) = headers {
+            for (k, v) in hdrs.iter() {
+                req = req.header(k, v);
+            }
+        }
+
+        req = req.multipart(form);
+
+        if debug {
+            tracing::debug!("{}: {}", method, url);
+        }
+
+        let resp = http_client.execute(req.build()?).await?;
+        let response = response_from_reqwest(&resp);
+        let status = resp.status().as_u16();
+
+        if status / 100 != 2 {
+            let err_bytes = resp.bytes().await.unwrap_or_default();
+            status_code_to_err(status, &err_bytes)?;
+            unreachable!()
+        }
+
+        let data = resp.bytes().await?.to_vec();
+        let value: T = serde_json::from_slice(&data)?;
+        Ok((value, response))
+    }
 }
 
 // ── Error mapping (pure function, no Client dependency) ─────────────

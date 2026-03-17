@@ -4,4 +4,5 @@
 
 pub mod admin;
 pub mod org;
+pub mod release;
 pub mod user;
