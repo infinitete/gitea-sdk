@@ -5,5 +5,6 @@
 pub mod admin;
 pub mod issue;
 pub mod org;
+pub mod pull;
 pub mod release;
 pub mod user;

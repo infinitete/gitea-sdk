@@ -34,6 +34,10 @@ pub use organization::{OrgPermissions, Organization};
 #[allow(unused_imports)]
 pub use package::{Package, PackageFile};
 #[allow(unused_imports)]
+pub use pull_request::{
+    ChangedFile, PRBranchInfo, PRBranchInfoRepo, PullRequest, PullReview, PullReviewComment,
+};
+#[allow(unused_imports)]
 pub use reaction::Reaction;
 #[allow(unused_imports)]
 pub use release::{Attachment, Release};
@@ -63,6 +67,7 @@ pub mod notification;
 pub mod oauth2;
 pub mod organization;
 pub mod package;
+pub mod pull_request;
 pub mod reaction;
 pub mod release;
 pub mod secret;
