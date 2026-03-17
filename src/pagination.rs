@@ -46,10 +46,11 @@ impl QueryEncode for ListOptions {
 
 /// Trait for types that carry pagination options.
 ///
-/// Extended ListXxxOptions (Phase 1b) will implement this.
+/// Extended `ListXxxOptions` (Phase 1b) will implement this.
+#[allow(dead_code)]
 pub trait PaginationOptions: QueryEncode {
-    /// Apply defaults, returning a new value without mutation.
-    fn set_defaults(self) -> Self
+    /// Apply defaults, returning a new value without mutation. Idempotent.
+    fn with_defaults(self) -> Self
     where
         Self: Sized;
 }

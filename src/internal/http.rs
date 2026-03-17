@@ -24,6 +24,8 @@ impl Client {
         headers: Option<&HeaderMap>,
         body: Option<B>,
     ) -> crate::Result<reqwest::Response> {
+        let http_client = self.http_client();
+
         let (base_url, access_token, otp, username, password, sudo, user_agent, debug) = {
             let config = self.read_config();
             (
@@ -40,8 +42,7 @@ impl Client {
 
         let url = format!("{base_url}/api/v1{path}");
 
-        let mut req = self
-            .http_client()
+        let mut req = http_client
             .request(method.clone(), &url)
             .header("Accept", "application/json");
 
@@ -82,7 +83,7 @@ impl Client {
         }
 
         // SSH signing placeholder — Phase 1c.
-        let resp = self.http_client().execute(req.build()?).await?;
+        let resp = http_client.execute(req.build()?).await?;
         Ok(resp)
     }
 

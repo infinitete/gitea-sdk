@@ -1,7 +1,6 @@
 //! Gitea API client for Rust.
 //!
-//! This crate provides a typed client for the Gitea API,
-//! supporting both synchronous and asynchronous operations.
+//! This crate provides an asynchronous client for the Gitea API.
 //!
 //! # Quick Start
 //!
@@ -36,7 +35,7 @@ mod types;
 // Public API re-exports.
 pub use client::{Client, ClientBuilder};
 pub use error::{Error, Result};
-pub use pagination::{ListOptions, PaginationOptions, QueryEncode};
+pub use pagination::{ListOptions, QueryEncode};
 pub use response::{PageLinks, Response};
 
 #[cfg(test)]

@@ -9,7 +9,7 @@ use parking_lot::RwLock;
 use crate::Error;
 
 /// Configuration fields that can be mutated at runtime via setters on [`Client`].
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub(crate) struct ClientConfig {
     /// Base URL of the Gitea server (trailing slash stripped).
     pub(crate) base_url: String,
@@ -31,6 +31,29 @@ pub(crate) struct ClientConfig {
     pub(crate) ignore_version: bool,
 }
 
+impl std::fmt::Debug for ClientConfig {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("ClientConfig")
+            .field("base_url", &self.base_url)
+            .field(
+                "access_token",
+                &if self.access_token.is_empty() {
+                    &"" as &dyn std::fmt::Debug
+                } else {
+                    &"***" as &dyn std::fmt::Debug
+                },
+            )
+            .field("username", &self.username)
+            .field("password", &"***")
+            .field("otp", &"***")
+            .field("sudo", &self.sudo)
+            .field("user_agent", &self.user_agent)
+            .field("debug", &self.debug)
+            .field("ignore_version", &self.ignore_version)
+            .finish()
+    }
+}
+
 struct ClientInner {
     http: RwLock<reqwest::Client>,
     /// Mutable configuration protected by a reader-writer lock.
@@ -39,6 +62,8 @@ struct ClientInner {
     server_version: OnceLock<semver::Version>,
     /// Pre-set version supplied via [`ClientBuilder::gitea_version`].
     preset_version: Option<semver::Version>,
+    /// Guards against concurrent `load_server_version` fetches.
+    version_loading: parking_lot::Mutex<()>,
 }
 
 /// A thread-safe Gitea API client.
@@ -57,6 +82,7 @@ struct ClientInner {
 ///     .token("my-secret-token")
 ///     .build()?;
 /// ```
+#[derive(Clone)]
 pub struct Client {
     inner: Arc<ClientInner>,
 }
@@ -160,6 +186,10 @@ impl Client {
     pub(crate) fn ignore_version(&self) -> bool {
         self.inner.config.read().ignore_version
     }
+
+    pub(crate) fn version_loading_lock(&self) -> parking_lot::MutexGuard<'_, ()> {
+        self.inner.version_loading.lock()
+    }
 }
 
 // ── ClientBuilder ───────────────────────────────────────────────────
@@ -186,7 +216,7 @@ impl std::fmt::Debug for ClientBuilder<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("ClientBuilder")
             .field("base_url", &self.base_url)
-            .field("access_token", &self.access_token)
+            .field("access_token", &self.access_token.as_ref().map(|_| "***"))
             .field("username", &self.username)
             .field("password", &"***")
             .field("otp", &"***")
@@ -332,6 +362,7 @@ impl<'a> ClientBuilder<'a> {
                 config: RwLock::new(config),
                 server_version: OnceLock::new(),
                 preset_version: self.preset_version,
+                version_loading: parking_lot::Mutex::new(()),
             }),
         })
     }
@@ -504,17 +535,9 @@ mod tests {
             .token("shared-token")
             .build()
             .unwrap();
-        let cloned = clone_client(&client);
+        let cloned = client.clone();
 
         client.set_token("updated-token");
-        // The clone sees the same config because they share the Arc.
         assert_eq!(cloned.read_config().access_token, "updated-token");
-    }
-
-    /// Helper to clone a Client via Arc (simulate sharing across threads).
-    fn clone_client(client: &Client) -> Client {
-        Client {
-            inner: Arc::clone(&client.inner),
-        }
     }
 }

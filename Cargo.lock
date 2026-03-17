@@ -389,6 +389,7 @@ dependencies = [
  "serde_json",
  "serde_test",
  "sha2",
+ "subtle",
  "thiserror",
  "time",
  "tokio",

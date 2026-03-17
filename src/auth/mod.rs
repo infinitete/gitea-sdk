@@ -4,6 +4,7 @@
 
 use hmac::{Hmac, Mac};
 use sha2::Sha256;
+use subtle::ConstantTimeEq;
 
 type HmacSha256 = Hmac<Sha256>;
 
@@ -26,18 +27,7 @@ pub fn verify_webhook_signature(
     mac.update(payload);
     let computed = mac.finalize().into_bytes();
 
-    Ok(constant_time_eq(&computed, &expected_bytes))
-}
-
-fn constant_time_eq(a: &[u8], b: &[u8]) -> bool {
-    if a.len() != b.len() {
-        return false;
-    }
-    let mut result: u8 = 0;
-    for (x, y) in a.iter().zip(b.iter()) {
-        result |= x ^ y;
-    }
-    result == 0
+    Ok(computed.ct_eq(&expected_bytes).into())
 }
 
 #[cfg(test)]

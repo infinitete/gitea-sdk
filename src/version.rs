@@ -11,26 +11,26 @@ use crate::Client;
 // Using `LazyLock` because `semver::Version::parse` is not `const`.
 
 macro_rules! version_const {
-    ($name:ident, $major:expr, $minor:expr) => {
+    ($name:ident, $major:expr, $minor:expr, $patch:expr) => {
         #[allow(dead_code)]
         /// Lazily parsed [`semver::Version`] constant.
         pub(crate) static $name: LazyLock<Version> =
-            LazyLock::new(|| Version::new($major, $minor, 0));
+            LazyLock::new(|| Version::new($major, $minor, $patch));
     };
 }
 
-version_const!(VERSION_1_11, 1, 11);
-version_const!(VERSION_1_12, 1, 12);
-version_const!(VERSION_1_13, 1, 13);
-version_const!(VERSION_1_14, 1, 14);
-version_const!(VERSION_1_15, 1, 15);
-version_const!(VERSION_1_16, 1, 16);
-version_const!(VERSION_1_17, 1, 17);
-version_const!(VERSION_1_18, 1, 18);
-version_const!(VERSION_1_19, 1, 19);
-version_const!(VERSION_1_20, 1, 20);
-version_const!(VERSION_1_21, 1, 21);
-version_const!(VERSION_1_22, 1, 22);
+version_const!(VERSION_1_11_0, 1, 11, 0);
+version_const!(VERSION_1_11_5, 1, 11, 5);
+version_const!(VERSION_1_12_0, 1, 12, 0);
+version_const!(VERSION_1_12_3, 1, 12, 3);
+version_const!(VERSION_1_13_0, 1, 13, 0);
+version_const!(VERSION_1_14_0, 1, 14, 0);
+version_const!(VERSION_1_15_0, 1, 15, 0);
+version_const!(VERSION_1_16_0, 1, 16, 0);
+version_const!(VERSION_1_17_0, 1, 17, 0);
+version_const!(VERSION_1_22_0, 1, 22, 0);
+version_const!(VERSION_1_23_0, 1, 23, 0);
+version_const!(VERSION_1_25_0, 1, 25, 0);
 
 // ── Server version response ───────────────────────────────────────────
 
@@ -56,22 +56,25 @@ impl Client {
     /// On parse failure the lock is set to `1.11.0` (safety net) and
     /// [`Error::UnknownVersion`] is returned.
     pub(crate) async fn load_server_version(&self) -> crate::Result<Version> {
-        // 1. Version checks disabled.
         if self.ignore_version() {
             return Err(crate::Error::Version("version checks disabled".into()));
         }
 
-        // 2. Pre-set version from builder.
         if let Some(v) = self.preset_version() {
             return Ok(v.clone());
         }
 
-        // 3. Already cached via OnceLock.
         if let Some(v) = self.server_version_lock().get() {
             return Ok(v.clone());
         }
 
-        // 4. Fetch from server.
+        {
+            let _guard = self.version_loading_lock();
+            if self.server_version_lock().get().is_some() {
+                return Ok(self.server_version_lock().get().unwrap().clone());
+            }
+        }
+
         let (data, _resp) = self
             .get_response(reqwest::Method::GET, "/version", None, None::<String>)
             .await?;
@@ -85,8 +88,7 @@ impl Client {
                 Ok(v)
             }
             Err(_) => {
-                // Fallback to 1.11.0 on parse failure.
-                let fallback = VERSION_1_11.clone();
+                let fallback = VERSION_1_11_0.clone();
                 let _ = self.server_version_lock().set(fallback.clone());
                 Err(crate::Error::UnknownVersion(ver_str.to_string()))
             }
@@ -150,21 +152,22 @@ mod tests {
 
     #[test]
     fn test_version_constants() {
-        assert_eq!(VERSION_1_11.major, 1);
-        assert_eq!(VERSION_1_11.minor, 11);
-        assert_eq!(VERSION_1_11.patch, 0);
-        assert_eq!(VERSION_1_22.major, 1);
-        assert_eq!(VERSION_1_22.minor, 22);
-        assert_eq!(VERSION_1_12.minor, 12);
-        assert_eq!(VERSION_1_13.minor, 13);
-        assert_eq!(VERSION_1_14.minor, 14);
-        assert_eq!(VERSION_1_15.minor, 15);
-        assert_eq!(VERSION_1_16.minor, 16);
-        assert_eq!(VERSION_1_17.minor, 17);
-        assert_eq!(VERSION_1_18.minor, 18);
-        assert_eq!(VERSION_1_19.minor, 19);
-        assert_eq!(VERSION_1_20.minor, 20);
-        assert_eq!(VERSION_1_21.minor, 21);
+        assert_eq!(VERSION_1_11_0.major, 1);
+        assert_eq!(VERSION_1_11_0.minor, 11);
+        assert_eq!(VERSION_1_11_0.patch, 0);
+        assert_eq!(VERSION_1_22_0.major, 1);
+        assert_eq!(VERSION_1_22_0.minor, 22);
+        assert_eq!(VERSION_1_12_0.minor, 12);
+        assert_eq!(VERSION_1_12_0.patch, 0);
+        assert_eq!(VERSION_1_12_3.patch, 3);
+        assert_eq!(VERSION_1_13_0.minor, 13);
+        assert_eq!(VERSION_1_14_0.minor, 14);
+        assert_eq!(VERSION_1_15_0.minor, 15);
+        assert_eq!(VERSION_1_16_0.minor, 16);
+        assert_eq!(VERSION_1_17_0.minor, 17);
+        assert_eq!(VERSION_1_22_0.patch, 0);
+        assert_eq!(VERSION_1_23_0.minor, 23);
+        assert_eq!(VERSION_1_25_0.minor, 25);
     }
 
     #[test]
@@ -190,8 +193,8 @@ mod tests {
     #[test]
     fn test_version_constants_lazy_parse() {
         // Verify LazyLock produces consistent, clonable values.
-        let a = VERSION_1_11.clone();
-        let b = VERSION_1_11.clone();
+        let a = VERSION_1_11_0.clone();
+        let b = VERSION_1_11_0.clone();
         assert_eq!(a, b);
         assert_eq!(a.to_string(), "1.11.0");
     }
@@ -200,18 +203,18 @@ mod tests {
     fn test_version_constants_all_twelve() {
         // Ensure all 12 constants are distinct and ordered.
         let versions: Vec<&Version> = vec![
-            &VERSION_1_11,
-            &VERSION_1_12,
-            &VERSION_1_13,
-            &VERSION_1_14,
-            &VERSION_1_15,
-            &VERSION_1_16,
-            &VERSION_1_17,
-            &VERSION_1_18,
-            &VERSION_1_19,
-            &VERSION_1_20,
-            &VERSION_1_21,
-            &VERSION_1_22,
+            &VERSION_1_11_0,
+            &VERSION_1_11_5,
+            &VERSION_1_12_0,
+            &VERSION_1_12_3,
+            &VERSION_1_13_0,
+            &VERSION_1_14_0,
+            &VERSION_1_15_0,
+            &VERSION_1_16_0,
+            &VERSION_1_17_0,
+            &VERSION_1_22_0,
+            &VERSION_1_23_0,
+            &VERSION_1_25_0,
         ];
         assert_eq!(versions.len(), 12);
         for window in versions.windows(2) {
