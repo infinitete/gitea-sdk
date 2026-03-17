@@ -5,7 +5,11 @@
 #[allow(unused_imports)]
 pub use activity::Activity;
 #[allow(unused_imports)]
+pub use badge::Badge;
+#[allow(unused_imports)]
 pub use comment::Comment;
+#[allow(unused_imports)]
+pub use cron_task::CronTask;
 #[allow(unused_imports)]
 pub use label::Label;
 #[allow(unused_imports)]
@@ -42,7 +46,9 @@ pub mod enums;
 pub mod serde_helpers;
 
 pub mod activity;
+pub mod badge;
 pub mod comment;
+pub mod cron_task;
 pub mod label;
 pub mod milestone;
 pub mod node_info;

@@ -36,11 +36,11 @@ pub use response::{PageLinks, Response};
 
 // Re-export entity types for convenience.
 pub use types::{
-    AccessToken, Activity, Attachment, CombinedStatus, Comment, Email, GPGKey, GPGKeyEmail,
-    GitignoreTemplateInfo, Label, LabelTemplate, Milestone, NodeInfo, NodeInfoServices,
-    NodeInfoSoftware, NodeInfoUsage, NodeInfoUsageUsers, NotificationThread, NotifySubject, Oauth2,
-    OrgPermissions, Organization, Package, PackageFile, PublicKey, Reaction, Release, Secret,
-    Status, Team, User, UserSettings,
+    AccessToken, Activity, Attachment, Badge, CombinedStatus, Comment, CronTask, Email, GPGKey,
+    GPGKeyEmail, GitignoreTemplateInfo, Label, LabelTemplate, Milestone, NodeInfo,
+    NodeInfoServices, NodeInfoSoftware, NodeInfoUsage, NodeInfoUsageUsers, NotificationThread,
+    NotifySubject, Oauth2, OrgPermissions, Organization, Package, PackageFile, PublicKey, Reaction,
+    Release, Secret, Status, Team, User, UserSettings,
 };
 
 // Re-export all enums for convenience.
