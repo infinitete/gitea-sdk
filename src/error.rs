@@ -56,7 +56,7 @@ pub enum Error {
     Url(#[from] url::ParseError),
 }
 
-/// A type alias for `Result` with the SDK's [`Error`] type.
+/// A type alias for `Result` with the SDK's [`Error`](enum@Error) type.
 pub type Result<T> = std::result::Result<T, Error>;
 
 #[cfg(test)]

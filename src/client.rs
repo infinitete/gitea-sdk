@@ -136,6 +136,7 @@ impl Client {
     }
 
     /// Acquire a write lock on the configuration.
+    #[allow(dead_code)]
     fn write_config(&self) -> parking_lot::RwLockWriteGuard<'_, ClientConfig> {
         self.inner.config.write()
     }
@@ -311,7 +312,7 @@ impl<'a> ClientBuilder<'a> {
         // Strip trailing slash to match Go SDK behaviour.
         let base_url = parsed.as_str().trim_end_matches('/').to_string();
 
-        let http = self.http_client.unwrap_or_else(reqwest::Client::new);
+        let http = self.http_client.unwrap_or_default();
 
         let config = ClientConfig {
             base_url,

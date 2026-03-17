@@ -3,5 +3,5 @@
 // license that can be found in the LICENSE file.
 
 pub(crate) mod escape;
-pub(crate) mod query;
 pub(crate) mod http;
+pub(crate) mod query;

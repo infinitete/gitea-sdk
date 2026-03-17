@@ -1,19 +1,10 @@
 /// Options for Gitea API pagination.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct ListOptions {
     /// Page number. None=server default, Some(0)=disable pagination, Some(n)=explicit page (n >= 1)
     pub page: Option<i32>,
     /// Page size. None=server default
     pub page_size: Option<i32>,
-}
-
-impl Default for ListOptions {
-    fn default() -> Self {
-        Self {
-            page: None,
-            page_size: None,
-        }
-    }
 }
 
 impl ListOptions {

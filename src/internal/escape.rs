@@ -2,8 +2,9 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-use percent_encoding::{utf8_percent_encode, NON_ALPHANUMERIC};
+use percent_encoding::{NON_ALPHANUMERIC, utf8_percent_encode};
 
+#[allow(dead_code)]
 pub(crate) fn path_escape_segments(path: &str) -> String {
     path.split('/')
         .map(|seg| utf8_percent_encode(seg, NON_ALPHANUMERIC).to_string())
@@ -11,6 +12,7 @@ pub(crate) fn path_escape_segments(path: &str) -> String {
         .join("/")
 }
 
+#[allow(dead_code)]
 pub(crate) fn validate_and_escape_segments(segments: &[&str]) -> crate::Result<Vec<String>> {
     segments
         .iter()
@@ -27,6 +29,7 @@ pub(crate) fn validate_and_escape_segments(segments: &[&str]) -> crate::Result<V
         .collect()
 }
 
+#[allow(dead_code)]
 pub(crate) fn validate_path_segments(segments: &[&str]) -> crate::Result<()> {
     for (i, segment) in segments.iter().enumerate() {
         if segment.is_empty() {

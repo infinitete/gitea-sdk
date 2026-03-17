@@ -18,26 +18,26 @@ pub use serde::{Deserialize, Serialize};
 
 mod client;
 mod error;
-mod response;
-mod pagination;
-mod version;
 mod internal;
+mod pagination;
+mod response;
+mod version;
 
 pub mod auth;
 
 // Empty module stubs for Phase 1 types/options/API.
 #[allow(dead_code)]
-mod types;
+mod api;
 #[allow(dead_code)]
 mod options;
 #[allow(dead_code)]
-mod api;
+mod types;
 
 // Public API re-exports.
 pub use client::{Client, ClientBuilder};
 pub use error::{Error, Result};
-pub use response::{PageLinks, Response};
 pub use pagination::{ListOptions, PaginationOptions, QueryEncode};
+pub use response::{PageLinks, Response};
 
 #[cfg(test)]
 mod tests {

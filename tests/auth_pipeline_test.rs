@@ -31,9 +31,7 @@ async fn test_auth_token_header_wiremock() {
     Mock::given(method("GET"))
         .and(path("/api/v1/version"))
         .and(header("authorization", "token test-token"))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})),
-        )
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})))
         .expect(1)
         .mount(&server)
         .await;
@@ -54,9 +52,7 @@ async fn test_auth_basic_auth_header_wiremock() {
     Mock::given(method("GET"))
         .and(path("/api/v1/version"))
         .and(header("authorization", expected.as_str()))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})),
-        )
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})))
         .expect(1)
         .mount(&server)
         .await;
@@ -76,9 +72,7 @@ async fn test_auth_otp_header_wiremock() {
     Mock::given(method("GET"))
         .and(path("/api/v1/version"))
         .and(header("x-gitea-otp", "123456"))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})),
-        )
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})))
         .expect(1)
         .mount(&server)
         .await;
@@ -98,9 +92,7 @@ async fn test_auth_sudo_header_wiremock() {
     Mock::given(method("GET"))
         .and(path("/api/v1/version"))
         .and(header("sudo", "target-user"))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})),
-        )
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})))
         .expect(1)
         .mount(&server)
         .await;
@@ -120,9 +112,7 @@ async fn test_auth_user_agent_header_wiremock() {
     Mock::given(method("GET"))
         .and(path("/api/v1/version"))
         .and(header("user-agent", "my-app/1.0"))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})),
-        )
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})))
         .expect(1)
         .mount(&server)
         .await;
@@ -144,9 +134,7 @@ async fn test_auth_token_with_otp_and_sudo_combined_wiremock() {
         .and(header("authorization", "token abc"))
         .and(header("x-gitea-otp", "654321"))
         .and(header("sudo", "impersonated"))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})),
-        )
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})))
         .expect(1)
         .mount(&server)
         .await;
@@ -170,9 +158,7 @@ async fn test_auth_token_and_basic_auth_wiremock() {
     let server = MockServer::start().await;
     Mock::given(method("GET"))
         .and(path("/api/v1/version"))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})),
-        )
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})))
         .expect(1)
         .mount(&server)
         .await;
@@ -192,9 +178,7 @@ async fn test_auth_no_credentials_wiremock() {
     let server = MockServer::start().await;
     Mock::given(method("GET"))
         .and(path("/api/v1/version"))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})),
-        )
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})))
         .expect(1)
         .mount(&server)
         .await;
@@ -209,9 +193,7 @@ async fn test_auth_setters_at_runtime_wiremock() {
     Mock::given(method("GET"))
         .and(path("/api/v1/version"))
         .and(header("authorization", "token dynamic-token"))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})),
-        )
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})))
         .expect(1)
         .mount(&server)
         .await;
@@ -228,9 +210,7 @@ async fn test_auth_set_basic_auth_at_runtime_wiremock() {
     Mock::given(method("GET"))
         .and(path("/api/v1/version"))
         .and(header("authorization", expected.as_str()))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})),
-        )
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})))
         .expect(1)
         .mount(&server)
         .await;
@@ -247,9 +227,7 @@ async fn test_path_prefix_api_v1_wiremock() {
     let server = MockServer::start().await;
     Mock::given(method("GET"))
         .and(path("/api/v1/version"))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})),
-        )
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})))
         .expect(1)
         .mount(&server)
         .await;
@@ -270,9 +248,7 @@ async fn test_path_wrong_prefix_rejected_wiremock() {
 
     Mock::given(method("GET"))
         .and(path("/api/v1/version"))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})),
-        )
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})))
         .mount(&server)
         .await;
 
@@ -286,9 +262,7 @@ async fn test_path_base_url_trailing_slash_wiremock() {
     let base = format!("{}/", server.uri());
     Mock::given(method("GET"))
         .and(path("/api/v1/version"))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})),
-        )
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})))
         .expect(1)
         .mount(&server)
         .await;
@@ -309,9 +283,7 @@ async fn test_pipeline_json_response_parsed_wiremock() {
     Mock::given(method("GET"))
         .and(path("/api/v1/version"))
         .and(header("authorization", "token full-pipeline"))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})),
-        )
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})))
         .expect(1)
         .mount(&server)
         .await;
@@ -331,9 +303,7 @@ async fn test_pipeline_accept_json_header_wiremock() {
     Mock::given(method("GET"))
         .and(path("/api/v1/version"))
         .and(header("accept", "application/json"))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})),
-        )
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})))
         .expect(1)
         .mount(&server)
         .await;
@@ -367,9 +337,7 @@ async fn test_pipeline_json_error_with_message_wiremock() {
     let server = MockServer::start().await;
     Mock::given(method("GET"))
         .and(path("/api/v1/version"))
-        .respond_with(
-            ResponseTemplate::new(403).set_body_json(json!({"message": "forbidden"})),
-        )
+        .respond_with(ResponseTemplate::new(403).set_body_json(json!({"message": "forbidden"})))
         .mount(&server)
         .await;
 
@@ -377,9 +345,7 @@ async fn test_pipeline_json_error_with_message_wiremock() {
     let err = client.server_version().await.unwrap_err();
     match err {
         Error::Api {
-            status,
-            message,
-            ..
+            status, message, ..
         } => {
             assert_eq!(status, 403);
             assert_eq!(message, "forbidden");
@@ -393,9 +359,7 @@ async fn test_pipeline_version_cached_after_first_call_wiremock() {
     let server = MockServer::start().await;
     Mock::given(method("GET"))
         .and(path("/api/v1/version"))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})),
-        )
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})))
         .expect(1)
         .mount(&server)
         .await;
@@ -411,9 +375,7 @@ async fn test_pipeline_get_method_wiremock() {
     let server = MockServer::start().await;
     Mock::given(method("GET"))
         .and(path("/api/v1/version"))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})),
-        )
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})))
         .expect(1)
         .mount(&server)
         .await;
@@ -437,9 +399,7 @@ async fn test_pipeline_version_constraint_with_auth_wiremock() {
     Mock::given(method("GET"))
         .and(path("/api/v1/version"))
         .and(header("authorization", "token constraint-test"))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})),
-        )
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})))
         .expect(1)
         .mount(&server)
         .await;
@@ -468,9 +428,7 @@ async fn test_concurrent_client_multiple_calls_wiremock() {
     let server = MockServer::start().await;
     Mock::given(method("GET"))
         .and(path("/api/v1/version"))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})),
-        )
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})))
         .mount(&server)
         .await;
 
@@ -487,9 +445,7 @@ async fn test_concurrent_clients_same_server_wiremock() {
     let server = MockServer::start().await;
     Mock::given(method("GET"))
         .and(path("/api/v1/version"))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})),
-        )
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})))
         .mount(&server)
         .await;
 
@@ -509,9 +465,7 @@ async fn test_interleaved_setters_and_requests_wiremock() {
     let server = MockServer::start().await;
     Mock::given(method("GET"))
         .and(path("/api/v1/version"))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})),
-        )
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})))
         .mount(&server)
         .await;
 
@@ -531,9 +485,7 @@ async fn test_concurrent_different_auth_configs_wiremock() {
 
     Mock::given(method("GET"))
         .and(path("/api/v1/version"))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})),
-        )
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})))
         .mount(&server)
         .await;
 
@@ -616,9 +568,7 @@ async fn test_pipeline_multiple_errors_sequential_wiremock() {
 
     Mock::given(method("GET"))
         .and(path("/api/v1/version"))
-        .respond_with(
-            ResponseTemplate::new(404).set_body_json(json!({"message": "not found"})),
-        )
+        .respond_with(ResponseTemplate::new(404).set_body_json(json!({"message": "not found"})))
         .mount(&server)
         .await;
 
@@ -651,9 +601,7 @@ async fn test_preset_version_no_http_request_wiremock() {
     let server = MockServer::start().await;
     Mock::given(method("GET"))
         .and(path("/api/v1/version"))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})),
-        )
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})))
         .expect(0)
         .mount(&server)
         .await;
@@ -675,9 +623,7 @@ async fn test_ignore_version_no_http_request_wiremock() {
     let server = MockServer::start().await;
     Mock::given(method("GET"))
         .and(path("/api/v1/version"))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})),
-        )
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({"version": "1.22.0"})))
         .expect(0)
         .mount(&server)
         .await;

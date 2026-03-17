@@ -12,6 +12,7 @@ use crate::Client;
 
 macro_rules! version_const {
     ($name:ident, $major:expr, $minor:expr) => {
+        #[allow(dead_code)]
         /// Lazily parsed [`semver::Version`] constant.
         pub(crate) static $name: LazyLock<Version> =
             LazyLock::new(|| Version::new($major, $minor, 0));
@@ -57,9 +58,7 @@ impl Client {
     pub(crate) async fn load_server_version(&self) -> crate::Result<Version> {
         // 1. Version checks disabled.
         if self.ignore_version() {
-            return Err(crate::Error::Version(
-                "version checks disabled".into(),
-            ));
+            return Err(crate::Error::Version("version checks disabled".into()));
         }
 
         // 2. Pre-set version from builder.
@@ -74,12 +73,7 @@ impl Client {
 
         // 4. Fetch from server.
         let (data, _resp) = self
-            .get_response(
-                reqwest::Method::GET,
-                "/version",
-                None,
-                None::<String>,
-            )
+            .get_response(reqwest::Method::GET, "/version", None, None::<String>)
             .await?;
 
         let svr: ServerVersionResponse = serde_json::from_slice(&data)?;
@@ -110,7 +104,7 @@ impl Client {
     /// Check a semver version constraint against the server version.
     ///
     /// Returns `Ok(())` if the constraint is satisfied, or
-    /// [`Error::Version`] if it is not.
+    /// [`crate::Error::Version`] if it is not.
     ///
     /// Equivalent to Go SDK `CheckServerVersionConstraint`.
     pub async fn check_server_version_constraint(&self, constraint: &str) -> crate::Result<()> {
@@ -132,6 +126,7 @@ impl Client {
     /// When `ignore_version` is enabled this always returns `Ok(())`.
     ///
     /// Equivalent to Go SDK `checkServerVersionGreaterThanOrEqual`.
+    #[allow(dead_code)]
     pub(crate) async fn check_server_version_ge(&self, v: &Version) -> crate::Result<()> {
         if self.ignore_version() {
             return Ok(());
@@ -205,9 +200,18 @@ mod tests {
     fn test_version_constants_all_twelve() {
         // Ensure all 12 constants are distinct and ordered.
         let versions: Vec<&Version> = vec![
-            &VERSION_1_11, &VERSION_1_12, &VERSION_1_13, &VERSION_1_14,
-            &VERSION_1_15, &VERSION_1_16, &VERSION_1_17, &VERSION_1_18,
-            &VERSION_1_19, &VERSION_1_20, &VERSION_1_21, &VERSION_1_22,
+            &VERSION_1_11,
+            &VERSION_1_12,
+            &VERSION_1_13,
+            &VERSION_1_14,
+            &VERSION_1_15,
+            &VERSION_1_16,
+            &VERSION_1_17,
+            &VERSION_1_18,
+            &VERSION_1_19,
+            &VERSION_1_20,
+            &VERSION_1_21,
+            &VERSION_1_22,
         ];
         assert_eq!(versions.len(), 12);
         for window in versions.windows(2) {

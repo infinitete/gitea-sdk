@@ -4,9 +4,9 @@
 
 use reqwest::header::HeaderMap;
 
-use crate::response::response_from_reqwest;
 use crate::Client;
 use crate::Response;
+use crate::response::response_from_reqwest;
 
 // ── HTTP request pipeline (mirrors go-sdk/gitea/client.go) ─────────
 
@@ -24,9 +24,19 @@ impl Client {
         headers: Option<&HeaderMap>,
         body: Option<B>,
     ) -> crate::Result<reqwest::Response> {
-        let config = self.read_config();
-        let base_url = &config.base_url;
-        let debug = config.debug;
+        let (base_url, access_token, otp, username, password, sudo, user_agent, debug) = {
+            let config = self.read_config();
+            (
+                config.base_url.clone(),
+                config.access_token.clone(),
+                config.otp.clone(),
+                config.username.clone(),
+                config.password.clone(),
+                config.sudo.clone(),
+                config.user_agent.clone(),
+                config.debug,
+            )
+        };
 
         let url = format!("{base_url}/api/v1{path}");
 
@@ -37,26 +47,25 @@ impl Client {
 
         // Auth header injection — exact order from Go SDK doRequest:
         // 1. Token → Authorization: token {access_token}
-        if !config.access_token.is_empty() {
-            req = req.header("Authorization", format!("token {}", config.access_token));
+        if !access_token.is_empty() {
+            req = req.header("Authorization", format!("token {access_token}"));
         }
         // 2. OTP → X-GITEA-OTP
-        if !config.otp.is_empty() {
-            req = req.header("X-GITEA-OTP", &config.otp);
+        if !otp.is_empty() {
+            req = req.header("X-GITEA-OTP", &otp);
         }
         // 3. Basic Auth
-        if !config.username.is_empty() {
-            req = req.basic_auth(&config.username, Some(&config.password));
+        if !username.is_empty() {
+            req = req.basic_auth(&username, Some(&password));
         }
         // 4. Sudo
-        if !config.sudo.is_empty() {
-            req = req.header("Sudo", &config.sudo);
+        if !sudo.is_empty() {
+            req = req.header("Sudo", &sudo);
         }
         // 5. User-Agent
-        if !config.user_agent.is_empty() {
-            req = req.header("User-Agent", &config.user_agent);
+        if !user_agent.is_empty() {
+            req = req.header("User-Agent", &user_agent);
         }
-        drop(config); // Release read lock before sending request.
 
         if let Some(hdrs) = headers {
             for (k, v) in hdrs.iter() {
@@ -81,6 +90,7 @@ impl Client {
     ///
     /// Used for DELETE and other operations where only the status code matters.
     /// Matches Go SDK `doRequestWithStatusHandle`.
+    #[allow(dead_code)]
     pub(crate) async fn do_request_with_status_handle<B: Into<reqwest::Body>>(
         &self,
         method: reqwest::Method,
@@ -104,6 +114,7 @@ impl Client {
     /// Layer 2: Return status code without checking for errors.
     ///
     /// Matches Go SDK `getStatusCode`.
+    #[allow(dead_code)]
     pub(crate) async fn get_status_code<B: Into<reqwest::Body>>(
         &self,
         method: reqwest::Method,
@@ -147,7 +158,11 @@ impl Client {
     ///
     /// Returns `(T, Response)` on success.
     /// Matches Go SDK `getParsedResponse`.
-    pub(crate) async fn get_parsed_response<T: serde::de::DeserializeOwned, B: Into<reqwest::Body>>(
+    #[allow(dead_code)]
+    pub(crate) async fn get_parsed_response<
+        T: serde::de::DeserializeOwned,
+        B: Into<reqwest::Body>,
+    >(
         &self,
         method: reqwest::Method,
         path: &str,
@@ -175,14 +190,14 @@ fn status_code_to_err(status: u16, body: &[u8]) -> crate::Result<()> {
         return Ok(());
     }
 
-    if let Ok(err_map) = serde_json::from_slice::<serde_json::Value>(body) {
-        if let Some(message) = err_map.get("message").and_then(|v| v.as_str()) {
-            return Err(crate::Error::Api {
-                status,
-                message: message.to_string(),
-                body: body.to_vec(),
-            });
-        }
+    if let Ok(err_map) = serde_json::from_slice::<serde_json::Value>(body)
+        && let Some(message) = err_map.get("message").and_then(|v| v.as_str())
+    {
+        return Err(crate::Error::Api {
+            status,
+            message: message.to_string(),
+            body: body.to_vec(),
+        });
     }
 
     Err(crate::Error::UnknownApi {
@@ -227,7 +242,10 @@ mod tests {
         let body = b"Internal Server Error";
         let err = status_code_to_err(500, body).unwrap_err();
         match err {
-            crate::Error::UnknownApi { status, body: err_body } => {
+            crate::Error::UnknownApi {
+                status,
+                body: err_body,
+            } => {
                 assert_eq!(status, 500);
                 assert_eq!(err_body, "Internal Server Error");
             }
@@ -240,7 +258,10 @@ mod tests {
         let body = br#"{"error":"bad request"}"#;
         let err = status_code_to_err(400, body).unwrap_err();
         match err {
-            crate::Error::UnknownApi { status, body: err_body } => {
+            crate::Error::UnknownApi {
+                status,
+                body: err_body,
+            } => {
                 assert_eq!(status, 400);
                 assert_eq!(err_body, r#"{"error":"bad request"}"#);
             }
@@ -253,7 +274,10 @@ mod tests {
         let body = b"";
         let err = status_code_to_err(500, body).unwrap_err();
         match err {
-            crate::Error::UnknownApi { status, body: err_body } => {
+            crate::Error::UnknownApi {
+                status,
+                body: err_body,
+            } => {
                 assert_eq!(status, 500);
                 assert!(err_body.is_empty());
             }
