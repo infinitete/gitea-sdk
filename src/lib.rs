@@ -37,16 +37,24 @@ pub use response::{PageLinks, Response};
 // Re-export entity types for convenience.
 pub use types::{
     AccessToken, ActionTask, ActionTaskResponse, ActionWorkflowJob, ActionWorkflowJobsResponse,
-    ActionWorkflowRun, ActionWorkflowRunsResponse, ActionWorkflowStep, Activity, Attachment, Badge,
-    ChangedFile, CombinedStatus, Comment, CronTask, Email, GPGKey, GPGKeyEmail,
-    GitignoreTemplateInfo, GlobalAPISettings, GlobalAttachmentSettings, GlobalRepoSettings,
-    GlobalUISettings, Hook, Issue, IssueFormElement, IssueFormElementAttributes,
+    ActionWorkflowRun, ActionWorkflowRunsResponse, ActionWorkflowStep, Activity, AnnotatedTag,
+    AnnotatedTagObject, Attachment, Badge, Branch, BranchProtection, ChangedFile,
+    CollaboratorPermissionResult, CombinedStatus, Comment, Commit, CommitAffectedFiles,
+    CommitDateOptions, CommitMeta, CommitStats, CommitUser, Compare, ContentsExtResponse,
+    ContentsResponse, CronTask, DeployKey, Email, ExternalTracker, ExternalWiki,
+    FileCommitResponse, FileLinksResponse, FileResponse, GPGKey, GPGKeyEmail, GitBlobResponse,
+    GitEntry, GitHook, GitObject, GitTreeResponse, GitignoreTemplateInfo, GlobalAPISettings,
+    GlobalAttachmentSettings, GlobalRepoSettings, GlobalUISettings, Hook, Identity,
+    InternalTracker, Issue, IssueFormElement, IssueFormElementAttributes,
     IssueFormElementValidations, IssueMeta, IssueTemplate, Label, LabelTemplate, Milestone,
-    NodeInfo, NodeInfoServices, NodeInfoSoftware, NodeInfoUsage, NodeInfoUsageUsers,
+    NodeInfo, NodeInfoServices, NodeInfoSoftware, NodeInfoUsage, NodeInfoUsageUsers, Note,
     NotificationThread, NotifySubject, Oauth2, OrgPermissions, Organization, PRBranchInfo,
-    PRBranchInfoRepo, Package, PackageFile, PublicKey, PullRequest, PullRequestMeta, PullReview,
-    PullReviewComment, Reaction, Release, RepositoryMeta, Secret, Status, StopWatch, Team,
-    TimelineComment, TrackedTime, User, UserSettings, WatchInfo,
+    PRBranchInfoRepo, Package, PackageFile, PayloadCommit, PayloadCommitVerification, PayloadUser,
+    Permission, PublicKey, PullRequest, PullRequestMeta, PullReview, PullReviewComment,
+    PushMirrorResponse, Reaction, Reference, Release, RepoActionVariable, RepoTransfer, Repository,
+    RepositoryMeta, Secret, Status, StopWatch, Tag, TagProtection, Team, TimelineComment,
+    TrackedTime, User, UserSettings, WatchInfo, WikiCommit, WikiCommitList, WikiPage,
+    WikiPageMetaData,
 };
 
 // Re-export all enums for convenience.

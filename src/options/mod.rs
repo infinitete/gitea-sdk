@@ -12,5 +12,6 @@ pub mod oauth2;
 pub mod org;
 pub mod pull;
 pub mod release;
+pub mod repo;
 pub mod status;
 pub mod user;

@@ -49,6 +49,17 @@ pub use reaction::Reaction;
 #[allow(unused_imports)]
 pub use release::{Attachment, Release};
 #[allow(unused_imports)]
+pub use repository::{
+    AnnotatedTag, AnnotatedTagObject, Branch, BranchProtection, CollaboratorPermissionResult,
+    Commit, CommitAffectedFiles, CommitDateOptions, CommitMeta, CommitStats, CommitUser, Compare,
+    ContentsExtResponse, ContentsResponse, DeployKey, ExternalTracker, ExternalWiki,
+    FileCommitResponse, FileLinksResponse, FileResponse, GitBlobResponse, GitEntry, GitHook,
+    GitObject, GitTreeResponse, Identity, InternalTracker, Note, PayloadCommit,
+    PayloadCommitVerification, PayloadUser, Permission, PushMirrorResponse, Reference,
+    RepoActionVariable, RepoTransfer, Repository, Tag, TagProtection, WikiCommit, WikiCommitList,
+    WikiPage, WikiPageMetaData,
+};
+#[allow(unused_imports)]
 pub use secret::Secret;
 #[allow(unused_imports)]
 pub use settings::{
@@ -83,6 +94,7 @@ pub mod package;
 pub mod pull_request;
 pub mod reaction;
 pub mod release;
+pub mod repository;
 pub mod secret;
 pub mod settings;
 pub mod status;
