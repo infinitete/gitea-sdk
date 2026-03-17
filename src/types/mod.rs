@@ -3,6 +3,11 @@
 // license that can be found in the LICENSE file.
 
 #[allow(unused_imports)]
+pub use action::{
+    ActionTask, ActionTaskResponse, ActionWorkflowJob, ActionWorkflowJobsResponse,
+    ActionWorkflowRun, ActionWorkflowRunsResponse, ActionWorkflowStep,
+};
+#[allow(unused_imports)]
 pub use activity::Activity;
 #[allow(unused_imports)]
 pub use badge::Badge;
@@ -10,6 +15,8 @@ pub use badge::Badge;
 pub use comment::Comment;
 #[allow(unused_imports)]
 pub use cron_task::CronTask;
+#[allow(unused_imports)]
+pub use hook::Hook;
 #[allow(unused_imports)]
 pub use issue::{
     Issue, IssueBlockedBy, IssueFormElement, IssueFormElementAttributes,
@@ -44,6 +51,10 @@ pub use release::{Attachment, Release};
 #[allow(unused_imports)]
 pub use secret::Secret;
 #[allow(unused_imports)]
+pub use settings::{
+    GlobalAPISettings, GlobalAttachmentSettings, GlobalRepoSettings, GlobalUISettings,
+};
+#[allow(unused_imports)]
 pub use status::{CombinedStatus, Status};
 #[allow(unused_imports)]
 pub use team::Team;
@@ -55,10 +66,12 @@ pub use user_settings::UserSettings;
 pub mod enums;
 pub mod serde_helpers;
 
+pub mod action;
 pub mod activity;
 pub mod badge;
 pub mod comment;
 pub mod cron_task;
+pub mod hook;
 pub mod issue;
 pub mod label;
 pub mod milestone;
@@ -71,6 +84,7 @@ pub mod pull_request;
 pub mod reaction;
 pub mod release;
 pub mod secret;
+pub mod settings;
 pub mod status;
 pub mod team;
 pub mod user;

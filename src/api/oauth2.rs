@@ -3,20 +3,175 @@
 // license that can be found in the LICENSE file.
 
 use crate::Client;
+use crate::Response;
+use crate::options::oauth2::*;
+use crate::pagination::QueryEncode;
+use crate::types::Oauth2;
 
-/// API methods for OAuth2 application operations.
 pub struct Oauth2Api<'a> {
     client: &'a Client,
 }
 
+fn json_body<T: serde::Serialize>(val: &T) -> crate::Result<String> {
+    Ok(serde_json::to_string(val)?)
+}
+
+fn json_header() -> reqwest::header::HeaderMap {
+    let mut headers = reqwest::header::HeaderMap::new();
+    headers.insert(
+        reqwest::header::CONTENT_TYPE,
+        reqwest::header::HeaderValue::from_static("application/json"),
+    );
+    headers
+}
+
 impl<'a> Oauth2Api<'a> {
-    /// Create a new `Oauth2Api` for the given client.
     pub fn new(client: &'a Client) -> Self {
         Self { client }
     }
 
-    /// Get a reference to the underlying client.
     pub(crate) fn client(&self) -> &'a Client {
         self.client
+    }
+
+    pub async fn list_applications(
+        &self,
+        opt: ListOauth2Option,
+    ) -> crate::Result<(Vec<Oauth2>, Response)> {
+        let path = format!("/user/applications/oauth2?{}", opt.query_encode());
+        self.client()
+            .get_parsed_response(
+                reqwest::Method::GET,
+                &path,
+                Some(&json_header()),
+                None::<&str>,
+            )
+            .await
+    }
+
+    pub async fn create_application(
+        &self,
+        opt: CreateOauth2Option,
+    ) -> crate::Result<(Oauth2, Response)> {
+        opt.validate()?;
+        let body = json_body(&opt)?;
+        self.client()
+            .get_parsed_response(
+                reqwest::Method::POST,
+                "/user/applications/oauth2",
+                Some(&json_header()),
+                Some(body),
+            )
+            .await
+    }
+
+    pub async fn get_application(&self, id: i64) -> crate::Result<(Oauth2, Response)> {
+        let path = format!("/user/applications/oauth2/{id}");
+        self.client()
+            .get_parsed_response(reqwest::Method::GET, &path, None, None::<&str>)
+            .await
+    }
+
+    pub async fn update_application(
+        &self,
+        id: i64,
+        opt: CreateOauth2Option,
+    ) -> crate::Result<(Oauth2, Response)> {
+        opt.validate()?;
+        let body = json_body(&opt)?;
+        let path = format!("/user/applications/oauth2/{id}");
+        self.client()
+            .get_parsed_response(
+                reqwest::Method::PATCH,
+                &path,
+                Some(&json_header()),
+                Some(body),
+            )
+            .await
+    }
+
+    pub async fn delete_application(&self, id: i64) -> crate::Result<Response> {
+        let path = format!("/user/applications/oauth2/{id}");
+        self.client()
+            .do_request_with_status_handle(reqwest::Method::DELETE, &path, None, None::<&str>)
+            .await
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use wiremock::matchers::{method, path};
+    use wiremock::{Mock, MockServer, ResponseTemplate};
+
+    fn create_test_client(server: &MockServer) -> Client {
+        Client::builder(&server.uri())
+            .token("test-token")
+            .gitea_version("")
+            .build()
+            .unwrap()
+    }
+
+    fn oauth2_json(id: i64, name: &str) -> serde_json::Value {
+        serde_json::json!({
+            "id": id,
+            "name": name,
+            "client_id": "abc123",
+            "client_secret": "secret456",
+            "redirect_uris": ["https://example.com/callback"],
+            "confidential_client": true,
+            "created": "2024-01-15T10:00:00Z"
+        })
+    }
+
+    #[tokio::test]
+    async fn test_list_applications() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/user/applications/oauth2"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(vec![oauth2_json(1, "My App")]))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let (apps, resp) = client
+            .oauth2()
+            .list_applications(Default::default())
+            .await
+            .unwrap();
+        assert_eq!(apps.len(), 1);
+        assert_eq!(apps[0].name, "My App");
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_create_and_delete_application() {
+        let server = MockServer::start().await;
+
+        Mock::given(method("POST"))
+            .and(path("/api/v1/user/applications/oauth2"))
+            .respond_with(ResponseTemplate::new(201).set_body_json(oauth2_json(2, "New App")))
+            .mount(&server)
+            .await;
+
+        Mock::given(method("DELETE"))
+            .and(path("/api/v1/user/applications/oauth2/2"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+
+        let opt = CreateOauth2Option {
+            name: "New App".to_string(),
+            confidential_client: true,
+            redirect_uris: vec!["https://example.com/callback".to_string()],
+        };
+        let (app, resp) = client.oauth2().create_application(opt).await.unwrap();
+        assert_eq!(app.id, 2);
+        assert_eq!(resp.status, 201);
+
+        let resp = client.oauth2().delete_application(2).await.unwrap();
+        assert_eq!(resp.status, 204);
     }
 }

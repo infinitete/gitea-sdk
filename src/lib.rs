@@ -36,14 +36,17 @@ pub use response::{PageLinks, Response};
 
 // Re-export entity types for convenience.
 pub use types::{
-    AccessToken, Activity, Attachment, Badge, ChangedFile, CombinedStatus, Comment, CronTask,
-    Email, GPGKey, GPGKeyEmail, GitignoreTemplateInfo, Issue, IssueFormElement,
-    IssueFormElementAttributes, IssueFormElementValidations, IssueMeta, IssueTemplate, Label,
-    LabelTemplate, Milestone, NodeInfo, NodeInfoServices, NodeInfoSoftware, NodeInfoUsage,
-    NodeInfoUsageUsers, NotificationThread, NotifySubject, Oauth2, OrgPermissions, Organization,
-    PRBranchInfo, PRBranchInfoRepo, Package, PackageFile, PublicKey, PullRequest, PullRequestMeta,
-    PullReview, PullReviewComment, Reaction, Release, RepositoryMeta, Secret, Status, StopWatch,
-    Team, TimelineComment, TrackedTime, User, UserSettings, WatchInfo,
+    AccessToken, ActionTask, ActionTaskResponse, ActionWorkflowJob, ActionWorkflowJobsResponse,
+    ActionWorkflowRun, ActionWorkflowRunsResponse, ActionWorkflowStep, Activity, Attachment, Badge,
+    ChangedFile, CombinedStatus, Comment, CronTask, Email, GPGKey, GPGKeyEmail,
+    GitignoreTemplateInfo, GlobalAPISettings, GlobalAttachmentSettings, GlobalRepoSettings,
+    GlobalUISettings, Hook, Issue, IssueFormElement, IssueFormElementAttributes,
+    IssueFormElementValidations, IssueMeta, IssueTemplate, Label, LabelTemplate, Milestone,
+    NodeInfo, NodeInfoServices, NodeInfoSoftware, NodeInfoUsage, NodeInfoUsageUsers,
+    NotificationThread, NotifySubject, Oauth2, OrgPermissions, Organization, PRBranchInfo,
+    PRBranchInfoRepo, Package, PackageFile, PublicKey, PullRequest, PullRequestMeta, PullReview,
+    PullReviewComment, Reaction, Release, RepositoryMeta, Secret, Status, StopWatch, Team,
+    TimelineComment, TrackedTime, User, UserSettings, WatchInfo,
 };
 
 // Re-export all enums for convenience.

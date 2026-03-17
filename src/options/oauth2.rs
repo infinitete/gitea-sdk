@@ -1,0 +1,38 @@
+// Copyright 2026 The Gitea Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
+use crate::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CreateOauth2Option {
+    pub name: String,
+    #[serde(rename = "confidential_client", default)]
+    pub confidential_client: bool,
+    #[serde(
+        rename = "redirect_uris",
+        default,
+        skip_serializing_if = "Vec::is_empty"
+    )]
+    pub redirect_uris: Vec<String>,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct ListOauth2Option {
+    pub list_options: crate::pagination::ListOptions,
+}
+
+impl crate::pagination::QueryEncode for ListOauth2Option {
+    fn query_encode(&self) -> String {
+        self.list_options.query_encode()
+    }
+}
+
+impl CreateOauth2Option {
+    pub fn validate(&self) -> crate::Result<()> {
+        if self.name.trim().is_empty() {
+            return Err(crate::Error::Validation("name is required".to_string()));
+        }
+        Ok(())
+    }
+}
