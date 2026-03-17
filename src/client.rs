@@ -7,6 +7,10 @@ use std::sync::{Arc, OnceLock};
 use parking_lot::RwLock;
 
 use crate::Error;
+use crate::api::{
+    ActionsApi, ActivityPubApi, AdminApi, HooksApi, IssuesApi, MiscApi, NotificationsApi,
+    Oauth2Api, OrgsApi, PullsApi, ReleasesApi, ReposApi, SettingsApi, StatusApi, UsersApi,
+};
 
 /// Configuration fields that can be mutated at runtime via setters on [`Client`].
 #[derive(Clone)]
@@ -189,6 +193,70 @@ impl Client {
 
     pub(crate) async fn version_loading_lock(&self) -> tokio::sync::MutexGuard<'_, ()> {
         self.inner.version_loading.lock().await
+    }
+}
+
+// ── API accessor methods ────────────────────────────────────────────
+
+impl Client {
+    pub fn repos(&self) -> ReposApi<'_> {
+        ReposApi::new(self)
+    }
+
+    pub fn issues(&self) -> IssuesApi<'_> {
+        IssuesApi::new(self)
+    }
+
+    pub fn pulls(&self) -> PullsApi<'_> {
+        PullsApi::new(self)
+    }
+
+    pub fn orgs(&self) -> OrgsApi<'_> {
+        OrgsApi::new(self)
+    }
+
+    pub fn users(&self) -> UsersApi<'_> {
+        UsersApi::new(self)
+    }
+
+    pub fn admin(&self) -> AdminApi<'_> {
+        AdminApi::new(self)
+    }
+
+    pub fn hooks(&self) -> HooksApi<'_> {
+        HooksApi::new(self)
+    }
+
+    pub fn notifications(&self) -> NotificationsApi<'_> {
+        NotificationsApi::new(self)
+    }
+
+    pub fn actions(&self) -> ActionsApi<'_> {
+        ActionsApi::new(self)
+    }
+
+    pub fn releases(&self) -> ReleasesApi<'_> {
+        ReleasesApi::new(self)
+    }
+
+    pub fn settings(&self) -> SettingsApi<'_> {
+        SettingsApi::new(self)
+    }
+
+    pub fn oauth2(&self) -> Oauth2Api<'_> {
+        Oauth2Api::new(self)
+    }
+
+    pub fn miscellaneous(&self) -> MiscApi<'_> {
+        MiscApi::new(self)
+    }
+
+    pub fn activitypub(&self) -> ActivityPubApi<'_> {
+        ActivityPubApi::new(self)
+    }
+
+    pub fn status(&self) -> StatusApi<'_> {
+        StatusApi::new(self)
     }
 }
 
