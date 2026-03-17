@@ -108,4 +108,20 @@ mod tests {
         assert_eq!(person["preferredUsername"], "testuser");
         assert_eq!(resp.status, 200);
     }
+
+    #[tokio::test]
+    async fn test_get_person_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/activitypub/user-id/1"))
+            .respond_with(ResponseTemplate::new(404).set_body_json(serde_json::json!({
+                "message": "Not Found"
+            })))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client.activitypub().get_person(1).await;
+        assert!(result.is_err());
+    }
 }

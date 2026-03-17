@@ -110,4 +110,20 @@ mod tests {
         assert_eq!(settings.allowed_reactions.len(), 3);
         assert_eq!(resp.status, 200);
     }
+
+    #[tokio::test]
+    async fn test_get_ui_settings_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/settings/ui"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(serde_json::json!({
+                "message": "Internal Server Error"
+            })))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client.settings().get_ui_settings().await;
+        assert!(result.is_err());
+    }
 }
