@@ -34,6 +34,7 @@ impl<'a> StatusApi<'a> {
         self.client
     }
 
+    /// CreateStatus creates a new Status for a given Commit
     pub async fn create_status(
         &self,
         owner: &str,
@@ -61,6 +62,7 @@ impl<'a> StatusApi<'a> {
             .await
     }
 
+    /// ListStatuses returns all statuses for a given Commit by ref
     pub async fn list_statuses(
         &self,
         owner: &str,
@@ -86,6 +88,7 @@ impl<'a> StatusApi<'a> {
             .await
     }
 
+    /// GetCombinedStatus returns the CombinedStatus for a given Commit
     pub async fn get_combined_status(
         &self,
         owner: &str,

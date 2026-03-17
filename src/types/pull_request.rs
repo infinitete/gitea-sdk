@@ -230,3 +230,182 @@ pub struct PullReviewComment {
     #[serde(rename = "pull_request_url")]
     pub html_pull_url: String,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn test_time() -> OffsetDateTime {
+        OffsetDateTime::new_utc(
+            time::Date::from_calendar_date(2024, time::Month::January, 15).unwrap(),
+            time::Time::from_hms(10, 0, 0).unwrap(),
+        )
+    }
+
+    fn test_pr_branch_info() -> PRBranchInfo {
+        PRBranchInfo {
+            name: "owner:main".to_string(),
+            ref_field: "main".to_string(),
+            sha: "abc123".to_string(),
+            repo_id: 1,
+            repository: None,
+        }
+    }
+
+    fn test_pull_request() -> PullRequest {
+        PullRequest {
+            id: 1,
+            url: "https://gitea.example.com/api/v1/repos/test/repo/pulls/1".to_string(),
+            index: 1,
+            poster: None,
+            title: "Fix bug".to_string(),
+            body: "This fixes the bug.".to_string(),
+            labels: vec![],
+            milestone: None,
+            assignee: None,
+            assignees: vec![],
+            requested_reviewers: vec![],
+            requested_reviewers_teams: vec![],
+            state: StateType::Open,
+            draft: false,
+            is_locked: false,
+            comments: 2,
+            review_comments: 1,
+            html_url: "https://gitea.example.com/test/repo/pulls/1".to_string(),
+            diff_url: "https://gitea.example.com/test/repo/pulls/1.diff".to_string(),
+            patch_url: "https://gitea.example.com/test/repo/pulls/1.patch".to_string(),
+            mergeable: true,
+            has_merged: false,
+            merged: None,
+            merged_commit_id: None,
+            merged_by: None,
+            allow_maintainer_edit: false,
+            base: None,
+            head: None,
+            merge_base: String::new(),
+            deadline: None,
+            created: test_time(),
+            updated: test_time(),
+            closed: None,
+            additions: None,
+            deletions: None,
+            changed_files: None,
+            pin_order: 0,
+        }
+    }
+
+    #[test]
+    fn test_pr_branch_info_round_trip() {
+        let original = test_pr_branch_info();
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: PRBranchInfo = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.sha, original.sha);
+        assert!(restored.repository.is_none());
+    }
+
+    #[test]
+    fn test_pull_request_round_trip_minimal() {
+        let original = test_pull_request();
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: PullRequest = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.id, original.id);
+        assert_eq!(restored.title, original.title);
+        assert!(restored.poster.is_none());
+        assert!(restored.labels.is_empty());
+        assert!(restored.assignees.is_empty());
+        assert!(restored.requested_reviewers.is_empty());
+        assert!(restored.additions.is_none());
+    }
+
+    #[test]
+    fn test_pull_request_round_trip_with_branches() {
+        let mut pr = test_pull_request();
+        pr.base = Some(Box::new(test_pr_branch_info()));
+        pr.head = Some(Box::new(test_pr_branch_info()));
+        let json = serde_json::to_string(&pr).unwrap();
+        let restored: PullRequest = serde_json::from_str(&json).unwrap();
+        assert!(restored.base.is_some());
+        assert!(restored.head.is_some());
+    }
+
+    #[test]
+    fn test_pull_request_round_trip_merged() {
+        let mut pr = test_pull_request();
+        pr.state = StateType::Closed;
+        pr.has_merged = true;
+        pr.merged = Some(test_time());
+        let json = serde_json::to_string(&pr).unwrap();
+        let restored: PullRequest = serde_json::from_str(&json).unwrap();
+        assert!(restored.has_merged);
+        assert!(restored.merged.is_some());
+    }
+
+    #[test]
+    fn test_changed_file_round_trip() {
+        let original = ChangedFile {
+            filename: "src/main.rs".to_string(),
+            previous_filename: String::new(),
+            status: "added".to_string(),
+            additions: 10,
+            deletions: 2,
+            changes: 12,
+            html_url: "https://example.com/file".to_string(),
+            contents_url: "https://example.com/file/raw".to_string(),
+            raw_url: "https://example.com/file/raw".to_string(),
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: ChangedFile = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.filename, original.filename);
+        assert_eq!(restored.additions, 10);
+    }
+
+    #[test]
+    fn test_pull_review_round_trip() {
+        let original = PullReview {
+            id: 1,
+            reviewer: None,
+            reviewer_team: None,
+            state: ReviewStateType::Approved,
+            body: "Looks good".to_string(),
+            commit_id: "abc123".to_string(),
+            stale: false,
+            official: false,
+            dismissed: false,
+            code_comments_count: 0,
+            submitted: test_time(),
+            html_url: "https://example.com/reviews/1".to_string(),
+            html_pull_url: "https://example.com/pulls/1".to_string(),
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: PullReview = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.id, original.id);
+        assert_eq!(restored.state, ReviewStateType::Approved);
+        assert!(restored.reviewer.is_none());
+    }
+
+    #[test]
+    fn test_pull_review_comment_round_trip() {
+        let original = PullReviewComment {
+            id: 1,
+            body: "nit: use snake_case".to_string(),
+            reviewer: None,
+            review_id: 10,
+            resolver: None,
+            created: test_time(),
+            updated: test_time(),
+            path: "src/main.rs".to_string(),
+            commit_id: "abc123".to_string(),
+            orig_commit_id: "abc123".to_string(),
+            diff_hunk: String::new(),
+            line_num: 42,
+            old_line_num: 42,
+            html_url: "https://example.com/comments/1".to_string(),
+            html_pull_url: "https://example.com/pulls/1".to_string(),
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: PullReviewComment = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.id, original.id);
+        assert_eq!(restored.line_num, 42);
+        assert!(restored.reviewer.is_none());
+    }
+}

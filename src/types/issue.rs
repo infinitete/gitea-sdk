@@ -280,3 +280,287 @@ pub struct IssueFormElementValidations {
     #[serde(default)]
     pub regex: String,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn test_time() -> OffsetDateTime {
+        OffsetDateTime::new_utc(
+            time::Date::from_calendar_date(2024, time::Month::January, 15).unwrap(),
+            time::Time::from_hms(10, 0, 0).unwrap(),
+        )
+    }
+
+    fn test_user() -> User {
+        User {
+            id: 1,
+            user_name: "testuser".to_string(),
+            login_name: "".to_string(),
+            source_id: 0,
+            full_name: "Test User".to_string(),
+            email: "test@example.com".to_string(),
+            avatar_url: "https://example.com/avatar.png".to_string(),
+            html_url: "https://gitea.example.com/testuser".to_string(),
+            language: "en-US".to_string(),
+            is_admin: false,
+            last_login: None,
+            created: None,
+            restricted: false,
+            is_active: true,
+            prohibit_login: false,
+            location: "".to_string(),
+            website: "".to_string(),
+            description: "".to_string(),
+            visibility: crate::types::enums::VisibleType::Public,
+            follower_count: 0,
+            following_count: 0,
+            starred_repo_count: 0,
+        }
+    }
+
+    fn test_issue() -> Issue {
+        Issue {
+            id: 1,
+            url: "https://gitea.example.com/api/v1/repos/test/repo/issues/1".to_string(),
+            html_url: "https://gitea.example.com/test/repo/issues/1".to_string(),
+            index: 1,
+            user: None,
+            original_author: String::new(),
+            original_author_id: 0,
+            title: "Bug fix".to_string(),
+            body: "Something broke".to_string(),
+            ref_field: String::new(),
+            labels: vec![],
+            milestone: None,
+            assignees: vec![],
+            state: StateType::Open,
+            is_locked: false,
+            comments: 0,
+            created: test_time(),
+            updated: test_time(),
+            closed: None,
+            deadline: None,
+            pull_request: None,
+            repository: None,
+        }
+    }
+
+    #[test]
+    fn test_pull_request_meta_round_trip() {
+        let original = PullRequestMeta {
+            has_merged: false,
+            merged: None,
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: PullRequestMeta = serde_json::from_str(&json).unwrap();
+        assert!(!restored.has_merged);
+        assert!(restored.merged.is_none());
+    }
+
+    #[test]
+    fn test_pull_request_meta_with_merge() {
+        let original = PullRequestMeta {
+            has_merged: true,
+            merged: Some(test_time()),
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: PullRequestMeta = serde_json::from_str(&json).unwrap();
+        assert!(restored.has_merged);
+        assert!(restored.merged.is_some());
+    }
+
+    #[test]
+    fn test_repository_meta_round_trip() {
+        let original = RepositoryMeta {
+            id: 1,
+            name: "test-repo".to_string(),
+            owner: "testowner".to_string(),
+            full_name: "testowner/test-repo".to_string(),
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: RepositoryMeta = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.id, original.id);
+        assert_eq!(restored.full_name, original.full_name);
+    }
+
+    #[test]
+    fn test_issue_round_trip_minimal() {
+        let original = test_issue();
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: Issue = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.id, original.id);
+        assert_eq!(restored.title, original.title);
+        assert_eq!(restored.state, original.state);
+        assert!(restored.user.is_none());
+        assert!(restored.labels.is_empty());
+        assert!(restored.assignees.is_empty());
+    }
+
+    #[test]
+    fn test_issue_round_trip_with_user() {
+        let mut issue = test_issue();
+        issue.user = Some(test_user());
+        let json = serde_json::to_string(&issue).unwrap();
+        let restored: Issue = serde_json::from_str(&json).unwrap();
+        assert!(restored.user.is_some());
+        assert_eq!(restored.user.unwrap().user_name, "testuser");
+    }
+
+    #[test]
+    fn test_issue_round_trip_with_closed() {
+        let mut issue = test_issue();
+        issue.state = StateType::Closed;
+        issue.closed = Some(test_time());
+        let json = serde_json::to_string(&issue).unwrap();
+        let restored: Issue = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.state, StateType::Closed);
+        assert!(restored.closed.is_some());
+    }
+
+    #[test]
+    fn test_issue_blocked_by_round_trip() {
+        let original = IssueBlockedBy {
+            index: 2,
+            title: "Blocking issue".to_string(),
+            state: "open".to_string(),
+            created_at: test_time(),
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: IssueBlockedBy = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.index, original.index);
+        assert_eq!(restored.title, original.title);
+    }
+
+    #[test]
+    fn test_issue_meta_round_trip() {
+        let original = IssueMeta { index: 1 };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: IssueMeta = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.index, 1);
+    }
+
+    #[test]
+    fn test_stop_watch_round_trip() {
+        let original = StopWatch {
+            created: test_time(),
+            seconds: 3600,
+            duration: "1h0m0s".to_string(),
+            issue_index: 1,
+            issue_title: "Fix bug".to_string(),
+            repo_owner_name: "owner".to_string(),
+            repo_name: "repo".to_string(),
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: StopWatch = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.seconds, 3600);
+        assert_eq!(restored.issue_index, 1);
+    }
+
+    #[test]
+    fn test_tracked_time_round_trip() {
+        let original = TrackedTime {
+            id: 1,
+            created: test_time(),
+            time: 1800,
+            user_id: 0,
+            user_name: String::new(),
+            issue_id: 0,
+            issue: None,
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: TrackedTime = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.id, original.id);
+        assert_eq!(restored.time, 1800);
+        assert!(restored.issue.is_none());
+    }
+
+    #[test]
+    fn test_timeline_comment_round_trip() {
+        let original = TimelineComment {
+            id: 1,
+            html_url: "https://example.com".to_string(),
+            pr_url: String::new(),
+            issue_url: "https://example.com".to_string(),
+            user: None,
+            original_author: String::new(),
+            original_author_id: 0,
+            body: "comment".to_string(),
+            created: test_time(),
+            updated: test_time(),
+            r#type: "comment".to_string(),
+            label: vec![],
+            milestone: None,
+            old_milestone: None,
+            new_title: String::new(),
+            old_title: String::new(),
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: TimelineComment = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.id, original.id);
+        assert!(restored.user.is_none());
+        assert!(restored.label.is_empty());
+    }
+
+    #[test]
+    fn test_watch_info_round_trip() {
+        let original = WatchInfo {
+            subscribed: true,
+            watching: true,
+            ignored: false,
+            reason: String::new(),
+            created_at: None,
+            url: String::new(),
+            repository_url: String::new(),
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: WatchInfo = serde_json::from_str(&json).unwrap();
+        assert!(restored.subscribed);
+        assert!(restored.watching);
+    }
+
+    #[test]
+    fn test_issue_template_round_trip() {
+        let original = IssueTemplate {
+            name: "Bug Report".to_string(),
+            about: "File a bug".to_string(),
+            filename: "bug_report.md".to_string(),
+            title: "Bug: ".to_string(),
+            labels: vec!["bug".to_string()],
+            r#ref: String::new(),
+            form: vec![],
+            markdown_content: "Describe the bug...".to_string(),
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: IssueTemplate = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.name, original.name);
+        assert_eq!(restored.labels.len(), 1);
+        assert!(restored.form.is_empty());
+    }
+
+    #[test]
+    fn test_issue_form_element_round_trip() {
+        let original = IssueFormElement {
+            id: "title".to_string(),
+            r#type: IssueFormElementType::Input,
+            attributes: IssueFormElementAttributes {
+                label: "Title".to_string(),
+                options: vec![],
+                value: String::new(),
+                description: "Bug title".to_string(),
+                placeholder: String::new(),
+                syntax_highlighting: String::new(),
+                multiple: false,
+            },
+            validations: IssueFormElementValidations {
+                required: true,
+                is_number: false,
+                regex: String::new(),
+            },
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: IssueFormElement = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.id, "title");
+        assert!(restored.validations.required);
+    }
+}

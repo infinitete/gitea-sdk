@@ -145,3 +145,163 @@ pub struct ActionWorkflowStep {
     #[serde(with = "rfc3339")]
     pub completed_at: OffsetDateTime,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn test_time() -> OffsetDateTime {
+        OffsetDateTime::new_utc(
+            time::Date::from_calendar_date(2024, time::Month::January, 15).unwrap(),
+            time::Time::from_hms(10, 0, 0).unwrap(),
+        )
+    }
+
+    #[test]
+    fn test_action_task_round_trip() {
+        let original = ActionTask {
+            id: 1,
+            name: "build".to_string(),
+            head_branch: "main".to_string(),
+            head_sha: "abc123".to_string(),
+            run_number: 42,
+            event: "push".to_string(),
+            display_title: "Build #42".to_string(),
+            status: "completed".to_string(),
+            workflow_id: "1234".to_string(),
+            url: "https://gitea.example.com/runs/1".to_string(),
+            created_at: test_time(),
+            updated_at: test_time(),
+            run_started_at: test_time(),
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: ActionTask = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.id, original.id);
+        assert_eq!(restored.name, original.name);
+        assert_eq!(restored.head_sha, original.head_sha);
+    }
+
+    #[test]
+    fn test_action_task_response_round_trip() {
+        let original = ActionTaskResponse {
+            total_count: 1,
+            workflow_runs: vec![],
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: ActionTaskResponse = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.total_count, 1);
+        assert!(restored.workflow_runs.is_empty());
+    }
+
+    #[test]
+    fn test_action_task_response_with_runs() {
+        let run = ActionTask {
+            id: 1,
+            name: "build".to_string(),
+            head_branch: "main".to_string(),
+            head_sha: "abc123".to_string(),
+            run_number: 1,
+            event: "push".to_string(),
+            display_title: "Build".to_string(),
+            status: "success".to_string(),
+            workflow_id: "10".to_string(),
+            url: "https://example.com".to_string(),
+            created_at: test_time(),
+            updated_at: test_time(),
+            run_started_at: test_time(),
+        };
+        let original = ActionTaskResponse {
+            total_count: 1,
+            workflow_runs: vec![run],
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: ActionTaskResponse = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.workflow_runs.len(), 1);
+    }
+
+    #[test]
+    fn test_action_workflow_run_round_trip() {
+        let original = ActionWorkflowRun {
+            id: 1,
+            display_title: "CI".to_string(),
+            event: "push".to_string(),
+            head_branch: "main".to_string(),
+            head_sha: "abc123".to_string(),
+            path: ".gitea/workflows/ci.yml".to_string(),
+            run_attempt: 1,
+            run_number: 42,
+            status: "completed".to_string(),
+            conclusion: "success".to_string(),
+            url: "https://example.com/runs/1".to_string(),
+            html_url: "https://example.com/runs/1".to_string(),
+            started_at: test_time(),
+            completed_at: test_time(),
+            actor: None,
+            trigger_actor: None,
+            repository: None,
+            head_repository: None,
+            repository_id: 1,
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: ActionWorkflowRun = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.id, original.id);
+        assert_eq!(restored.event, original.event);
+        assert!(restored.actor.is_none());
+    }
+
+    #[test]
+    fn test_action_workflow_jobs_response_round_trip() {
+        let original = ActionWorkflowJobsResponse {
+            total_count: 0,
+            jobs: vec![],
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: ActionWorkflowJobsResponse = serde_json::from_str(&json).unwrap();
+        assert!(restored.jobs.is_empty());
+    }
+
+    #[test]
+    fn test_action_workflow_job_round_trip() {
+        let original = ActionWorkflowJob {
+            id: 1,
+            run_id: 10,
+            run_url: "https://example.com/runs/10".to_string(),
+            run_attempt: 1,
+            name: "test".to_string(),
+            head_branch: "main".to_string(),
+            head_sha: "abc123".to_string(),
+            status: "completed".to_string(),
+            conclusion: "success".to_string(),
+            url: "https://example.com/jobs/1".to_string(),
+            html_url: "https://example.com/jobs/1".to_string(),
+            created_at: test_time(),
+            started_at: test_time(),
+            completed_at: test_time(),
+            runner_id: 1,
+            runner_name: "linux".to_string(),
+            labels: vec![],
+            steps: vec![],
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: ActionWorkflowJob = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.id, original.id);
+        assert!(restored.labels.is_empty());
+        assert!(restored.steps.is_empty());
+    }
+
+    #[test]
+    fn test_action_workflow_step_round_trip() {
+        let original = ActionWorkflowStep {
+            name: "checkout".to_string(),
+            number: 1,
+            status: "completed".to_string(),
+            conclusion: "success".to_string(),
+            started_at: test_time(),
+            completed_at: test_time(),
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: ActionWorkflowStep = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.name, original.name);
+        assert_eq!(restored.number, original.number);
+    }
+}

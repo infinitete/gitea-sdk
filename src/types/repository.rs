@@ -753,3 +753,488 @@ pub struct RepoActionVariable {
     pub name: String,
     pub data: String,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn test_time() -> OffsetDateTime {
+        OffsetDateTime::new_utc(
+            time::Date::from_calendar_date(2024, time::Month::January, 15).unwrap(),
+            time::Time::from_hms(10, 0, 0).unwrap(),
+        )
+    }
+
+    fn test_user() -> User {
+        User {
+            id: 1,
+            user_name: "testuser".to_string(),
+            login_name: "".to_string(),
+            source_id: 0,
+            full_name: "Test User".to_string(),
+            email: "test@example.com".to_string(),
+            avatar_url: "https://example.com/avatar.png".to_string(),
+            html_url: "https://gitea.example.com/testuser".to_string(),
+            language: "".to_string(),
+            is_admin: false,
+            last_login: None,
+            created: None,
+            restricted: false,
+            is_active: true,
+            prohibit_login: false,
+            location: "".to_string(),
+            website: "".to_string(),
+            description: "".to_string(),
+            visibility: crate::types::enums::VisibleType::Public,
+            follower_count: 0,
+            following_count: 0,
+            starred_repo_count: 0,
+        }
+    }
+
+    fn test_repository() -> Repository {
+        Repository {
+            id: 1,
+            owner: None,
+            name: "test-repo".to_string(),
+            full_name: "owner/test-repo".to_string(),
+            description: "A test repo".to_string(),
+            empty: false,
+            private: false,
+            fork: false,
+            template: false,
+            parent: None,
+            mirror: false,
+            size: 1024,
+            language: "Rust".to_string(),
+            languages_url: "https://example.com/languages".to_string(),
+            html_url: "https://example.com/owner/test-repo".to_string(),
+            url: "https://example.com/api/v1/repos/owner/test-repo".to_string(),
+            link: "https://example.com/owner/test-repo".to_string(),
+            ssh_url: "git@example.com:owner/test-repo.git".to_string(),
+            clone_url: "https://example.com/owner/test-repo.git".to_string(),
+            original_url: String::new(),
+            website: String::new(),
+            stars: 10,
+            forks: 2,
+            watchers: 5,
+            open_issues: 3,
+            open_pulls: 1,
+            releases: 4,
+            default_branch: "main".to_string(),
+            archived: false,
+            archived_at: test_time(),
+            created: test_time(),
+            updated: test_time(),
+            permissions: None,
+            has_issues: true,
+            has_code: true,
+            internal_tracker: None,
+            external_tracker: None,
+            has_wiki: true,
+            external_wiki: None,
+            has_pull_requests: true,
+            has_projects: true,
+            has_releases: None,
+            has_packages: None,
+            has_actions: None,
+            ignore_whitespace_conflicts: false,
+            allow_fast_forward_only_merge: false,
+            allow_merge: true,
+            allow_rebase: true,
+            allow_rebase_merge: true,
+            allow_rebase_update: false,
+            allow_squash: true,
+            default_allow_maintainer_edit: false,
+            avatar_url: String::new(),
+            internal: false,
+            mirror_interval: String::new(),
+            mirror_updated: None,
+            default_merge_style: MergeStyle::Merge,
+            projects_mode: None,
+            default_delete_branch_after_merge: false,
+            object_format_name: "sha1".to_string(),
+            topics: vec![],
+            licenses: vec![],
+            repo_transfer: None,
+        }
+    }
+
+    #[test]
+    fn test_permission_round_trip() {
+        let original = Permission {
+            admin: false,
+            push: true,
+            pull: true,
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: Permission = serde_json::from_str(&json).unwrap();
+        assert!(restored.pull);
+        assert!(!restored.admin);
+    }
+
+    #[test]
+    fn test_internal_tracker_round_trip() {
+        let original = InternalTracker {
+            enable_time_tracker: true,
+            allow_only_contributors_to_track_time: false,
+            enable_issue_dependencies: true,
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: InternalTracker = serde_json::from_str(&json).unwrap();
+        assert!(restored.enable_time_tracker);
+        assert!(restored.enable_issue_dependencies);
+    }
+
+    #[test]
+    fn test_external_tracker_round_trip() {
+        let original = ExternalTracker {
+            external_tracker_url: "https://tracker.example.com".to_string(),
+            external_tracker_format: "https://tracker.example.com/{index}".to_string(),
+            external_tracker_style: "numeric".to_string(),
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: ExternalTracker = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.external_tracker_style, "numeric");
+    }
+
+    #[test]
+    fn test_external_wiki_round_trip() {
+        let original = ExternalWiki {
+            external_wiki_url: "https://wiki.example.com".to_string(),
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: ExternalWiki = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.external_wiki_url, original.external_wiki_url);
+    }
+
+    #[test]
+    fn test_repo_transfer_round_trip() {
+        let original = RepoTransfer {
+            doer: None,
+            recipient: None,
+            teams: vec![],
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: RepoTransfer = serde_json::from_str(&json).unwrap();
+        assert!(restored.teams.is_empty());
+        assert!(restored.doer.is_none());
+    }
+
+    #[test]
+    fn test_repository_round_trip() {
+        let original = test_repository();
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: Repository = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.id, original.id);
+        assert_eq!(restored.name, original.name);
+        assert_eq!(restored.full_name, original.full_name);
+        assert!(!restored.private);
+        assert!(restored.topics.is_empty());
+        assert!(restored.licenses.is_empty());
+        assert!(restored.repo_transfer.is_none());
+    }
+
+    #[test]
+    fn test_repository_with_owner() {
+        let mut repo = test_repository();
+        repo.owner = Some(test_user());
+        let json = serde_json::to_string(&repo).unwrap();
+        let restored: Repository = serde_json::from_str(&json).unwrap();
+        assert!(restored.owner.is_some());
+        assert_eq!(restored.owner.unwrap().user_name, "testuser");
+    }
+
+    #[test]
+    fn test_repository_with_permissions() {
+        let mut repo = test_repository();
+        repo.permissions = Some(Permission {
+            admin: false,
+            push: true,
+            pull: true,
+        });
+        let json = serde_json::to_string(&repo).unwrap();
+        let restored: Repository = serde_json::from_str(&json).unwrap();
+        assert!(restored.permissions.is_some());
+        assert!(restored.permissions.unwrap().push);
+    }
+
+    #[test]
+    fn test_repository_with_topics() {
+        let mut repo = test_repository();
+        repo.topics = vec!["rust".to_string(), "gitea".to_string()];
+        repo.licenses = vec!["MIT".to_string()];
+        let json = serde_json::to_string(&repo).unwrap();
+        let restored: Repository = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.topics.len(), 2);
+        assert_eq!(restored.licenses.len(), 1);
+    }
+
+    #[test]
+    fn test_branch_round_trip() {
+        let original = Branch {
+            name: "main".to_string(),
+            commit: None,
+            protected: false,
+            required_approvals: 0,
+            enable_status_check: false,
+            status_check_contexts: vec![],
+            user_can_push: true,
+            user_can_merge: true,
+            effective_branch_protection_name: String::new(),
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: Branch = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.name, "main");
+        assert!(restored.status_check_contexts.is_empty());
+    }
+
+    #[test]
+    fn test_payload_user_round_trip() {
+        let original = PayloadUser {
+            name: "Test".to_string(),
+            email: "test@example.com".to_string(),
+            username: "testuser".to_string(),
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: PayloadUser = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.username, "testuser");
+    }
+
+    #[test]
+    fn test_commit_meta_round_trip() {
+        let original = CommitMeta {
+            url: "https://example.com/commit/abc".to_string(),
+            sha: "abc123".to_string(),
+            created: test_time(),
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: CommitMeta = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.sha, "abc123");
+    }
+
+    #[test]
+    fn test_tag_round_trip() {
+        let original = Tag {
+            name: "v1.0".to_string(),
+            message: "Release v1.0".to_string(),
+            id: "abc123".to_string(),
+            commit: None,
+            zipball_url: "https://example.com/archive/zip".to_string(),
+            tarball_url: "https://example.com/archive/tar".to_string(),
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: Tag = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.name, "v1.0");
+        assert!(restored.commit.is_none());
+    }
+
+    #[test]
+    fn test_contents_response_round_trip() {
+        let original = ContentsResponse {
+            name: "README.md".to_string(),
+            path: "README.md".to_string(),
+            sha: "def456".to_string(),
+            type_: "file".to_string(),
+            size: 100,
+            encoding: None,
+            content: None,
+            target: None,
+            url: None,
+            html_url: None,
+            git_url: None,
+            download_url: None,
+            submodule_git_url: None,
+            links: None,
+            last_commit_sha: "abc123".to_string(),
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: ContentsResponse = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.name, "README.md");
+        assert!(restored.content.is_none());
+    }
+
+    #[test]
+    fn test_branch_protection_round_trip() {
+        let original = BranchProtection {
+            branch_name: "main".to_string(),
+            rule_name: "main".to_string(),
+            enable_push: false,
+            enable_push_whitelist: false,
+            push_whitelist_usernames: vec![],
+            push_whitelist_teams: vec![],
+            push_whitelist_deploy_keys: false,
+            enable_merge_whitelist: false,
+            merge_whitelist_usernames: vec![],
+            merge_whitelist_teams: vec![],
+            enable_status_check: false,
+            status_check_contexts: vec![],
+            required_approvals: 1,
+            enable_approvals_whitelist: false,
+            approvals_whitelist_usernames: vec![],
+            approvals_whitelist_teams: vec![],
+            block_on_rejected_reviews: false,
+            block_on_official_review_requests: false,
+            block_on_outdated_branch: false,
+            dismiss_stale_approvals: false,
+            require_signed_commits: false,
+            protected_file_patterns: String::new(),
+            unprotected_file_patterns: String::new(),
+            created: test_time(),
+            updated: test_time(),
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: BranchProtection = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.branch_name, "main");
+        assert_eq!(restored.required_approvals, 1);
+    }
+
+    #[test]
+    fn test_deploy_key_round_trip() {
+        let original = DeployKey {
+            id: 1,
+            key_id: 2,
+            key: "ssh-rsa AAAA...".to_string(),
+            url: "https://example.com/keys/1".to_string(),
+            title: "CI key".to_string(),
+            fingerprint: "abcd".to_string(),
+            created: test_time(),
+            read_only: true,
+            repository: None,
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: DeployKey = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.title, "CI key");
+        assert!(restored.repository.is_none());
+    }
+
+    #[test]
+    fn test_git_hook_round_trip() {
+        let original = GitHook {
+            name: "pre-receive".to_string(),
+            is_active: true,
+            content: None,
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: GitHook = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.name, "pre-receive");
+        assert!(restored.content.is_none());
+    }
+
+    #[test]
+    fn test_git_tree_response_round_trip() {
+        let original = GitTreeResponse {
+            sha: "abc123".to_string(),
+            url: "https://example.com/tree".to_string(),
+            tree: vec![],
+            truncated: false,
+            page: 1,
+            total_count: 0,
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: GitTreeResponse = serde_json::from_str(&json).unwrap();
+        assert!(restored.tree.is_empty());
+    }
+
+    #[test]
+    fn test_git_entry_round_trip() {
+        let original = GitEntry {
+            path: "src/main.rs".to_string(),
+            mode: "100644".to_string(),
+            type_: "blob".to_string(),
+            size: 1024,
+            sha: "abc123".to_string(),
+            url: "https://example.com/blob".to_string(),
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: GitEntry = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.path, "src/main.rs");
+    }
+
+    #[test]
+    fn test_reference_round_trip() {
+        let original = Reference {
+            ref_: "refs/heads/main".to_string(),
+            url: "https://example.com/ref".to_string(),
+            object: None,
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: Reference = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.ref_, "refs/heads/main");
+        assert!(restored.object.is_none());
+    }
+
+    #[test]
+    fn test_git_blob_response_round_trip() {
+        let original = GitBlobResponse {
+            content: "aGVsbG8=".to_string(),
+            encoding: "base64".to_string(),
+            url: "https://example.com/blob".to_string(),
+            sha: "abc123".to_string(),
+            size: 5,
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: GitBlobResponse = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.encoding, "base64");
+    }
+
+    #[test]
+    fn test_wiki_page_round_trip() {
+        let original = WikiPage {
+            title: "Home".to_string(),
+            content_base64: "SGVsbG8=".to_string(),
+            commit_count: 1,
+            sidebar: String::new(),
+            footer: String::new(),
+            html_url: "https://example.com/wiki/Home".to_string(),
+            sub_url: "wiki/Home".to_string(),
+            last_commit: None,
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: WikiPage = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.title, "Home");
+        assert!(restored.last_commit.is_none());
+    }
+
+    #[test]
+    fn test_collaborator_permission_result_round_trip() {
+        let original = CollaboratorPermissionResult {
+            permission: crate::types::enums::AccessMode::Write,
+            role: "write".to_string(),
+            user: None,
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: CollaboratorPermissionResult = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.permission, crate::types::enums::AccessMode::Write);
+        assert!(restored.user.is_none());
+    }
+
+    #[test]
+    fn test_push_mirror_response_round_trip() {
+        let original = PushMirrorResponse {
+            created: "2024-01-01".to_string(),
+            interval: "8h".to_string(),
+            last_error: String::new(),
+            last_update: "2024-01-15".to_string(),
+            remote_address: "https://mirror.example.com".to_string(),
+            remote_name: "origin".to_string(),
+            repo_name: "test-repo".to_string(),
+            sync_on_commit: true,
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: PushMirrorResponse = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.interval, "8h");
+    }
+
+    #[test]
+    fn test_compare_round_trip() {
+        let original = Compare {
+            total_commits: 2,
+            commits: vec![],
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: Compare = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.total_commits, 2);
+        assert!(restored.commits.is_empty());
+    }
+}

@@ -305,3 +305,78 @@ pub struct UserBadgeOption {
     #[serde(rename = "badge_slugs")]
     pub badge_slugs: Vec<String>,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_create_user_option_validate_success() {
+        let opt = CreateUserOption {
+            username: "testuser".to_string(),
+            email: "test@example.com".to_string(),
+            password: "secret123".to_string(),
+            ..Default::default()
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_create_user_option_validate_empty_username() {
+        let opt = CreateUserOption {
+            username: String::new(),
+            email: "test@example.com".to_string(),
+            password: "secret123".to_string(),
+            ..Default::default()
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_user_option_validate_empty_password() {
+        let opt = CreateUserOption {
+            username: "testuser".to_string(),
+            email: "test@example.com".to_string(),
+            password: String::new(),
+            ..Default::default()
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_user_option_validate_empty_email() {
+        let opt = CreateUserOption {
+            username: "testuser".to_string(),
+            email: String::new(),
+            password: "secret123".to_string(),
+            ..Default::default()
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_hook_option_validate_success() {
+        let opt = CreateHookOption {
+            hook_type: HookType::Gitea,
+            config: std::collections::HashMap::new(),
+            events: Vec::new(),
+            branch_filter: String::new(),
+            active: false,
+            authorization_header: String::new(),
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_create_hook_option_validate_unknown_type() {
+        let opt = CreateHookOption {
+            hook_type: HookType::Unknown,
+            config: std::collections::HashMap::new(),
+            events: Vec::new(),
+            branch_filter: String::new(),
+            active: false,
+            authorization_header: String::new(),
+        };
+        assert!(opt.validate().is_err());
+    }
+}

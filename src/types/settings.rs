@@ -52,3 +52,66 @@ pub struct GlobalAttachmentSettings {
     #[serde(rename = "max_files")]
     pub max_files: i32,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_global_ui_settings_round_trip() {
+        let original = GlobalUISettings {
+            default_theme: "gitea-auto".to_string(),
+            allowed_reactions: vec!["+1".to_string(), "-1".to_string(), "laugh".to_string()],
+            custom_emojis: vec![],
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: GlobalUISettings = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.default_theme, "gitea-auto");
+        assert_eq!(restored.allowed_reactions.len(), 3);
+        assert!(restored.custom_emojis.is_empty());
+    }
+
+    #[test]
+    fn test_global_repo_settings_round_trip() {
+        let original = GlobalRepoSettings {
+            mirrors_disabled: false,
+            http_git_disabled: false,
+            migrations_disabled: false,
+            stars_disabled: false,
+            time_tracking_disabled: false,
+            lfs_disabled: false,
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: GlobalRepoSettings = serde_json::from_str(&json).unwrap();
+        assert!(!restored.mirrors_disabled);
+        assert!(!restored.http_git_disabled);
+    }
+
+    #[test]
+    fn test_global_api_settings_round_trip() {
+        let original = GlobalAPISettings {
+            max_response_items: 50,
+            default_paging_num: 30,
+            default_git_trees_per_page: 1000,
+            default_max_blob_size: 10485760,
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: GlobalAPISettings = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.max_response_items, 50);
+        assert_eq!(restored.default_paging_num, 30);
+    }
+
+    #[test]
+    fn test_global_attachment_settings_round_trip() {
+        let original = GlobalAttachmentSettings {
+            enabled: true,
+            allowed_types: ".png,.jpg".to_string(),
+            max_size: 4194304,
+            max_files: 5,
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: GlobalAttachmentSettings = serde_json::from_str(&json).unwrap();
+        assert!(restored.enabled);
+        assert_eq!(restored.max_files, 5);
+    }
+}

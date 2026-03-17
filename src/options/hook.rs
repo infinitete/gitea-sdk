@@ -66,3 +66,34 @@ pub struct EditHookOption {
     )]
     pub authorization_header: Option<String>,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_create_hook_option_validate_success() {
+        let opt = CreateHookOption {
+            hook_type: HookType::Gitea,
+            config: std::collections::HashMap::new(),
+            events: Vec::new(),
+            branch_filter: None,
+            active: false,
+            authorization_header: None,
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_create_hook_option_validate_unknown_type() {
+        let opt = CreateHookOption {
+            hook_type: HookType::Unknown,
+            config: std::collections::HashMap::new(),
+            events: Vec::new(),
+            branch_filter: None,
+            active: false,
+            authorization_header: None,
+        };
+        assert!(opt.validate().is_err());
+    }
+}

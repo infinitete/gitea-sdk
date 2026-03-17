@@ -27,6 +27,7 @@ impl<'a> ActivityPubApi<'a> {
         self.client
     }
 
+    /// GetActivityPubPerson returns the Person actor for a user
     pub async fn get_person(&self, user_id: i64) -> crate::Result<(serde_json::Value, Response)> {
         let path = format!("/activitypub/user-id/{user_id}");
         self.client()
@@ -39,6 +40,7 @@ impl<'a> ActivityPubApi<'a> {
             .await
     }
 
+    /// GetActivityPubRepository returns the Repository actor for a repo
     pub async fn get_repository(
         &self,
         owner: &str,
@@ -56,6 +58,7 @@ impl<'a> ActivityPubApi<'a> {
             .await
     }
 
+    /// GetActivityPubFollowers returns the followers collection for a repo
     pub async fn get_followers(
         &self,
         owner: &str,

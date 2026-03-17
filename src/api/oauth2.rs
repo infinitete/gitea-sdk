@@ -34,6 +34,7 @@ impl<'a> Oauth2Api<'a> {
         self.client
     }
 
+    /// ListOauth2 all of your Oauth2 Applications
     pub async fn list_applications(
         &self,
         opt: ListOauth2Option,
@@ -49,6 +50,7 @@ impl<'a> Oauth2Api<'a> {
             .await
     }
 
+    /// CreateOauth2 create an Oauth2 Application and returns a completed Oauth2 object
     pub async fn create_application(
         &self,
         opt: CreateOauth2Option,
@@ -65,6 +67,7 @@ impl<'a> Oauth2Api<'a> {
             .await
     }
 
+    /// GetOauth2 a specific Oauth2 Application by ID
     pub async fn get_application(&self, id: i64) -> crate::Result<(Oauth2, Response)> {
         let path = format!("/user/applications/oauth2/{id}");
         self.client()
@@ -72,6 +75,7 @@ impl<'a> Oauth2Api<'a> {
             .await
     }
 
+    /// UpdateOauth2 a specific Oauth2 Application by ID and return a completed Oauth2 object
     pub async fn update_application(
         &self,
         id: i64,
@@ -90,6 +94,7 @@ impl<'a> Oauth2Api<'a> {
             .await
     }
 
+    /// DeleteOauth2 delete an Oauth2 application by ID
     pub async fn delete_application(&self, id: i64) -> crate::Result<Response> {
         let path = format!("/user/applications/oauth2/{id}");
         self.client()

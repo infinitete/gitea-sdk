@@ -283,3 +283,161 @@ impl UpdateUserAvatarOption {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_create_email_option_validate_success() {
+        let opt = CreateEmailOption {
+            emails: vec!["user@example.com".to_string()],
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_create_email_option_validate_empty_list() {
+        let opt = CreateEmailOption { emails: vec![] };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_email_option_validate_empty_email() {
+        let opt = CreateEmailOption {
+            emails: vec![String::new()],
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_delete_email_option_validate_success() {
+        let opt = DeleteEmailOption {
+            emails: vec!["user@example.com".to_string()],
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_delete_email_option_validate_empty_list() {
+        let opt = DeleteEmailOption { emails: vec![] };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_delete_email_option_validate_empty_email() {
+        let opt = DeleteEmailOption {
+            emails: vec![String::new()],
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_key_option_validate_success() {
+        let opt = CreateKeyOption {
+            title: "my-key".to_string(),
+            key: "ssh-rsa AAAAB3...".to_string(),
+            read_only: false,
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_create_key_option_validate_empty_key() {
+        let opt = CreateKeyOption {
+            title: "my-key".to_string(),
+            key: String::new(),
+            read_only: false,
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_key_option_validate_empty_title() {
+        let opt = CreateKeyOption {
+            title: String::new(),
+            key: "ssh-rsa AAAAB3...".to_string(),
+            read_only: false,
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_access_token_option_validate_success() {
+        let opt = CreateAccessTokenOption {
+            name: "my-token".to_string(),
+            scopes: Vec::new(),
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_create_access_token_option_validate_empty_name() {
+        let opt = CreateAccessTokenOption {
+            name: String::new(),
+            scopes: Vec::new(),
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_gpg_key_option_validate_success() {
+        let opt = CreateGPGKeyOption {
+            armored_key: "-----BEGIN PGP PUBLIC KEY BLOCK-----".to_string(),
+            signature: None,
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_create_gpg_key_option_validate_empty_key() {
+        let opt = CreateGPGKeyOption {
+            armored_key: String::new(),
+            signature: None,
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_verify_gpg_key_option_validate_success() {
+        let opt = VerifyGPGKeyOption {
+            key_id: "ABCDEF".to_string(),
+            signature: "-----BEGIN PGP SIGNATURE-----".to_string(),
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_verify_gpg_key_option_validate_empty_key_id() {
+        let opt = VerifyGPGKeyOption {
+            key_id: String::new(),
+            signature: "sig".to_string(),
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_verify_gpg_key_option_validate_empty_signature() {
+        let opt = VerifyGPGKeyOption {
+            key_id: "ABCDEF".to_string(),
+            signature: String::new(),
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_update_user_avatar_option_validate_success() {
+        let opt = UpdateUserAvatarOption {
+            image: "base64image".to_string(),
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_update_user_avatar_option_validate_empty_image() {
+        let opt = UpdateUserAvatarOption {
+            image: String::new(),
+        };
+        assert!(opt.validate().is_err());
+    }
+}

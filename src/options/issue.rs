@@ -474,3 +474,175 @@ pub struct EditDeadlineOption {
     )]
     pub deadline: Option<OffsetDateTime>,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_create_issue_option_validate_success() {
+        let opt = CreateIssueOption {
+            title: "bug report".to_string(),
+            body: String::new(),
+            r#ref: String::new(),
+            assignees: Vec::new(),
+            deadline: None,
+            milestone: 0,
+            labels: Vec::new(),
+            closed: false,
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_create_issue_option_validate_empty_title() {
+        let opt = CreateIssueOption {
+            title: String::new(),
+            body: String::new(),
+            r#ref: String::new(),
+            assignees: Vec::new(),
+            deadline: None,
+            milestone: 0,
+            labels: Vec::new(),
+            closed: false,
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_issue_option_validate_whitespace_title() {
+        let opt = CreateIssueOption {
+            title: "   ".to_string(),
+            body: String::new(),
+            r#ref: String::new(),
+            assignees: Vec::new(),
+            deadline: None,
+            milestone: 0,
+            labels: Vec::new(),
+            closed: false,
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_edit_issue_option_validate_success() {
+        let opt = EditIssueOption {
+            title: Some("new title".to_string()),
+            body: None,
+            r#ref: None,
+            assignees: Vec::new(),
+            milestone: None,
+            state: None,
+            deadline: None,
+            remove_deadline: None,
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_edit_issue_option_validate_empty_title() {
+        let opt = EditIssueOption {
+            title: Some("   ".to_string()),
+            body: None,
+            r#ref: None,
+            assignees: Vec::new(),
+            milestone: None,
+            state: None,
+            deadline: None,
+            remove_deadline: None,
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_issue_comment_option_validate_success() {
+        let opt = CreateIssueCommentOption {
+            body: "comment".to_string(),
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_create_issue_comment_option_validate_empty_body() {
+        let opt = CreateIssueCommentOption {
+            body: String::new(),
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_edit_issue_comment_option_validate_success() {
+        let opt = EditIssueCommentOption {
+            body: "updated comment".to_string(),
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_edit_issue_comment_option_validate_empty_body() {
+        let opt = EditIssueCommentOption {
+            body: String::new(),
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_milestone_option_validate_success() {
+        let opt = CreateMilestoneOption {
+            title: "v1.0".to_string(),
+            description: String::new(),
+            state: StateType::Open,
+            deadline: None,
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_create_milestone_option_validate_empty_title() {
+        let opt = CreateMilestoneOption {
+            title: String::new(),
+            description: String::new(),
+            state: StateType::Open,
+            deadline: None,
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_edit_milestone_option_validate_success() {
+        let opt = EditMilestoneOption {
+            title: Some("v2.0".to_string()),
+            ..Default::default()
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_edit_milestone_option_validate_empty_title() {
+        let opt = EditMilestoneOption {
+            title: Some("   ".to_string()),
+            ..Default::default()
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_add_time_option_validate_success() {
+        let opt = AddTimeOption {
+            time: 3600,
+            created: None,
+            user: String::new(),
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_add_time_option_validate_zero_time() {
+        let opt = AddTimeOption {
+            time: 0,
+            created: None,
+            user: String::new(),
+        };
+        assert!(opt.validate().is_err());
+    }
+}

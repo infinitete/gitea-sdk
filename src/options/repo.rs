@@ -1144,3 +1144,488 @@ pub struct GetRepoNoteOptions {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub files: Option<bool>,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_create_repo_option_validate_success() {
+        let opt = CreateRepoOption {
+            name: "test-repo".to_string(),
+            description: String::new(),
+            private: false,
+            issue_labels: String::new(),
+            auto_init: false,
+            template: false,
+            gitignores: String::new(),
+            license: String::new(),
+            readme: String::new(),
+            default_branch: String::new(),
+            trust_model: TrustModel::Default,
+            object_format_name: String::new(),
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_create_repo_option_validate_empty_name() {
+        let opt = CreateRepoOption {
+            name: String::new(),
+            description: String::new(),
+            private: false,
+            issue_labels: String::new(),
+            auto_init: false,
+            template: false,
+            gitignores: String::new(),
+            license: String::new(),
+            readme: String::new(),
+            default_branch: String::new(),
+            trust_model: TrustModel::Default,
+            object_format_name: String::new(),
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_repo_option_validate_whitespace_name() {
+        let opt = CreateRepoOption {
+            name: "   ".to_string(),
+            description: String::new(),
+            private: false,
+            issue_labels: String::new(),
+            auto_init: false,
+            template: false,
+            gitignores: String::new(),
+            license: String::new(),
+            readme: String::new(),
+            default_branch: String::new(),
+            trust_model: TrustModel::Default,
+            object_format_name: String::new(),
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_repo_option_validate_name_too_long() {
+        let opt = CreateRepoOption {
+            name: "a".repeat(101),
+            description: String::new(),
+            private: false,
+            issue_labels: String::new(),
+            auto_init: false,
+            template: false,
+            gitignores: String::new(),
+            license: String::new(),
+            readme: String::new(),
+            default_branch: String::new(),
+            trust_model: TrustModel::Default,
+            object_format_name: String::new(),
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_repo_option_validate_description_too_long() {
+        let opt = CreateRepoOption {
+            name: "test".to_string(),
+            description: "d".repeat(2049),
+            private: false,
+            issue_labels: String::new(),
+            auto_init: false,
+            template: false,
+            gitignores: String::new(),
+            license: String::new(),
+            readme: String::new(),
+            default_branch: String::new(),
+            trust_model: TrustModel::Default,
+            object_format_name: String::new(),
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_repo_option_validate_invalid_object_format() {
+        let opt = CreateRepoOption {
+            name: "test".to_string(),
+            description: String::new(),
+            private: false,
+            issue_labels: String::new(),
+            auto_init: false,
+            template: false,
+            gitignores: String::new(),
+            license: String::new(),
+            readme: String::new(),
+            default_branch: String::new(),
+            trust_model: TrustModel::Default,
+            object_format_name: "sha512".to_string(),
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_repo_option_validate_sha256_format() {
+        let opt = CreateRepoOption {
+            name: "test".to_string(),
+            description: String::new(),
+            private: false,
+            issue_labels: String::new(),
+            auto_init: false,
+            template: false,
+            gitignores: String::new(),
+            license: String::new(),
+            readme: String::new(),
+            default_branch: String::new(),
+            trust_model: TrustModel::Default,
+            object_format_name: "sha256".to_string(),
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_update_repo_branch_option_validate_success() {
+        let opt = UpdateRepoBranchOption {
+            name: "main".to_string(),
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_update_repo_branch_option_validate_empty_name() {
+        let opt = UpdateRepoBranchOption {
+            name: String::new(),
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_tag_option_validate_success() {
+        let opt = CreateTagOption {
+            tag_name: "v1.0".to_string(),
+            message: String::new(),
+            target: String::new(),
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_create_tag_option_validate_empty_tag_name() {
+        let opt = CreateTagOption {
+            tag_name: String::new(),
+            message: String::new(),
+            target: String::new(),
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_add_collaborator_option_validate_read() {
+        let mut opt = AddCollaboratorOption {
+            permission: Some(AccessMode::Read),
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_add_collaborator_option_validate_none() {
+        let mut opt = AddCollaboratorOption { permission: None };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_create_label_option_validate_success() {
+        let opt = CreateLabelOption {
+            name: "bug".to_string(),
+            color: "ff0000".to_string(),
+            description: String::new(),
+            exclusive: false,
+            is_archived: false,
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_create_label_option_validate_invalid_color() {
+        let opt = CreateLabelOption {
+            name: "bug".to_string(),
+            color: "red".to_string(),
+            description: String::new(),
+            exclusive: false,
+            is_archived: false,
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_label_option_validate_empty_name() {
+        let opt = CreateLabelOption {
+            name: String::new(),
+            color: "ff0000".to_string(),
+            description: String::new(),
+            exclusive: false,
+            is_archived: false,
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_label_option_validate_color_with_hash() {
+        let opt = CreateLabelOption {
+            name: "bug".to_string(),
+            color: "#00ff00".to_string(),
+            description: String::new(),
+            exclusive: false,
+            is_archived: false,
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_edit_label_option_validate_success() {
+        let opt = EditLabelOption {
+            name: Some("new-name".to_string()),
+            color: Some("abcdef".to_string()),
+            description: None,
+            exclusive: None,
+            is_archived: None,
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_edit_label_option_validate_invalid_color() {
+        let opt = EditLabelOption {
+            name: None,
+            color: Some("zzz".to_string()),
+            description: None,
+            exclusive: None,
+            is_archived: None,
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_edit_label_option_validate_empty_name() {
+        let opt = EditLabelOption {
+            name: Some("   ".to_string()),
+            color: None,
+            description: None,
+            exclusive: None,
+            is_archived: None,
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_migrate_repo_option_validate_success_git() {
+        let opt = MigrateRepoOption {
+            clone_addr: "https://example.com/repo.git".to_string(),
+            repo_owner: "myuser".to_string(),
+            repo_name: "my-repo".to_string(),
+            service: GitServiceType::Git,
+            uid: 0,
+            auth_username: String::new(),
+            auth_password: String::new(),
+            auth_token: String::new(),
+            mirror: false,
+            private: false,
+            description: String::new(),
+            wiki: false,
+            milestones: false,
+            labels: false,
+            issues: false,
+            pull_requests: false,
+            releases: false,
+            mirror_interval: String::new(),
+            lfs: false,
+            lfs_endpoint: String::new(),
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_migrate_repo_option_validate_empty_clone_addr() {
+        let opt = MigrateRepoOption {
+            clone_addr: String::new(),
+            repo_owner: "myuser".to_string(),
+            repo_name: "my-repo".to_string(),
+            service: GitServiceType::Git,
+            uid: 0,
+            auth_username: String::new(),
+            auth_password: String::new(),
+            auth_token: String::new(),
+            mirror: false,
+            private: false,
+            description: String::new(),
+            wiki: false,
+            milestones: false,
+            labels: false,
+            issues: false,
+            pull_requests: false,
+            releases: false,
+            mirror_interval: String::new(),
+            lfs: false,
+            lfs_endpoint: String::new(),
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_migrate_repo_option_validate_empty_repo_name() {
+        let opt = MigrateRepoOption {
+            clone_addr: "https://example.com/repo.git".to_string(),
+            repo_owner: "myuser".to_string(),
+            repo_name: String::new(),
+            service: GitServiceType::Git,
+            uid: 0,
+            auth_username: String::new(),
+            auth_password: String::new(),
+            auth_token: String::new(),
+            mirror: false,
+            private: false,
+            description: String::new(),
+            wiki: false,
+            milestones: false,
+            labels: false,
+            issues: false,
+            pull_requests: false,
+            releases: false,
+            mirror_interval: String::new(),
+            lfs: false,
+            lfs_endpoint: String::new(),
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_migrate_repo_option_validate_name_too_long() {
+        let opt = MigrateRepoOption {
+            clone_addr: "https://example.com/repo.git".to_string(),
+            repo_owner: "myuser".to_string(),
+            repo_name: "a".repeat(101),
+            service: GitServiceType::Git,
+            uid: 0,
+            auth_username: String::new(),
+            auth_password: String::new(),
+            auth_token: String::new(),
+            mirror: false,
+            private: false,
+            description: String::new(),
+            wiki: false,
+            milestones: false,
+            labels: false,
+            issues: false,
+            pull_requests: false,
+            releases: false,
+            mirror_interval: String::new(),
+            lfs: false,
+            lfs_endpoint: String::new(),
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_migrate_repo_option_validate_github_no_token() {
+        let opt = MigrateRepoOption {
+            clone_addr: "https://github.com/user/repo.git".to_string(),
+            repo_owner: "myuser".to_string(),
+            repo_name: "my-repo".to_string(),
+            service: GitServiceType::Github,
+            uid: 0,
+            auth_username: String::new(),
+            auth_password: String::new(),
+            auth_token: String::new(),
+            mirror: false,
+            private: false,
+            description: String::new(),
+            wiki: false,
+            milestones: false,
+            labels: false,
+            issues: false,
+            pull_requests: false,
+            releases: false,
+            mirror_interval: String::new(),
+            lfs: false,
+            lfs_endpoint: String::new(),
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_migrate_repo_option_validate_github_with_token() {
+        let opt = MigrateRepoOption {
+            clone_addr: "https://github.com/user/repo.git".to_string(),
+            repo_owner: "myuser".to_string(),
+            repo_name: "my-repo".to_string(),
+            service: GitServiceType::Github,
+            uid: 0,
+            auth_username: String::new(),
+            auth_password: String::new(),
+            auth_token: "token123".to_string(),
+            mirror: false,
+            private: false,
+            description: String::new(),
+            wiki: false,
+            milestones: false,
+            labels: false,
+            issues: false,
+            pull_requests: false,
+            releases: false,
+            mirror_interval: String::new(),
+            lfs: false,
+            lfs_endpoint: String::new(),
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_create_repo_from_template_option_validate_success() {
+        let opt = CreateRepoFromTemplateOption {
+            owner: "myorg".to_string(),
+            name: "my-repo".to_string(),
+            description: String::new(),
+            private: false,
+            git_content: false,
+            topics: false,
+            git_hooks: false,
+            webhooks: false,
+            avatar: false,
+            labels: false,
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_create_repo_from_template_option_validate_empty_owner() {
+        let opt = CreateRepoFromTemplateOption {
+            owner: String::new(),
+            name: "my-repo".to_string(),
+            description: String::new(),
+            private: false,
+            git_content: false,
+            topics: false,
+            git_hooks: false,
+            webhooks: false,
+            avatar: false,
+            labels: false,
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_repo_from_template_option_validate_empty_name() {
+        let opt = CreateRepoFromTemplateOption {
+            owner: "myorg".to_string(),
+            name: String::new(),
+            description: String::new(),
+            private: false,
+            git_content: false,
+            topics: false,
+            git_hooks: false,
+            webhooks: false,
+            avatar: false,
+            labels: false,
+        };
+        assert!(opt.validate().is_err());
+    }
+}

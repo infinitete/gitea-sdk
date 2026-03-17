@@ -30,6 +30,7 @@ impl<'a> SettingsApi<'a> {
         self.client
     }
 
+    /// GetGlobalUISettings get global ui settings witch are exposed by API
     pub async fn get_ui_settings(&self) -> crate::Result<(GlobalUISettings, Response)> {
         self.client()
             .get_parsed_response(
@@ -41,6 +42,7 @@ impl<'a> SettingsApi<'a> {
             .await
     }
 
+    /// GetGlobalRepoSettings get global repository settings witch are exposed by API
     pub async fn get_repo_settings(&self) -> crate::Result<(GlobalRepoSettings, Response)> {
         self.client()
             .get_parsed_response(
@@ -52,6 +54,7 @@ impl<'a> SettingsApi<'a> {
             .await
     }
 
+    /// GetGlobalAPISettings get global api settings witch are exposed by it
     pub async fn get_api_settings(&self) -> crate::Result<(GlobalAPISettings, Response)> {
         self.client()
             .get_parsed_response(
@@ -63,6 +66,7 @@ impl<'a> SettingsApi<'a> {
             .await
     }
 
+    /// GetGlobalAttachmentSettings get global repository settings witch are exposed by API
     pub async fn get_attachment_settings(
         &self,
     ) -> crate::Result<(GlobalAttachmentSettings, Response)> {

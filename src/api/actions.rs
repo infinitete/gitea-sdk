@@ -32,6 +32,7 @@ impl<'a> ActionsApi<'a> {
         self.client
     }
 
+    /// ListRepoActionRuns lists workflow runs for a repository
     pub async fn list_repo_action_runs(
         &self,
         owner: &str,
@@ -55,6 +56,7 @@ impl<'a> ActionsApi<'a> {
             .await
     }
 
+    /// GetRepoActionRun gets a single workflow run
     pub async fn get_repo_action_run(
         &self,
         owner: &str,
@@ -73,6 +75,7 @@ impl<'a> ActionsApi<'a> {
             .await
     }
 
+    /// DeleteRepoActionRun deletes a workflow run
     pub async fn delete_repo_action_run(
         &self,
         owner: &str,
@@ -91,6 +94,7 @@ impl<'a> ActionsApi<'a> {
             .await
     }
 
+    /// ListRepoActionRunJobs lists jobs for a workflow run
     pub async fn list_repo_action_run_jobs(
         &self,
         owner: &str,
@@ -115,6 +119,7 @@ impl<'a> ActionsApi<'a> {
             .await
     }
 
+    /// ListRepoActionJobs lists all jobs for a repository
     pub async fn list_repo_action_jobs(
         &self,
         owner: &str,
@@ -138,6 +143,7 @@ impl<'a> ActionsApi<'a> {
             .await
     }
 
+    /// GetRepoActionJob gets a single job
     pub async fn get_repo_action_job(
         &self,
         owner: &str,
@@ -156,6 +162,7 @@ impl<'a> ActionsApi<'a> {
             .await
     }
 
+    /// GetRepoActionJobLogs gets the logs for a specific job
     pub async fn get_repo_action_job_logs(
         &self,
         owner: &str,

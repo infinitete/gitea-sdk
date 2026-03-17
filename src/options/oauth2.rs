@@ -36,3 +36,28 @@ impl CreateOauth2Option {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_create_oauth2_option_validate_success() {
+        let opt = CreateOauth2Option {
+            name: "my-app".to_string(),
+            confidential_client: false,
+            redirect_uris: Vec::new(),
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_create_oauth2_option_validate_empty_name() {
+        let opt = CreateOauth2Option {
+            name: String::new(),
+            confidential_client: false,
+            redirect_uris: Vec::new(),
+        };
+        assert!(opt.validate().is_err());
+    }
+}

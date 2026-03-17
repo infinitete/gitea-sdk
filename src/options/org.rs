@@ -504,3 +504,279 @@ fn percent_encode(s: &str) -> String {
     use percent_encoding::{NON_ALPHANUMERIC, utf8_percent_encode};
     utf8_percent_encode(s, NON_ALPHANUMERIC).to_string()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_create_org_option_validate_success() {
+        let opt = CreateOrgOption {
+            name: "myorg".to_string(),
+            ..Default::default()
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_create_org_option_validate_empty_name() {
+        let opt = CreateOrgOption {
+            name: String::new(),
+            ..Default::default()
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_org_option_validate_invalid_visibility() {
+        let opt = CreateOrgOption {
+            name: "myorg".to_string(),
+            visibility: Some(VisibleType::Unknown),
+            ..Default::default()
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_edit_org_option_validate_success() {
+        let opt = EditOrgOption {
+            visibility: Some(VisibleType::Public),
+            ..Default::default()
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_edit_org_option_validate_invalid_visibility() {
+        let opt = EditOrgOption {
+            visibility: Some(VisibleType::Unknown),
+            ..Default::default()
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_team_option_validate_success() {
+        let opt = CreateTeamOption {
+            name: "core".to_string(),
+            description: Some("Core team".to_string()),
+            permission: Some(AccessMode::Read),
+            can_create_org_repo: None,
+            includes_all_repositories: None,
+            units: Vec::new(),
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_create_team_option_validate_empty_name() {
+        let opt = CreateTeamOption {
+            name: String::new(),
+            description: None,
+            permission: None,
+            can_create_org_repo: None,
+            includes_all_repositories: None,
+            units: Vec::new(),
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_team_option_validate_name_too_long() {
+        let opt = CreateTeamOption {
+            name: "a".repeat(256),
+            description: None,
+            permission: None,
+            can_create_org_repo: None,
+            includes_all_repositories: None,
+            units: Vec::new(),
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_team_option_validate_description_too_long() {
+        let opt = CreateTeamOption {
+            name: "core".to_string(),
+            description: Some("d".repeat(256)),
+            permission: None,
+            can_create_org_repo: None,
+            includes_all_repositories: None,
+            units: Vec::new(),
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_team_option_validate_invalid_permission() {
+        let opt = CreateTeamOption {
+            name: "core".to_string(),
+            permission: Some(AccessMode::Owner),
+            description: None,
+            can_create_org_repo: None,
+            includes_all_repositories: None,
+            units: Vec::new(),
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_edit_team_option_validate_success() {
+        let opt = EditTeamOption {
+            name: "core".to_string(),
+            description: Some("Core team".to_string()),
+            permission: Some(AccessMode::Read),
+            can_create_org_repo: None,
+            includes_all_repositories: None,
+            units: Vec::new(),
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_edit_team_option_validate_empty_name() {
+        let opt = EditTeamOption {
+            name: String::new(),
+            description: None,
+            permission: None,
+            can_create_org_repo: None,
+            includes_all_repositories: None,
+            units: Vec::new(),
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_edit_team_option_validate_name_too_long() {
+        let opt = EditTeamOption {
+            name: "a".repeat(31),
+            description: None,
+            permission: None,
+            can_create_org_repo: None,
+            includes_all_repositories: None,
+            units: Vec::new(),
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_org_label_option_validate_success() {
+        let opt = CreateOrgLabelOption {
+            name: "bug".to_string(),
+            color: "ff0000".to_string(),
+            description: None,
+            exclusive: None,
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_create_org_label_option_validate_invalid_color() {
+        let opt = CreateOrgLabelOption {
+            name: "bug".to_string(),
+            color: "red".to_string(),
+            description: None,
+            exclusive: None,
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_org_label_option_validate_empty_name() {
+        let opt = CreateOrgLabelOption {
+            name: String::new(),
+            color: "ff0000".to_string(),
+            description: None,
+            exclusive: None,
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_org_action_variable_option_validate_success() {
+        let opt = CreateOrgActionVariableOption {
+            name: "VAR".to_string(),
+            value: "value".to_string(),
+            description: None,
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_create_org_action_variable_option_validate_empty_name() {
+        let opt = CreateOrgActionVariableOption {
+            name: String::new(),
+            value: "value".to_string(),
+            description: None,
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_org_action_variable_option_validate_name_too_long() {
+        let opt = CreateOrgActionVariableOption {
+            name: "a".repeat(31),
+            value: "value".to_string(),
+            description: None,
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_org_action_variable_option_validate_empty_value() {
+        let opt = CreateOrgActionVariableOption {
+            name: "VAR".to_string(),
+            value: String::new(),
+            description: None,
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_update_org_action_variable_option_validate_success() {
+        let opt = UpdateOrgActionVariableOption {
+            value: "new-value".to_string(),
+            description: None,
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_update_org_action_variable_option_validate_empty_value() {
+        let opt = UpdateOrgActionVariableOption {
+            value: String::new(),
+            description: None,
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_secret_option_validate_success() {
+        let opt = CreateSecretOption {
+            name: "MY_SECRET".to_string(),
+            data: "secret-data".to_string(),
+            description: None,
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_create_secret_option_validate_empty_name() {
+        let opt = CreateSecretOption {
+            name: String::new(),
+            data: "secret-data".to_string(),
+            description: None,
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_secret_option_validate_empty_data() {
+        let opt = CreateSecretOption {
+            name: "MY_SECRET".to_string(),
+            data: String::new(),
+            description: None,
+        };
+        assert!(opt.validate().is_err());
+    }
+}

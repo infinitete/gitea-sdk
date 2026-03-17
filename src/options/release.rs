@@ -125,3 +125,63 @@ impl EditAttachmentOption {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_create_release_option_validate_success() {
+        let opt = CreateReleaseOption {
+            tag_name: "v1.0.0".to_string(),
+            target: None,
+            title: None,
+            note: None,
+            is_draft: false,
+            is_prerelease: false,
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_create_release_option_validate_empty_tag_name() {
+        let opt = CreateReleaseOption {
+            tag_name: String::new(),
+            target: None,
+            title: None,
+            note: None,
+            is_draft: false,
+            is_prerelease: false,
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_release_option_validate_empty_title() {
+        let opt = CreateReleaseOption {
+            tag_name: "v1.0.0".to_string(),
+            target: None,
+            title: Some("   ".to_string()),
+            note: None,
+            is_draft: false,
+            is_prerelease: false,
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_edit_attachment_option_validate_success() {
+        let opt = EditAttachmentOption {
+            name: "file.zip".to_string(),
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_edit_attachment_option_validate_empty_name() {
+        let opt = EditAttachmentOption {
+            name: String::new(),
+        };
+        assert!(opt.validate().is_err());
+    }
+}

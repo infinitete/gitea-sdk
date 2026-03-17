@@ -179,7 +179,7 @@ pub struct MergePullRequestOption {
     pub merge_when_checks_succeed: bool,
 }
 
-/// PullRequestDiffOptions options for GET /repos/<owner>/<repo>/pulls/<idx>.[diff|patch]
+/// PullRequestDiffOptions options for GET `/repos/<owner>/<repo>/pulls/<idx>.[diff|patch]`
 #[derive(Debug, Clone, Default)]
 pub struct PullRequestDiffOptions {
     /// Include binary file changes when requesting a .diff
@@ -323,4 +323,116 @@ pub struct PullReviewRequestOptions {
     pub reviewers: Vec<String>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub team_reviewers: Vec<String>,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_edit_pull_request_option_validate_success() {
+        let opt = EditPullRequestOption {
+            title: Some("new title".to_string()),
+            ..Default::default()
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_edit_pull_request_option_validate_empty_title() {
+        let opt = EditPullRequestOption {
+            title: Some("   ".to_string()),
+            ..Default::default()
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_pull_review_options_validate_approved() {
+        let opt = CreatePullReviewOptions {
+            state: Some(ReviewStateType::Approved),
+            body: None,
+            commit_id: None,
+            comments: Vec::new(),
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_create_pull_review_options_validate_empty_body() {
+        let opt = CreatePullReviewOptions {
+            state: None,
+            body: Some("   ".to_string()),
+            commit_id: None,
+            comments: Vec::new(),
+        };
+        assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_pull_review_options_validate_with_comments() {
+        let opt = CreatePullReviewOptions {
+            state: None,
+            body: Some("   ".to_string()),
+            commit_id: None,
+            comments: vec![CreatePullReviewComment {
+                path: "main.rs".to_string(),
+                body: "fix this".to_string(),
+                old_line_num: 0,
+                new_line_num: 10,
+            }],
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_create_pull_review_comment_validate_success() {
+        let comment = CreatePullReviewComment {
+            path: "main.rs".to_string(),
+            body: "fix this".to_string(),
+            old_line_num: 0,
+            new_line_num: 10,
+        };
+        assert!(comment.validate().is_ok());
+    }
+
+    #[test]
+    fn test_create_pull_review_comment_validate_empty_body() {
+        let comment = CreatePullReviewComment {
+            path: "main.rs".to_string(),
+            body: String::new(),
+            old_line_num: 0,
+            new_line_num: 10,
+        };
+        assert!(comment.validate().is_err());
+    }
+
+    #[test]
+    fn test_create_pull_review_comment_validate_both_lines_set() {
+        let comment = CreatePullReviewComment {
+            path: "main.rs".to_string(),
+            body: "fix this".to_string(),
+            old_line_num: 5,
+            new_line_num: 10,
+        };
+        assert!(comment.validate().is_err());
+    }
+
+    #[test]
+    fn test_submit_pull_review_options_validate_approved() {
+        let opt = SubmitPullReviewOptions {
+            state: Some(ReviewStateType::Approved),
+            body: None,
+        };
+        assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_submit_pull_review_options_validate_empty_body() {
+        let opt = SubmitPullReviewOptions {
+            state: None,
+            body: Some("   ".to_string()),
+        };
+        assert!(opt.validate().is_err());
+    }
 }
