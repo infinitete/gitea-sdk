@@ -11,6 +11,12 @@ pub use comment::Comment;
 #[allow(unused_imports)]
 pub use cron_task::CronTask;
 #[allow(unused_imports)]
+pub use issue::{
+    Issue, IssueBlockedBy, IssueFormElement, IssueFormElementAttributes,
+    IssueFormElementValidations, IssueMeta, IssueTemplate, PullRequestMeta, RepositoryMeta,
+    StopWatch, TimelineComment, TrackedTime, WatchInfo,
+};
+#[allow(unused_imports)]
 pub use label::Label;
 #[allow(unused_imports)]
 pub use milestone::Milestone;
@@ -49,6 +55,7 @@ pub mod activity;
 pub mod badge;
 pub mod comment;
 pub mod cron_task;
+pub mod issue;
 pub mod label;
 pub mod milestone;
 pub mod node_info;

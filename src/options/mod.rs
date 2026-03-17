@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 
 pub mod admin;
+pub mod issue;
 pub mod org;
 pub mod release;
 pub mod user;
