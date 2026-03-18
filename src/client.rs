@@ -63,13 +63,20 @@ struct ClientInner {
     /// Mutable configuration protected by a reader-writer lock.
     config: RwLock<ClientConfig>,
     /// Server version discovered lazily (populated by the first version check).
-    server_version: OnceLock<semver::Version>,
+    server_version: OnceLock<CachedServerVersion>,
     /// Pre-set version supplied via [`ClientBuilder::gitea_version`].
     preset_version: Option<semver::Version>,
     /// Guards against concurrent `load_server_version` fetches.
     version_loading: tokio::sync::Mutex<()>,
     /// SSH signer for HTTP Signature authentication, if configured.
     ssh_signer: RwLock<Option<crate::auth::ssh_sign::SshSigner>>,
+}
+
+/// Cached result of server version discovery.
+#[derive(Clone, Debug)]
+pub(crate) enum CachedServerVersion {
+    Parsed(semver::Version),
+    Unknown(String),
 }
 
 /// A thread-safe Gitea API client.
@@ -164,7 +171,12 @@ impl Client {
 // ── Internal helpers (crate-visible) ────────────────────────────────
 
 impl Client {
-    #[allow(private_interfaces)]
+    /// Snapshot mutable request config values for one request pipeline run.
+    pub(crate) fn config_snapshot(&self) -> ClientConfig {
+        self.inner.config.read().clone()
+    }
+
+    #[allow(dead_code, private_interfaces)]
     pub(crate) fn read_config(&self) -> parking_lot::RwLockReadGuard<'_, ClientConfig> {
         self.inner.config.read()
     }
@@ -181,7 +193,7 @@ impl Client {
 
     /// Borrow the [`OnceLock`] that will hold the server version once
     /// discovered.
-    pub(crate) fn server_version_lock(&self) -> &OnceLock<semver::Version> {
+    pub(crate) fn server_version_lock(&self) -> &OnceLock<CachedServerVersion> {
         &self.inner.server_version
     }
 
@@ -209,11 +221,12 @@ impl Client {
     ///
     /// Returns `true` (use legacy) when:
     /// - Version checks are disabled (`ignore_version`), or
-    /// - The server version is known to be < 1.23.0.
+    /// - The server version is known to be < 1.23.0, or
+    /// - The server version is cached as unknown.
     ///
     /// Returns `false` (use modern) when:
     /// - The server version is known to be >= 1.23.0, or
-    /// - The version is unknown (optimistically assume modern).
+    /// - No server version has been discovered yet.
     pub(crate) fn should_use_legacy_ssh(&self) -> bool {
         if self.ignore_version() {
             return true;
@@ -222,7 +235,10 @@ impl Client {
             return v < &*crate::version::VERSION_1_23_0;
         }
         if let Some(v) = self.server_version_lock().get() {
-            return v < &*crate::version::VERSION_1_23_0;
+            return match v {
+                CachedServerVersion::Parsed(ver) => ver < &*crate::version::VERSION_1_23_0,
+                CachedServerVersion::Unknown(_) => true,
+            };
         }
         false
     }
@@ -776,7 +792,7 @@ mod tests {
         )
         .expect("write temp key");
         let fp = crate::auth::ssh_sign::fingerprint(
-            &ssh_key::PrivateKey::from_openssh(include_bytes!(
+            ssh_key::PrivateKey::from_openssh(include_bytes!(
                 "../tests/ssh_fixtures/id_ed25519_test"
             ))
             .expect("parse test key")

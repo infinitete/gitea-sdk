@@ -1712,8 +1712,10 @@ mod tests {
             .mount(&server)
             .await;
         let client = create_test_client(&server);
-        let mut opt = SearchAdminEmailsOptions::default();
-        opt.query = "search".to_string();
+        let opt = SearchAdminEmailsOptions {
+            query: "search".to_string(),
+            ..Default::default()
+        };
         let (emails, resp) = client.admin().search_emails(opt).await.unwrap();
         assert_eq!(emails.len(), 1);
         assert_eq!(emails[0].email, "search@example.com");
