@@ -340,6 +340,9 @@ pub struct ClientBuilder<'a> {
     http_client: Option<reqwest::Client>,
     ssh_signer: Option<crate::auth::ssh_sign::SshSigner>,
     timeout: Option<std::time::Duration>,
+    connect_timeout: Option<std::time::Duration>,
+    tcp_keepalive: Option<std::time::Duration>,
+    pool_max_idle_per_host: Option<usize>,
 }
 
 impl std::fmt::Debug for ClientBuilder<'_> {
@@ -381,6 +384,9 @@ impl<'a> ClientBuilder<'a> {
             http_client: None,
             ssh_signer: None,
             timeout: None,
+            connect_timeout: None,
+            tcp_keepalive: None,
+            pool_max_idle_per_host: None,
         }
     }
 
@@ -453,6 +459,30 @@ impl<'a> ClientBuilder<'a> {
     /// If not set, defaults to 30 seconds. Set to `None` to disable timeouts.
     pub fn timeout(mut self, timeout: std::time::Duration) -> Self {
         self.timeout = Some(timeout);
+        self
+    }
+
+    /// Set the connection timeout for establishing TCP connections.
+    ///
+    /// If not set, defaults to 10 seconds.
+    pub fn connect_timeout(mut self, timeout: std::time::Duration) -> Self {
+        self.connect_timeout = Some(timeout);
+        self
+    }
+
+    /// Set the TCP keepalive interval for detecting dead connections.
+    ///
+    /// If not set, defaults to 60 seconds.
+    pub fn tcp_keepalive(mut self, timeout: std::time::Duration) -> Self {
+        self.tcp_keepalive = Some(timeout);
+        self
+    }
+
+    /// Set the maximum number of idle connections per host in the connection pool.
+    ///
+    /// If not set, defaults to 10.
+    pub fn pool_max_idle_per_host(mut self, max: usize) -> Self {
+        self.pool_max_idle_per_host = Some(max);
         self
     }
 
@@ -570,9 +600,19 @@ impl<'a> ClientBuilder<'a> {
 
         let default_timeout = std::time::Duration::from_secs(30);
         let timeout = self.timeout.unwrap_or(default_timeout);
+        let connect_timeout = self
+            .connect_timeout
+            .unwrap_or(std::time::Duration::from_secs(10));
+        let tcp_keepalive = self
+            .tcp_keepalive
+            .unwrap_or(std::time::Duration::from_secs(60));
+        let pool_max_idle_per_host = self.pool_max_idle_per_host.unwrap_or(10);
         let http = self.http_client.unwrap_or_else(|| {
             reqwest::Client::builder()
                 .timeout(timeout)
+                .connect_timeout(connect_timeout)
+                .tcp_keepalive(tcp_keepalive)
+                .pool_max_idle_per_host(pool_max_idle_per_host)
                 .build()
                 .expect("failed to build default HTTP client")
         });
