@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! Path segment validation and escaping.
+
 use percent_encoding::{NON_ALPHANUMERIC, utf8_percent_encode};
 
 #[allow(dead_code)]

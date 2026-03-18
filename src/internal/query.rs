@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! URL query string encoding.
+
 /// Build a full URL path with optional query string.
 ///
 /// When `query` is non-empty, returns `base_path?query`.

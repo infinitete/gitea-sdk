@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! Organization API endpoints for managing Gitea organizations, teams, and members.
+
 use crate::Client;
 use crate::Response;
 use crate::options::org::*;
@@ -9,7 +11,7 @@ use crate::pagination::QueryEncode;
 use crate::types::{Activity, Label, OrgPermissions, Organization, Secret, Team, User};
 use crate::{Deserialize, Serialize};
 
-/// API methods for organization resources.
+/// API methods for organizations. Access via [`Client::orgs()`](crate::Client::orgs).
 pub struct OrgsApi<'a> {
     client: &'a Client,
 }

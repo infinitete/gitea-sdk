@@ -2,13 +2,15 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! Notification API endpoints for managing Gitea user notifications.
+
 use crate::Client;
 use crate::Response;
 use crate::options::notification::*;
 use crate::pagination::QueryEncode;
 use crate::types::NotificationThread;
 
-/// API methods for notification resources.
+/// API methods for notifications. Access via [`Client::notifications()`](crate::Client::notifications).
 pub struct NotificationsApi<'a> {
     client: &'a Client,
 }

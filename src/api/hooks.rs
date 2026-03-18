@@ -2,13 +2,15 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! Webhook API endpoints for managing Gitea repository and organization webhooks.
+
 use crate::Client;
 use crate::Response;
 use crate::options::hook::*;
 use crate::pagination::QueryEncode;
 use crate::types::Hook;
 
-/// API methods for webhook resources.
+/// API methods for webhooks. Access via [`Client::hooks()`](crate::Client::hooks).
 pub struct HooksApi<'a> {
     client: &'a Client,
 }

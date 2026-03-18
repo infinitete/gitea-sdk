@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! Request option types for pull request API endpoints.
+
 use crate::pagination::{ListOptions, QueryEncode};
 use crate::types::enums::{MergeStyle, ReviewStateType, StateType};
 use crate::{Deserialize, Serialize};

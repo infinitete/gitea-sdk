@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! HTTP response metadata and pagination link parsing.
+
 use reqwest::header::HeaderMap;
 
 /// Pagination links extracted from the `Link` response header.

@@ -2,13 +2,15 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! OAuth2 API endpoints for managing Gitea OAuth2 applications and grants.
+
 use crate::Client;
 use crate::Response;
 use crate::options::oauth2::*;
 use crate::pagination::QueryEncode;
 use crate::types::Oauth2;
 
-/// API methods for OAuth2 application resources.
+/// API methods for OAuth2 applications. Access via [`Client::oauth2()`](crate::Client::oauth2).
 pub struct Oauth2Api<'a> {
     client: &'a Client,
 }

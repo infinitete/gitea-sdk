@@ -2,10 +2,12 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! ActivityPub API endpoints for Gitea federation and ActivityStreams protocol.
+
 use crate::Client;
 use crate::Response;
 
-/// API methods for ActivityPub resources.
+/// API methods for ActivityPub. Access via [`Client::activitypub()`](crate::Client::activitypub).
 pub struct ActivityPubApi<'a> {
     client: &'a Client,
 }

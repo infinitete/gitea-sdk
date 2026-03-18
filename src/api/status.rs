@@ -2,13 +2,15 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! Commit status API endpoints for managing Gitea CI/CD commit statuses.
+
 use crate::Client;
 use crate::Response;
 use crate::options::status::*;
 use crate::pagination::QueryEncode;
 use crate::types::{CombinedStatus, Status};
 
-/// API methods for commit status resources.
+/// API methods for commit statuses. Access via [`Client::status()`](crate::Client::status).
 pub struct StatusApi<'a> {
     client: &'a Client,
 }

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! Repository API endpoints for managing Gitea repositories.
+
 use std::collections::HashMap;
 
 use crate::Client;
@@ -30,6 +32,7 @@ fn json_header() -> reqwest::header::HeaderMap {
 }
 
 /// API methods for repository operations.
+/// API methods for repositories. Access via [`Client::repos()`](crate::Client::repos).
 pub struct ReposApi<'a> {
     client: &'a Client,
 }

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! Types for organizations and their permissions.
+
 use crate::{Deserialize, Serialize};
 
 /// Organization represents an organization

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! Types for global Gitea instance settings (UI, repo, API, attachments).
+
 use crate::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

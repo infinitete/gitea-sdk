@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! Request option types for OAuth2 application API endpoints.
+
 use crate::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

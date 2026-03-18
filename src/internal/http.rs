@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! HTTP request helpers for the Gitea API client.
+
 use reqwest::header::HeaderMap;
 
 use crate::Client;

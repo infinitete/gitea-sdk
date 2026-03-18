@@ -2,13 +2,15 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! Settings API endpoints for retrieving Gitea instance configuration.
+
 use crate::Client;
 use crate::Response;
 use crate::types::settings::{
     GlobalAPISettings, GlobalAttachmentSettings, GlobalRepoSettings, GlobalUISettings,
 };
 
-/// API methods for settings resources.
+/// API methods for settings. Access via [`Client::settings()`](crate::Client::settings).
 pub struct SettingsApi<'a> {
     client: &'a Client,
 }

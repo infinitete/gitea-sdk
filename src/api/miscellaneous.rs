@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! Miscellaneous API endpoints for Gitea templates, node info, and signing keys.
+
 use crate::Client;
 use crate::Response;
 use crate::options::miscellaneous::*;
@@ -9,7 +11,7 @@ use crate::types::{
     GitignoreTemplateInfo, LabelTemplate, LicenseTemplateInfo, LicensesTemplateListEntry, NodeInfo,
 };
 
-/// API methods for miscellaneous resources.
+/// API methods for miscellaneous endpoints. Access via [`Client::miscellaneous()`](crate::Client::miscellaneous).
 pub struct MiscApi<'a> {
     client: &'a Client,
 }

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! Actions API endpoints for managing Gitea CI/CD workflows and runs.
+
 use crate::Client;
 use crate::Response;
 use crate::options::action::*;
@@ -11,7 +13,7 @@ use crate::types::action::{
     ActionWorkflowRunsResponse,
 };
 
-/// API methods for repository actions resources.
+/// API methods for actions. Access via [`Client::actions()`](crate::Client::actions).
 pub struct ActionsApi<'a> {
     client: &'a Client,
 }

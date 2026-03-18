@@ -2,55 +2,76 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! Entity types returned by the Gitea API, organized by resource.
+
 #[allow(unused_imports)]
+#[doc(hidden)]
 pub use action::{
     ActionTask, ActionTaskResponse, ActionWorkflowJob, ActionWorkflowJobsResponse,
     ActionWorkflowRun, ActionWorkflowRunsResponse, ActionWorkflowStep,
 };
 #[allow(unused_imports)]
+#[doc(hidden)]
 pub use activity::Activity;
 #[allow(unused_imports)]
+#[doc(hidden)]
 pub use badge::Badge;
 #[allow(unused_imports)]
+#[doc(hidden)]
 pub use comment::Comment;
 #[allow(unused_imports)]
+#[doc(hidden)]
 pub use cron_task::CronTask;
 #[allow(unused_imports)]
+#[doc(hidden)]
 pub use hook::Hook;
 #[allow(unused_imports)]
+#[doc(hidden)]
 pub use issue::{
     Issue, IssueBlockedBy, IssueFormElement, IssueFormElementAttributes,
     IssueFormElementValidations, IssueMeta, IssueTemplate, PullRequestMeta, RepositoryMeta,
     StopWatch, TimelineComment, TrackedTime, WatchInfo,
 };
 #[allow(unused_imports)]
+#[doc(hidden)]
 pub use label::Label;
 #[allow(unused_imports)]
+#[doc(hidden)]
 pub use license::{LicenseTemplateInfo, LicensesTemplateListEntry};
 #[allow(unused_imports)]
+#[doc(hidden)]
 pub use milestone::Milestone;
 #[allow(unused_imports)]
+#[doc(hidden)]
 pub use node_info::{
     GitignoreTemplateInfo, LabelTemplate, NodeInfo, NodeInfoServices, NodeInfoSoftware,
     NodeInfoUsage, NodeInfoUsageUsers,
 };
 #[allow(unused_imports)]
+#[doc(hidden)]
 pub use notification::{NotificationThread, NotifySubject};
 #[allow(unused_imports)]
+#[doc(hidden)]
 pub use oauth2::Oauth2;
 #[allow(unused_imports)]
+#[doc(hidden)]
 pub use organization::{OrgPermissions, Organization};
 #[allow(unused_imports)]
+#[doc(hidden)]
 pub use package::{Package, PackageFile};
 #[allow(unused_imports)]
+#[doc(hidden)]
 pub use pull_request::{
     ChangedFile, PRBranchInfo, PRBranchInfoRepo, PullRequest, PullReview, PullReviewComment,
 };
 #[allow(unused_imports)]
+#[doc(hidden)]
 pub use reaction::Reaction;
 #[allow(unused_imports)]
+#[doc(hidden)]
 pub use release::{Attachment, Release};
 #[allow(unused_imports)]
+#[doc(hidden)]
 pub use repository::{
     AnnotatedTag, AnnotatedTagObject, Branch, BranchProtection, CollaboratorPermissionResult,
     Commit, CommitAffectedFiles, CommitDateOptions, CommitMeta, CommitStats, CommitUser, Compare,
@@ -62,18 +83,24 @@ pub use repository::{
     WikiPage, WikiPageMetaData,
 };
 #[allow(unused_imports)]
+#[doc(hidden)]
 pub use secret::Secret;
 #[allow(unused_imports)]
+#[doc(hidden)]
 pub use settings::{
     GlobalAPISettings, GlobalAttachmentSettings, GlobalRepoSettings, GlobalUISettings,
 };
 #[allow(unused_imports)]
+#[doc(hidden)]
 pub use status::{CombinedStatus, Status};
 #[allow(unused_imports)]
+#[doc(hidden)]
 pub use team::Team;
 #[allow(unused_imports)]
+#[doc(hidden)]
 pub use user::{AccessToken, Email, GPGKey, GPGKeyEmail, PublicKey, User, UserHeatmapData};
 #[allow(unused_imports)]
+#[doc(hidden)]
 pub use user_settings::UserSettings;
 
 pub mod enums;

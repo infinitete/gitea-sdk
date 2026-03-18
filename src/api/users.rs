@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! User API endpoints for managing Gitea user accounts, keys, and settings.
+
 use crate::Client;
 use crate::Response;
 use crate::options::user::*;
@@ -9,7 +11,7 @@ use crate::pagination::QueryEncode;
 use crate::types::user::UserHeatmapData;
 use crate::types::{AccessToken, Activity, Email, GPGKey, PublicKey, User, UserSettings};
 
-/// API methods for user resources.
+/// API methods for users. Access via [`Client::users()`](crate::Client::users).
 pub struct UsersApi<'a> {
     client: &'a Client,
 }

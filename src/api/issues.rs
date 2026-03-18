@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! Issue API endpoints for managing Gitea issues, labels, and milestones.
+
 use crate::Client;
 use crate::Response;
 use crate::options::issue::*;
@@ -11,7 +13,7 @@ use crate::types::{
     TrackedTime, WatchInfo,
 };
 
-/// API methods for issue resources.
+/// API methods for issues. Access via [`Client::issues()`](crate::Client::issues).
 pub struct IssuesApi<'a> {
     client: &'a Client,
 }

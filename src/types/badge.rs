@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! Types for user badges.
+
 use crate::{Deserialize, Serialize};
 
 /// Badge represents a user badge

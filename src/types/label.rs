@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! Types for issue and pull request labels.
+
 use crate::{Deserialize, Serialize};
 
 /// Label represents a label for an issue or a pull request

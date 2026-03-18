@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! Admin API endpoints for Gitea instance administration tasks.
+
 use crate::Client;
 use crate::Response;
 use crate::options::admin::*;
@@ -11,7 +13,7 @@ use crate::options::user::CreateKeyOption;
 use crate::pagination::QueryEncode;
 use crate::types::{Badge, CronTask, Email, Hook, Organization, PublicKey, Repository, User};
 
-/// API methods for admin resources.
+/// API methods for admin tasks. Access via [`Client::admin()`](crate::Client::admin).
 pub struct AdminApi<'a> {
     client: &'a Client,
 }

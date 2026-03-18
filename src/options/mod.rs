@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! Request option types for all Gitea API endpoints.
+
 pub mod action;
 pub mod admin;
 pub mod hook;

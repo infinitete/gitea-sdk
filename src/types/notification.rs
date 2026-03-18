@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! Types for notification threads and subjects.
+
 use crate::{Deserialize, Serialize};
 use time::OffsetDateTime;
 use time::serde::rfc3339;

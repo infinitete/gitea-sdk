@@ -1,3 +1,5 @@
+//! Pagination options for list endpoints.
+
 /// Options for Gitea API pagination.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct ListOptions {

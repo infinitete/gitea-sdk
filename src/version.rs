@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! Server version detection and compatibility checking.
+
 use std::sync::LazyLock;
 
 use semver::Version;

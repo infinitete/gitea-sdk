@@ -2,13 +2,15 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! Package API endpoints for managing Gitea packages and container registry.
+
 use crate::Client;
 use crate::Response;
 use crate::options::package::ListPackagesOptions;
 use crate::pagination::QueryEncode;
 use crate::types::{Package, PackageFile};
 
-/// API methods for package resources.
+/// API methods for packages. Access via [`Client::packages()`](crate::Client::packages).
 pub struct PackagesApi<'a> {
     client: &'a Client,
 }

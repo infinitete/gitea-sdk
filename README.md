@@ -1,47 +1,117 @@
-# Rust SDK
+# gitea-sdk
 
-## Live Integration Tests
+An async Rust SDK for the [Gitea](https://about.gitea.com/) API.
 
-The repository root `.env` can point the Rust SDK at a dedicated live Gitea
-instance for end-to-end verification.
+## Installation
 
-The current live smoke suite expects at least:
-- `GITEA_HOST`
-- `GITEA_HTTP_PORT`
-- `GITEA_SSH_PORT`
-- `GITEA_USER_NAME`
-- `GITEA_USER_PASS`
-- `GITEA_TOKEN_VALUE`
-- one of `ED25519_PUBLIC_KEY` or `RSA_PUBLIC_KEY`
+Add this to your `Cargo.toml`:
 
-Run the ignored live suite with:
-
-```bash
-cargo test --test live_integration_test -- --ignored --nocapture
+```toml
+[dependencies]
+gitea-sdk = "0.1.0"
 ```
 
-The suite currently verifies:
-- `server_version()`
-- `users().get_my_info()`
-- `users().list_my_public_keys()`
-- public key create/get/delete lifecycle
-- shared repo fixture create/delete lifecycle
-- shared org fixture create/delete lifecycle when the live account is allowed to create orgs
+Feature flags:
 
-## Git Hooks
+| Feature       | Description                        |
+|---------------|------------------------------------|
+| `rustls-tls`  | Use rustls for TLS *(default)*     |
+| `native-tls`  | Use the system native TLS backend  |
+| `stream`      | Enable streaming response support  |
 
-This repository uses a local Git `pre-commit` hook under `.githooks/pre-commit`.
+## Quick Start
 
-Enable it with:
+```rust
+use gitea_sdk::Client;
 
-```bash
-git config core.hooksPath .githooks
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = Client::builder("https://gitea.example.com")
+        .token("your-token-here")
+        .build()?;
+
+    let (user, _) = client.users().get_my_info().await?;
+    println!("Logged in as: {}", user.user_name);
+
+    Ok(())
+}
 ```
 
-Before each commit, the hook runs:
+More complete examples are in the `examples/` directory:
 
 ```bash
-cargo fmt --check
-cargo clippy --all-targets --all-features -- -D warnings
-cargo test
+cargo run --example basic_usage
+cargo run --example authentication
 ```
+
+## Features
+
+- **Async API client** built on reqwest with async/await
+- **15 API modules** covering repos, issues, pulls, orgs, users, admin, hooks, notifications, actions, releases, settings, OAuth2, packages, miscellaneous, ActivityPub, and status
+- **6 authentication methods**: token, basic auth, OTP, sudo, SSH certificate signing, and SSH public key signing
+- **Pagination** via `ListOptions` for all list endpoints
+- **Version checking** with automatic server version detection
+- **Thread-safe** client that can be cloned and shared across tasks
+- **Full serde support** for serialization and deserialization
+
+## Authentication
+
+```rust
+use gitea_sdk::Client;
+
+// Personal access token
+let client = Client::builder("https://gitea.example.com")
+    .token("your-token-here")
+    .build()?;
+
+// Username and password
+let client = Client::builder("https://gitea.example.com")
+    .basic_auth("username", "password")
+    .build()?;
+
+// Token with two-factor OTP
+let client = Client::builder("https://gitea.example.com")
+    .token("your-token-here")
+    .otp("123456")
+    .build()?;
+
+// Act as another user (sudo)
+let client = Client::builder("https://gitea.example.com")
+    .token("your-token-here")
+    .sudo("target-username")
+    .build()?;
+```
+
+The client stores credentials in a thread-safe interior and supports swapping them at runtime via `set_token()`, `set_basic_auth()`, `set_otp()`, and `set_sudo()`.
+
+## Pagination
+
+List endpoints accept option structs that embed pagination parameters:
+
+```rust
+use gitea_sdk::ListOptions;
+use gitea_sdk::options::repo::ListReposOptions;
+
+let opts = ListReposOptions {
+    list_options: ListOptions {
+        page: Some(1),
+        page_size: Some(50),
+    },
+};
+let (repos, _) = client.repos().list_my_repos(opts).await?;
+```
+
+Set `page` to `Some(0)` to disable pagination and fetch all results at once.
+
+## Minimum Rust Version
+
+Requires Rust **1.88** or later.
+
+## License
+
+Licensed under the [MIT License](LICENSE).
+
+## Links
+
+- [Repository](https://gitea.com/gitea/go-sdk)
+- [Changelog](CHANGELOG.md)

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! Pull request API endpoints for managing Gitea pull requests and reviews.
+
 use crate::Client;
 use crate::Response;
 use crate::options::pull::*;
@@ -9,7 +11,7 @@ use crate::pagination::QueryEncode;
 use crate::types::{ChangedFile, PullRequest, PullReview, PullReviewComment};
 use crate::version::{VERSION_1_11_5, VERSION_1_12_0, VERSION_1_13_0, VERSION_1_14_0};
 
-/// API methods for pull request resources.
+/// API methods for pull requests. Access via [`Client::pulls()`](crate::Client::pulls).
 pub struct PullsApi<'a> {
     client: &'a Client,
 }

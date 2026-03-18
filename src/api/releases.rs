@@ -2,13 +2,15 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! Release API endpoints for managing Gitea repository releases and assets.
+
 use crate::Client;
 use crate::Response;
 use crate::options::release::*;
 use crate::pagination::QueryEncode;
 use crate::types::{Attachment, Release};
 
-/// API methods for release resources.
+/// API methods for releases. Access via [`Client::releases()`](crate::Client::releases).
 pub struct ReleasesApi<'a> {
     client: &'a Client,
 }

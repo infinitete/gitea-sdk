@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! Shared enum types used across the Gitea API.
+
 use serde::{Deserialize, Serialize};
 use strum::{AsRefStr, Display};
 
