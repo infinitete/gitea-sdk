@@ -9,7 +9,8 @@ use parking_lot::RwLock;
 use crate::Error;
 use crate::api::{
     ActionsApi, ActivityPubApi, AdminApi, HooksApi, IssuesApi, MiscApi, NotificationsApi,
-    Oauth2Api, OrgsApi, PullsApi, ReleasesApi, ReposApi, SettingsApi, StatusApi, UsersApi,
+    Oauth2Api, OrgsApi, PackagesApi, PullsApi, ReleasesApi, ReposApi, SettingsApi, StatusApi,
+    UsersApi,
 };
 
 /// Configuration fields that can be mutated at runtime via setters on [`Client`].
@@ -63,20 +64,13 @@ struct ClientInner {
     /// Mutable configuration protected by a reader-writer lock.
     config: RwLock<ClientConfig>,
     /// Server version discovered lazily (populated by the first version check).
-    server_version: OnceLock<CachedServerVersion>,
+    server_version: OnceLock<semver::Version>,
     /// Pre-set version supplied via [`ClientBuilder::gitea_version`].
     preset_version: Option<semver::Version>,
     /// Guards against concurrent `load_server_version` fetches.
     version_loading: tokio::sync::Mutex<()>,
     /// SSH signer for HTTP Signature authentication, if configured.
     ssh_signer: RwLock<Option<crate::auth::ssh_sign::SshSigner>>,
-}
-
-/// Cached result of server version discovery.
-#[derive(Clone, Debug)]
-pub(crate) enum CachedServerVersion {
-    Parsed(semver::Version),
-    Unknown(String),
 }
 
 /// A thread-safe Gitea API client.
@@ -88,12 +82,16 @@ pub(crate) enum CachedServerVersion {
 ///
 /// # Examples
 ///
-/// ```ignore
-/// use gitea_sdk::{Client, ClientBuilder};
+/// ```no_run
+/// use gitea_sdk::Client;
 ///
+/// # fn main() -> Result<(), gitea_sdk::Error> {
 /// let client = Client::builder("https://gitea.example.com")
 ///     .token("my-secret-token")
 ///     .build()?;
+/// # let _ = client;
+/// # Ok(())
+/// # }
 /// ```
 #[derive(Clone)]
 /// Client payload type.
@@ -171,12 +169,7 @@ impl Client {
 // ── Internal helpers (crate-visible) ────────────────────────────────
 
 impl Client {
-    /// Snapshot mutable request config values for one request pipeline run.
-    pub(crate) fn config_snapshot(&self) -> ClientConfig {
-        self.inner.config.read().clone()
-    }
-
-    #[allow(dead_code, private_interfaces)]
+    #[allow(private_interfaces)]
     pub(crate) fn read_config(&self) -> parking_lot::RwLockReadGuard<'_, ClientConfig> {
         self.inner.config.read()
     }
@@ -193,7 +186,7 @@ impl Client {
 
     /// Borrow the [`OnceLock`] that will hold the server version once
     /// discovered.
-    pub(crate) fn server_version_lock(&self) -> &OnceLock<CachedServerVersion> {
+    pub(crate) fn server_version_lock(&self) -> &OnceLock<semver::Version> {
         &self.inner.server_version
     }
 
@@ -221,12 +214,11 @@ impl Client {
     ///
     /// Returns `true` (use legacy) when:
     /// - Version checks are disabled (`ignore_version`), or
-    /// - The server version is known to be < 1.23.0, or
-    /// - The server version is cached as unknown.
+    /// - The server version is known to be < 1.23.0.
     ///
     /// Returns `false` (use modern) when:
     /// - The server version is known to be >= 1.23.0, or
-    /// - No server version has been discovered yet.
+    /// - The version is unknown (optimistically assume modern).
     pub(crate) fn should_use_legacy_ssh(&self) -> bool {
         if self.ignore_version() {
             return true;
@@ -235,10 +227,7 @@ impl Client {
             return v < &*crate::version::VERSION_1_23_0;
         }
         if let Some(v) = self.server_version_lock().get() {
-            return match v {
-                CachedServerVersion::Parsed(ver) => ver < &*crate::version::VERSION_1_23_0,
-                CachedServerVersion::Unknown(_) => true,
-            };
+            return v < &*crate::version::VERSION_1_23_0;
         }
         false
     }
@@ -305,6 +294,11 @@ impl Client {
     /// Access OAuth2 application API methods.
     pub fn oauth2(&self) -> Oauth2Api<'_> {
         Oauth2Api::new(self)
+    }
+
+    /// Access package API methods.
+    pub fn packages(&self) -> PackagesApi<'_> {
+        PackagesApi::new(self)
     }
 
     /// Access miscellaneous API methods.

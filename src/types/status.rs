@@ -15,6 +15,7 @@ use super::user::User;
 /// Status payload type.
 pub struct Status {
     pub id: i64,
+    #[serde(alias = "status")]
     pub state: StatusState,
     #[serde(rename = "target_url")]
     pub target_url: String,
@@ -23,9 +24,9 @@ pub struct Status {
     pub context: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub creator: Option<User>,
-    #[serde(with = "rfc3339")]
+    #[serde(with = "rfc3339", alias = "created_at")]
     pub created: OffsetDateTime,
-    #[serde(with = "rfc3339")]
+    #[serde(with = "rfc3339", alias = "updated_at")]
     pub updated: OffsetDateTime,
 }
 
@@ -90,5 +91,23 @@ mod tests {
         assert_eq!(combined.sha, "abc123def456");
         assert_eq!(combined.total_count, 2);
         assert!(combined.statuses.is_empty());
+    }
+
+    #[test]
+    fn test_status_deserialize_live_field_names() {
+        let json = r#"{
+            "id": 1,
+            "status": "success",
+            "target_url": "https://ci.example.com/build/1",
+            "description": "Build passed",
+            "url": "https://gitea.example.com/api/v1/repos/test/repo/statuses/abc123",
+            "context": "ci/build",
+            "creator": null,
+            "created_at": "2024-01-15T10:00:00Z",
+            "updated_at": "2024-01-15T10:00:00Z"
+        }"#;
+        let status: Status = serde_json::from_str(json).unwrap();
+        assert_eq!(status.state, StatusState::Success);
+        assert_eq!(status.context, "ci/build");
     }
 }

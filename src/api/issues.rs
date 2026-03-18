@@ -1402,14 +1402,29 @@ impl<'a> IssuesApi<'a> {
             "/repos/{}/{}/issues/{index}/deadline",
             escaped[0], escaped[1]
         );
-        self.client()
-            .get_parsed_response(
+        let (data, resp) = self
+            .client()
+            .get_response(
                 reqwest::Method::POST,
                 &path,
                 Some(&json_header()),
                 Some(body),
             )
-            .await
+            .await?;
+        if let Ok(issue) = serde_json::from_slice::<Issue>(&data) {
+            return Ok((issue, resp));
+        }
+        if serde_json::from_slice::<serde_json::Value>(&data)
+            .ok()
+            .and_then(|value| value.get("due_date").cloned())
+            .is_some()
+        {
+            let (issue, _) = self.get_issue(owner, repo, index).await?;
+            return Ok((issue, resp));
+        }
+        Err(crate::Error::Json(
+            serde_json::from_slice::<Issue>(&data).unwrap_err(),
+        ))
     }
 
     // ── issue_template.go ─────────────────────────────────────────

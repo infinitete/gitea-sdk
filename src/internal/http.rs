@@ -10,126 +10,7 @@ use crate::response::response_from_reqwest;
 
 // ── HTTP request pipeline (mirrors go-sdk/gitea/client.go) ─────────
 
-#[derive(Clone)]
-struct RequestPipelineConfig {
-    base_url: String,
-    access_token: String,
-    otp: String,
-    username: String,
-    password: String,
-    sudo: String,
-    user_agent: String,
-    debug: bool,
-}
-
-impl From<crate::client::ClientConfig> for RequestPipelineConfig {
-    fn from(config: crate::client::ClientConfig) -> Self {
-        Self {
-            base_url: config.base_url,
-            access_token: config.access_token,
-            otp: config.otp,
-            username: config.username,
-            password: config.password,
-            sudo: config.sudo,
-            user_agent: config.user_agent,
-            debug: config.debug,
-        }
-    }
-}
-
-enum RequestPayload {
-    Empty,
-    Body(reqwest::Body),
-    Multipart(reqwest::multipart::Form),
-}
-
-fn build_pipeline_request(
-    http_client: &reqwest::Client,
-    config: &RequestPipelineConfig,
-    method: reqwest::Method,
-    path: &str,
-    headers: Option<&HeaderMap>,
-    payload: RequestPayload,
-) -> crate::Result<reqwest::Request> {
-    let url = format!("{}/api/v1{path}", config.base_url);
-
-    let mut req = http_client
-        .request(method, &url)
-        .header("Accept", "application/json");
-
-    // Auth header injection — exact order from Go SDK doRequest:
-    // 1. Token → Authorization: token {access_token}
-    if !config.access_token.is_empty() {
-        req = req.header("Authorization", format!("token {}", config.access_token));
-    }
-    // 2. OTP → X-GITEA-OTP
-    if !config.otp.is_empty() {
-        req = req.header("X-GITEA-OTP", &config.otp);
-    }
-    // 3. Basic Auth
-    if !config.username.is_empty() {
-        req = req.basic_auth(&config.username, Some(&config.password));
-    }
-    // 4. Sudo
-    if !config.sudo.is_empty() {
-        req = req.header("Sudo", &config.sudo);
-    }
-    // 5. User-Agent
-    if !config.user_agent.is_empty() {
-        req = req.header("User-Agent", &config.user_agent);
-    }
-
-    if let Some(hdrs) = headers {
-        for (k, v) in hdrs {
-            req = req.header(k, v);
-        }
-    }
-
-    req = match payload {
-        RequestPayload::Empty => req,
-        RequestPayload::Body(body) => req.body(body),
-        RequestPayload::Multipart(form) => req.multipart(form),
-    };
-
-    Ok(req.build()?)
-}
-
 impl Client {
-    async fn do_request_raw_with_payload(
-        &self,
-        method: reqwest::Method,
-        path: &str,
-        headers: Option<&HeaderMap>,
-        payload: RequestPayload,
-    ) -> crate::Result<reqwest::Response> {
-        let http_client = self.http_client();
-        let request_config = RequestPipelineConfig::from(self.config_snapshot());
-        let mut built_req = build_pipeline_request(
-            &http_client,
-            &request_config,
-            method,
-            path,
-            headers,
-            payload,
-        )?;
-
-        if request_config.debug {
-            tracing::debug!("{}: {}", built_req.method(), built_req.url());
-        }
-
-        {
-            // sign_request() is synchronous; do NOT add .await inside this scope
-            let signer = self.ssh_signer();
-            if let Some(ref signer) = *signer {
-                let use_legacy = self.should_use_legacy_ssh();
-                crate::auth::ssh_sign::sign_request(&mut built_req, signer, use_legacy)?;
-            }
-        }
-
-        let resp = http_client.execute(built_req).await?;
-        Ok(resp)
-    }
-
     /// Layer 0 (internal): Build and send a request, returning the raw
     /// `reqwest::Response` so that higher layers can decide how to consume
     /// the body.
@@ -143,12 +24,77 @@ impl Client {
         headers: Option<&HeaderMap>,
         body: Option<B>,
     ) -> crate::Result<reqwest::Response> {
-        let payload = match body {
-            Some(value) => RequestPayload::Body(value.into()),
-            None => RequestPayload::Empty,
+        let http_client = self.http_client();
+
+        let (base_url, access_token, otp, username, password, sudo, user_agent, debug) = {
+            let config = self.read_config();
+            (
+                config.base_url.clone(),
+                config.access_token.clone(),
+                config.otp.clone(),
+                config.username.clone(),
+                config.password.clone(),
+                config.sudo.clone(),
+                config.user_agent.clone(),
+                config.debug,
+            )
         };
-        self.do_request_raw_with_payload(method, path, headers, payload)
-            .await
+
+        let url = format!("{base_url}/api/v1{path}");
+
+        let mut req = http_client
+            .request(method.clone(), &url)
+            .header("Accept", "application/json");
+
+        // Auth header injection — exact order from Go SDK doRequest:
+        // 1. Token → Authorization: token {access_token}
+        if !access_token.is_empty() {
+            req = req.header("Authorization", format!("token {access_token}"));
+        }
+        // 2. OTP → X-GITEA-OTP
+        if !otp.is_empty() {
+            req = req.header("X-GITEA-OTP", &otp);
+        }
+        // 3. Basic Auth
+        if !username.is_empty() {
+            req = req.basic_auth(&username, Some(&password));
+        }
+        // 4. Sudo
+        if !sudo.is_empty() {
+            req = req.header("Sudo", &sudo);
+        }
+        // 5. User-Agent
+        if !user_agent.is_empty() {
+            req = req.header("User-Agent", &user_agent);
+        }
+
+        if let Some(hdrs) = headers {
+            for (k, v) in hdrs.iter() {
+                req = req.header(k, v);
+            }
+        }
+
+        if let Some(b) = body {
+            req = req.body(b);
+        }
+
+        if debug {
+            tracing::debug!("{}: {}", method, url);
+        }
+
+        let mut built_req = req.build()?;
+
+        {
+            // sign_request() is synchronous; do NOT add .await inside this scope
+            let signer = self.ssh_signer();
+            if let Some(ref signer) = *signer {
+                let use_legacy = self.should_use_legacy_ssh();
+                crate::auth::ssh_sign::sign_request(&mut built_req, signer, use_legacy)?;
+            }
+        }
+
+        let resp = http_client.execute(built_req).await?;
+        Ok(resp)
     }
 
     /// Layer 1: Status check only, discards the body.
@@ -250,9 +196,58 @@ impl Client {
         headers: Option<&HeaderMap>,
         form: reqwest::multipart::Form,
     ) -> crate::Result<(T, Response)> {
-        let resp = self
-            .do_request_raw_with_payload(method, path, headers, RequestPayload::Multipart(form))
-            .await?;
+        let http_client = self.http_client();
+
+        let (base_url, access_token, otp, username, password, sudo, user_agent, debug) = {
+            let config = self.read_config();
+            (
+                config.base_url.clone(),
+                config.access_token.clone(),
+                config.otp.clone(),
+                config.username.clone(),
+                config.password.clone(),
+                config.sudo.clone(),
+                config.user_agent.clone(),
+                config.debug,
+            )
+        };
+
+        let url = format!("{base_url}/api/v1{path}");
+
+        let mut req = http_client
+            .request(method.clone(), &url)
+            .header("Accept", "application/json");
+
+        // Auth header injection — exact order from Go SDK doRequest.
+        if !access_token.is_empty() {
+            req = req.header("Authorization", format!("token {access_token}"));
+        }
+        if !otp.is_empty() {
+            req = req.header("X-GITEA-OTP", &otp);
+        }
+        if !username.is_empty() {
+            req = req.basic_auth(&username, Some(&password));
+        }
+        if !sudo.is_empty() {
+            req = req.header("Sudo", &sudo);
+        }
+        if !user_agent.is_empty() {
+            req = req.header("User-Agent", &user_agent);
+        }
+
+        if let Some(hdrs) = headers {
+            for (k, v) in hdrs.iter() {
+                req = req.header(k, v);
+            }
+        }
+
+        req = req.multipart(form);
+
+        if debug {
+            tracing::debug!("{}: {}", method, url);
+        }
+
+        let resp = http_client.execute(req.build()?).await?;
         let response = response_from_reqwest(&resp);
         let status = resp.status().as_u16();
 
@@ -465,59 +460,5 @@ mod tests {
             .await
             .expect("get_version should succeed");
         assert_eq!(version, "1.22.0");
-    }
-
-    #[test]
-    fn test_request_pipeline_builder_applies_common_headers_for_body_and_multipart() {
-        let http_client = reqwest::Client::new();
-        let mut extra_headers = HeaderMap::new();
-        extra_headers.insert("X-Test-Header", "from-caller".parse().unwrap());
-
-        let body_request = build_pipeline_request(
-            &http_client,
-            &RequestPipelineConfig {
-                base_url: "https://example.com".to_string(),
-                access_token: "token-123".to_string(),
-                otp: "654321".to_string(),
-                username: "".to_string(),
-                password: "".to_string(),
-                sudo: "sudo-user".to_string(),
-                user_agent: "gitea-rust-sdk/test".to_string(),
-                debug: false,
-            },
-            reqwest::Method::POST,
-            "/repos/owner/repo",
-            Some(&extra_headers),
-            RequestPayload::Body(reqwest::Body::from("payload")),
-        )
-        .expect("body request should build");
-
-        let multipart_request = build_pipeline_request(
-            &http_client,
-            &RequestPipelineConfig {
-                base_url: "https://example.com".to_string(),
-                access_token: "token-123".to_string(),
-                otp: "654321".to_string(),
-                username: "".to_string(),
-                password: "".to_string(),
-                sudo: "sudo-user".to_string(),
-                user_agent: "gitea-rust-sdk/test".to_string(),
-                debug: false,
-            },
-            reqwest::Method::POST,
-            "/repos/owner/repo/avatar",
-            Some(&extra_headers),
-            RequestPayload::Multipart(reqwest::multipart::Form::new().text("name", "avatar")),
-        )
-        .expect("multipart request should build");
-
-        for request in [&body_request, &multipart_request] {
-            assert_eq!(request.headers()["accept"], "application/json");
-            assert_eq!(request.headers()["authorization"], "token token-123");
-            assert_eq!(request.headers()["x-gitea-otp"], "654321");
-            assert_eq!(request.headers()["sudo"], "sudo-user");
-            assert_eq!(request.headers()["user-agent"], "gitea-rust-sdk/test");
-            assert_eq!(request.headers()["x-test-header"], "from-caller");
-        }
     }
 }

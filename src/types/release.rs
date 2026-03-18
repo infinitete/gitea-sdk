@@ -17,7 +17,7 @@ pub struct Attachment {
     pub size: i64,
     #[serde(rename = "download_count")]
     pub download_count: i64,
-    #[serde(with = "rfc3339")]
+    #[serde(with = "rfc3339", alias = "created_at")]
     pub created: OffsetDateTime,
     pub uuid: String,
     #[serde(rename = "browser_download_url")]
@@ -31,8 +31,11 @@ pub struct Release {
     pub id: i64,
     #[serde(rename = "tag_name")]
     pub tag_name: String,
+    #[serde(alias = "target_commitish", default)]
     pub target: String,
+    #[serde(alias = "name", default)]
     pub title: String,
+    #[serde(alias = "body", default)]
     pub note: String,
     pub url: String,
     #[serde(rename = "html_url")]

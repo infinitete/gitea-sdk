@@ -14,8 +14,9 @@ use super::user::User;
 pub struct Reaction {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub user: Option<User>,
+    #[serde(alias = "content")]
     pub reaction: String,
-    #[serde(with = "rfc3339")]
+    #[serde(with = "rfc3339", alias = "created_at")]
     pub created: OffsetDateTime,
 }
 
@@ -36,5 +37,16 @@ mod tests {
         let json = serde_json::to_string(&original).unwrap();
         let restored: Reaction = serde_json::from_str(&json).unwrap();
         assert_eq!(restored.reaction, original.reaction);
+    }
+
+    #[test]
+    fn test_reaction_deserialize_live_field_names() {
+        let json = r#"{
+            "user": null,
+            "content": "+1",
+            "created_at": "2026-03-18T13:00:00+08:00"
+        }"#;
+        let reaction: Reaction = serde_json::from_str(json).unwrap();
+        assert_eq!(reaction.reaction, "+1");
     }
 }

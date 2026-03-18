@@ -37,13 +37,23 @@ fn strict_phase3_api_coverage_2x_per_method() {
         })
         .collect();
 
+    assert!(
+        !modules.is_empty(),
+        "Phase 3 coverage: no direct api/*.rs modules found under {}",
+        api_dir.display()
+    );
+
     let mut failures: Vec<String> = Vec::new();
+    let mut total_pub_async_fn_count = 0usize;
+    let mut total_tokio_test_count = 0usize;
 
     for path in &modules {
         let contents = fs::read_to_string(path).expect("api source file should be readable");
 
         let pub_async_fn_count = contents.matches("pub async fn").count();
         let tokio_test_count = contents.matches("#[tokio::test]").count();
+        total_pub_async_fn_count += pub_async_fn_count;
+        total_tokio_test_count += tokio_test_count;
 
         let required = pub_async_fn_count * 2;
 
@@ -63,6 +73,17 @@ fn strict_phase3_api_coverage_2x_per_method() {
         }
     }
 
+    assert!(
+        total_pub_async_fn_count > 0,
+        "Phase 3 coverage: discovered {} modules but found zero public async API methods",
+        modules.len()
+    );
+    assert!(
+        total_tokio_test_count > 0,
+        "Phase 3 coverage: discovered {} modules but found zero #[tokio::test] cases",
+        modules.len()
+    );
+
     if failures.is_empty() {
         return;
     }
@@ -72,9 +93,11 @@ fn strict_phase3_api_coverage_2x_per_method() {
         report.push_str(&format!("  - {}\n", f));
     }
     report.push_str(&format!(
-        "\n{} modules below threshold out of {} checked\n",
+        "\n{} modules below threshold out of {} checked; totals: methods={}, tests={}\n",
         failures.len(),
-        modules.len()
+        modules.len(),
+        total_pub_async_fn_count,
+        total_tokio_test_count,
     ));
 
     panic!("{}", report);

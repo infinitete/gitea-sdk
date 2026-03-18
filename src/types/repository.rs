@@ -6,7 +6,7 @@ use crate::{Deserialize, Serialize};
 use time::OffsetDateTime;
 use time::serde::rfc3339;
 
-use super::serde_helpers::nullable_rfc3339;
+use super::serde_helpers::{null_to_default, nullable_rfc3339};
 use super::team::Team;
 use super::user::User;
 use crate::types::enums::{MergeStyle, ProjectsMode};
@@ -231,12 +231,13 @@ pub struct PayloadCommit {
     pub committer: Option<PayloadUser>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub verification: Option<PayloadCommitVerification>,
+    #[serde(with = "rfc3339")]
     pub timestamp: OffsetDateTime,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub added: Vec<String>,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub removed: Vec<String>,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub modified: Vec<String>,
 }
 
@@ -327,7 +328,9 @@ pub struct CommitAffectedFiles {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Commit Date Options payload type.
 pub struct CommitDateOptions {
+    #[serde(with = "rfc3339")]
     pub author: OffsetDateTime,
+    #[serde(with = "rfc3339")]
     pub committer: OffsetDateTime,
 }
 
@@ -345,9 +348,9 @@ pub struct Commit {
     pub author: Option<User>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub committer: Option<User>,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub parents: Vec<CommitMeta>,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub files: Vec<CommitAffectedFiles>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub stats: Option<CommitStats>,
@@ -685,6 +688,7 @@ pub struct GitObject {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Reference payload type.
 pub struct Reference {
+    #[serde(rename = "ref")]
     pub ref_: String,
     pub url: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -714,7 +718,7 @@ pub struct Compare {
     #[serde(rename = "total_commits")]
     pub total_commits: i32,
     /// List of commits in the comparison
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub commits: Vec<Commit>,
 }
 

@@ -7,7 +7,6 @@ use std::sync::LazyLock;
 use semver::Version;
 
 use crate::Client;
-use crate::client::CachedServerVersion;
 
 // Using `LazyLock` because `semver::Version::parse` is not `const`.
 
@@ -44,18 +43,18 @@ struct ServerVersionResponse {
 // ── Client impl (version methods) ─────────────────────────────────────
 
 impl Client {
-    /// Load the server version lazily via [`OnceLock`].
+    /// Load the server version lazily via [`OnceLock`], falling back to
+    /// `1.11.0` on parse failure.
     ///
     /// Resolution order:
     /// 1. If `ignore_version` is set → returns [`Error::Version`].
     /// 2. If a preset version was configured via [`ClientBuilder::gitea_version`]
     ///    → uses that without making an HTTP request.
     /// 3. If the [`OnceLock`] is already initialised → returns the cached value.
-    /// 4. Otherwise → `GET /version`, parse the response, and cache either the
-    ///    parsed version or the unknown-version failure.
+    /// 4. Otherwise → `GET /version`, parse the response, and cache it.
     ///
-    /// On parse failure, [`Error::UnknownVersion`] is returned and that failure
-    /// is cached to avoid repeated network round-trips.
+    /// On parse failure the lock is set to `1.11.0` (safety net) and
+    /// [`Error::UnknownVersion`] is returned.
     pub(crate) async fn load_server_version(&self) -> crate::Result<Version> {
         if self.ignore_version() {
             return Err(crate::Error::Version("version checks disabled".into()));
@@ -66,18 +65,12 @@ impl Client {
         }
 
         if let Some(v) = self.server_version_lock().get() {
-            return match v {
-                CachedServerVersion::Parsed(parsed) => Ok(parsed.clone()),
-                CachedServerVersion::Unknown(raw) => Err(crate::Error::UnknownVersion(raw.clone())),
-            };
+            return Ok(v.clone());
         }
 
         let _guard = self.version_loading_lock().await;
         if let Some(v) = self.server_version_lock().get() {
-            return match v {
-                CachedServerVersion::Parsed(parsed) => Ok(parsed.clone()),
-                CachedServerVersion::Unknown(raw) => Err(crate::Error::UnknownVersion(raw.clone())),
-            };
+            return Ok(v.clone());
         }
 
         let (data, _resp) = self
@@ -89,17 +82,13 @@ impl Client {
 
         match Version::parse(ver_str) {
             Ok(v) => {
-                let _ = self
-                    .server_version_lock()
-                    .set(CachedServerVersion::Parsed(v.clone()));
+                let _ = self.server_version_lock().set(v.clone());
                 Ok(v)
             }
             Err(_) => {
-                let raw = ver_str.to_string();
-                let _ = self
-                    .server_version_lock()
-                    .set(CachedServerVersion::Unknown(raw.clone()));
-                Err(crate::Error::UnknownVersion(raw))
+                let fallback = VERSION_1_11_0.clone();
+                let _ = self.server_version_lock().set(fallback.clone());
+                Err(crate::Error::UnknownVersion(ver_str.to_string()))
             }
         }
     }

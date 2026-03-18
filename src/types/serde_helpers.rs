@@ -9,7 +9,7 @@
 //! `Option<OffsetDateTime>` fields.
 
 use serde::de::{self, Visitor};
-use serde::{Deserializer, Serializer};
+use serde::{Deserialize, Deserializer, Serializer};
 use std::fmt;
 use time::OffsetDateTime;
 
@@ -39,14 +39,20 @@ fn is_zero(dt: OffsetDateTime) -> bool {
 ///
 /// # Usage
 ///
-/// ```ignore
-/// use crate::types::serde_helpers::nullable_rfc3339;
+/// ```no_run
+/// use gitea_sdk::types::serde_helpers::nullable_rfc3339;
+/// use serde::{Deserialize, Serialize};
+/// use time::OffsetDateTime;
 ///
 /// #[derive(Serialize, Deserialize)]
 /// struct MyEntity {
 ///     #[serde(with = "nullable_rfc3339", skip_serializing_if = "Option::is_none")]
 ///     created_at: Option<OffsetDateTime>,
 /// }
+///
+/// let _entity = MyEntity {
+///     created_at: Some(OffsetDateTime::UNIX_EPOCH),
+/// };
 /// ```
 pub mod nullable_rfc3339 {
     use super::*;
@@ -98,6 +104,15 @@ pub mod nullable_rfc3339 {
             None => serializer.serialize_none(),
         }
     }
+}
+
+/// Deserialize `null` as `T::default()`.
+pub fn null_to_default<'de, D, T>(deserializer: D) -> Result<T, D::Error>
+where
+    D: Deserializer<'de>,
+    T: Deserialize<'de> + Default,
+{
+    Ok(Option::<T>::deserialize(deserializer)?.unwrap_or_default())
 }
 
 #[cfg(test)]

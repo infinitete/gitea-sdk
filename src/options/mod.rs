@@ -10,6 +10,7 @@ pub mod miscellaneous;
 pub mod notification;
 pub mod oauth2;
 pub mod org;
+pub mod package;
 pub mod pull;
 pub mod release;
 pub mod repo;

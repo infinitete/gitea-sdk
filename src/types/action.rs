@@ -6,6 +6,8 @@ use crate::{Deserialize, Serialize};
 use time::OffsetDateTime;
 use time::serde::rfc3339;
 
+use super::serde_helpers::null_to_default;
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Action Task payload type.
 pub struct ActionTask {
@@ -58,6 +60,7 @@ pub struct ActionWorkflowRun {
     #[serde(rename = "run_number")]
     pub run_number: i64,
     pub status: String,
+    #[serde(default)]
     pub conclusion: String,
     pub url: String,
     #[serde(rename = "html_url")]
@@ -82,7 +85,7 @@ pub struct ActionWorkflowRun {
         skip_serializing_if = "Option::is_none"
     )]
     pub head_repository: Option<serde_json::Value>,
-    #[serde(rename = "repository_id")]
+    #[serde(rename = "repository_id", default)]
     pub repository_id: i64,
 }
 
@@ -111,6 +114,7 @@ pub struct ActionWorkflowJob {
     #[serde(rename = "head_sha")]
     pub head_sha: String,
     pub status: String,
+    #[serde(default)]
     pub conclusion: String,
     pub url: String,
     #[serde(rename = "html_url")]
@@ -121,13 +125,13 @@ pub struct ActionWorkflowJob {
     pub started_at: OffsetDateTime,
     #[serde(with = "rfc3339")]
     pub completed_at: OffsetDateTime,
-    #[serde(rename = "runner_id")]
+    #[serde(rename = "runner_id", default)]
     pub runner_id: i64,
-    #[serde(rename = "runner_name")]
+    #[serde(rename = "runner_name", default)]
     pub runner_name: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub labels: Vec<String>,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub steps: Vec<ActionWorkflowStep>,
 }
 

@@ -19,16 +19,16 @@ pub struct Comment {
     pub pr_url: String,
     #[serde(rename = "issue_url")]
     pub issue_url: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none", alias = "user")]
     pub poster: Option<User>,
     #[serde(rename = "original_author")]
     pub original_author: String,
     #[serde(rename = "original_author_id")]
     pub original_author_id: i64,
     pub body: String,
-    #[serde(with = "rfc3339")]
+    #[serde(with = "rfc3339", alias = "created_at")]
     pub created: OffsetDateTime,
-    #[serde(with = "rfc3339")]
+    #[serde(with = "rfc3339", alias = "updated_at")]
     pub updated: OffsetDateTime,
 }
 
@@ -60,5 +60,25 @@ mod tests {
         let restored: Comment = serde_json::from_str(&json).unwrap();
         assert_eq!(restored.id, original.id);
         assert_eq!(restored.body, original.body);
+    }
+
+    #[test]
+    fn test_comment_deserialize_live_field_names() {
+        let json = r#"{
+            "id": 2,
+            "html_url": "https://gitea.example.com/o/r/issues/1#issuecomment-2",
+            "pull_request_url": "",
+            "issue_url": "https://gitea.example.com/api/v1/repos/o/r/issues/1",
+            "user": null,
+            "original_author": "",
+            "original_author_id": 0,
+            "body": "live comment",
+            "assets": [],
+            "created_at": "2026-03-18T12:54:50+08:00",
+            "updated_at": "2026-03-18T12:54:50+08:00"
+        }"#;
+        let comment: Comment = serde_json::from_str(json).unwrap();
+        assert_eq!(comment.id, 2);
+        assert_eq!(comment.body, "live comment");
     }
 }

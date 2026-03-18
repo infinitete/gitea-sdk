@@ -4,12 +4,16 @@
 //!
 //! # Quick Start
 //!
-//! ```ignore
+//! ```no_run
 //! use gitea_sdk::Client;
 //!
+//! # fn main() -> Result<(), gitea_sdk::Error> {
 //! let client = Client::builder("https://gitea.example.com")
 //!     .token("your-token")
 //!     .build()?;
+//! # let _ = client;
+//! # Ok(())
+//! # }
 //! ```
 
 // Re-export serde macros for convenience.
@@ -63,7 +67,8 @@ pub use types::enums::*;
 // Re-export API sub-structs for convenience.
 pub use api::{
     ActionsApi, ActivityPubApi, AdminApi, HooksApi, IssuesApi, MiscApi, NotificationsApi,
-    Oauth2Api, OrgsApi, PullsApi, ReleasesApi, ReposApi, SettingsApi, StatusApi, UsersApi,
+    Oauth2Api, OrgsApi, PackagesApi, PullsApi, ReleasesApi, ReposApi, SettingsApi, StatusApi,
+    UsersApi,
 };
 
 #[cfg(test)]

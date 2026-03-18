@@ -177,58 +177,6 @@ async fn test_version_unknown_format_wiremock() {
 }
 
 #[tokio::test]
-async fn test_version_unknown_format_cached_as_failure_wiremock() {
-    let server = MockServer::start().await;
-    Mock::given(method("GET"))
-        .and(path("/api/v1/version"))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(json!({"version": "unknown-format"})),
-        )
-        .expect(1)
-        .mount(&server)
-        .await;
-
-    let client = create_client(&server);
-
-    let first = client.server_version().await.unwrap_err();
-    match first {
-        Error::UnknownVersion(v) => assert_eq!(v, "unknown-format"),
-        other => panic!("expected Error::UnknownVersion, got: {other}"),
-    }
-
-    let second = client.server_version().await.unwrap_err();
-    match second {
-        Error::UnknownVersion(v) => assert_eq!(v, "unknown-format"),
-        other => panic!("expected Error::UnknownVersion, got: {other}"),
-    }
-}
-
-#[tokio::test]
-async fn test_version_unknown_format_concurrent_single_flight_wiremock() {
-    let server = MockServer::start().await;
-    Mock::given(method("GET"))
-        .and(path("/api/v1/version"))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(json!({"version": "unknown-format"})),
-        )
-        .expect(1)
-        .mount(&server)
-        .await;
-
-    let client = create_client(&server);
-    let (first, second) = tokio::join!(client.server_version(), client.server_version());
-
-    match first.unwrap_err() {
-        Error::UnknownVersion(v) => assert_eq!(v, "unknown-format"),
-        other => panic!("expected Error::UnknownVersion, got: {other}"),
-    }
-    match second.unwrap_err() {
-        Error::UnknownVersion(v) => assert_eq!(v, "unknown-format"),
-        other => panic!("expected Error::UnknownVersion, got: {other}"),
-    }
-}
-
-#[tokio::test]
 async fn test_version_ignore_version_returns_error() {
     let client = Client::builder("https://localhost:1")
         .gitea_version("")

@@ -132,7 +132,6 @@ mod tests {
         serde_json::json!({
             "id": id,
             "status": state,
-            "state": state,
             "target_url": "https://ci.example.com/build/1",
             "description": "Build passed",
             "url": "https://gitea.example.com/api/v1/repos/test/repo/statuses/abc123",

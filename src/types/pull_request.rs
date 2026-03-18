@@ -8,7 +8,7 @@ use time::serde::rfc3339;
 
 use super::label::Label;
 use super::milestone::Milestone;
-use super::serde_helpers::nullable_rfc3339;
+use super::serde_helpers::{null_to_default, nullable_rfc3339};
 use super::team::Team;
 use super::user::User;
 use crate::types::enums::{ReviewStateType, StateType};
@@ -56,17 +56,17 @@ pub struct PullRequest {
     pub title: String,
     #[serde(default)]
     pub body: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub labels: Vec<Label>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub milestone: Option<Box<Milestone>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub assignee: Option<Box<User>>,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub assignees: Vec<User>,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub requested_reviewers: Vec<User>,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub requested_reviewers_teams: Vec<Team>,
     pub state: StateType,
     #[serde(default)]

@@ -549,12 +549,12 @@ pub struct PullRequestCommit {
 #[derive(Debug, Clone, serde::Deserialize)]
 /// Commit Meta payload type.
 pub struct CommitMeta {
-    #[serde(rename = "sha")]
+    #[serde(rename = "sha", default)]
     pub id: String,
-    #[serde(rename = "author")]
-    pub author: CommitUser,
-    #[serde(rename = "committer")]
-    pub committer: CommitUser,
+    #[serde(rename = "author", default)]
+    pub author: Option<CommitUser>,
+    #[serde(rename = "committer", default)]
+    pub committer: Option<CommitUser>,
     #[serde(default)]
     pub message: String,
 }

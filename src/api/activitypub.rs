@@ -42,6 +42,47 @@ impl<'a> ActivityPubApi<'a> {
             .await
     }
 
+    /// SendActivityPubInbox sends an ActivityPub message to a user's inbox.
+    pub async fn send_inbox(
+        &self,
+        user_id: i64,
+        activity: serde_json::Value,
+    ) -> crate::Result<Response> {
+        let path = format!("/activitypub/user-id/{user_id}/inbox");
+        let body = serde_json::to_string(&activity)?;
+        let (status, response) = self
+            .client()
+            .get_status_code(
+                reqwest::Method::POST,
+                &path,
+                Some(&json_header()),
+                Some(body),
+            )
+            .await?;
+
+        if status == reqwest::StatusCode::NO_CONTENT.as_u16() {
+            Ok(response)
+        } else {
+            Err(crate::Error::UnknownApi {
+                status,
+                body: format!("unexpected status: {status}"),
+            })
+        }
+    }
+
+    /// GetActivityPubPersonResponse returns the raw ActivityPub Person response.
+    pub async fn get_person_response(&self, user_id: i64) -> crate::Result<(Vec<u8>, Response)> {
+        let path = format!("/activitypub/user-id/{user_id}");
+        self.client()
+            .get_response(
+                reqwest::Method::GET,
+                &path,
+                Some(&json_header()),
+                None::<&str>,
+            )
+            .await
+    }
+
     /// GetActivityPubRepository returns the Repository actor for a repo
     pub async fn get_repository(
         &self,
@@ -127,6 +168,87 @@ mod tests {
 
         let client = create_test_client(&server);
         let result = client.activitypub().get_person(1).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_send_inbox() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path("/api/v1/activitypub/user-id/1/inbox"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let resp = client
+            .activitypub()
+            .send_inbox(
+                1,
+                serde_json::json!({
+                    "@context": "https://www.w3.org/ns/activitystreams",
+                    "type": "Follow",
+                    "actor": "https://gitea.example.com/activitypub/user-id/2",
+                    "object": "https://gitea.example.com/activitypub/user-id/1",
+                }),
+            )
+            .await
+            .unwrap();
+        assert_eq!(resp.status, 204);
+    }
+
+    #[tokio::test]
+    async fn test_send_inbox_error_unexpected_status() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path("/api/v1/activitypub/user-id/1/inbox"))
+            .respond_with(ResponseTemplate::new(200))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client
+            .activitypub()
+            .send_inbox(1, serde_json::json!({"type": "Follow"}))
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_get_person_response() {
+        let server = MockServer::start().await;
+        let body = serde_json::json!({
+            "@context": "https://www.w3.org/ns/activitystreams",
+            "type": "Person",
+            "id": "https://gitea.example.com/api/v1/activitypub/user-id/1",
+            "preferredUsername": "testuser"
+        });
+        Mock::given(method("GET"))
+            .and(path("/api/v1/activitypub/user-id/1"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(&body))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let (raw, resp) = client.activitypub().get_person_response(1).await.unwrap();
+        let parsed: serde_json::Value = serde_json::from_slice(&raw).unwrap();
+        assert_eq!(parsed["type"], "Person");
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_get_person_response_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/activitypub/user-id/1"))
+            .respond_with(ResponseTemplate::new(404).set_body_json(serde_json::json!({
+                "message": "Not Found"
+            })))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client.activitypub().get_person_response(1).await;
         assert!(result.is_err());
     }
 

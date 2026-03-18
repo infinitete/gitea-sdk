@@ -90,9 +90,23 @@ impl<'a> ReposApi<'a> {
         opt: SearchRepoOptions,
     ) -> crate::Result<(Vec<Repository>, Response)> {
         let path = format!("/repos/search?{}", opt.query_encode());
-        self.client()
-            .get_parsed_response(reqwest::Method::GET, &path, None, None::<&str>)
-            .await
+        let (data, resp) = self
+            .client()
+            .get_response(reqwest::Method::GET, &path, None, None::<&str>)
+            .await?;
+
+        if let Ok(repos) = serde_json::from_slice::<Vec<Repository>>(&data) {
+            return Ok((repos, resp));
+        }
+
+        #[derive(serde::Deserialize)]
+        struct SearchReposEnvelope {
+            #[serde(default)]
+            data: Vec<Repository>,
+        }
+
+        let wrapped: SearchReposEnvelope = serde_json::from_slice(&data)?;
+        Ok((wrapped.data, resp))
     }
 
     /// CreateRepo create a repository
@@ -342,14 +356,23 @@ impl<'a> ReposApi<'a> {
             "/repos/{}/{}/branches/{}",
             escaped[0], escaped[1], escaped[2]
         );
-        self.client()
-            .get_parsed_response(
+        let (data, resp) = self
+            .client()
+            .get_response(
                 reqwest::Method::PATCH,
                 &path,
                 Some(&json_header()),
                 Some(body),
             )
-            .await
+            .await?;
+
+        if data.is_empty() {
+            let (updated, _) = self.get_branch(owner, repo, &opt.name).await?;
+            return Ok((updated, resp));
+        }
+
+        let updated: Branch = serde_json::from_slice(&data)?;
+        Ok((updated, resp))
     }
 
     /// CreateBranch create a branch in a repository
@@ -664,7 +687,15 @@ impl<'a> ReposApi<'a> {
             .client()
             .get_response(reqwest::Method::GET, &path, None, None::<&str>)
             .await?;
-        let ext: ContentsExtResponse = serde_json::from_slice(&data)?;
+        let mut ext: ContentsExtResponse = serde_json::from_slice(&data)?;
+        if ext.file_contents.is_none() && ext.dir_contents.is_none() {
+            if let Ok(file_contents) = serde_json::from_slice::<ContentsResponse>(&data) {
+                ext.file_contents = Some(file_contents);
+            } else if let Ok(dir_contents) = serde_json::from_slice::<Vec<ContentsResponse>>(&data)
+            {
+                ext.dir_contents = Some(dir_contents);
+            }
+        }
         Ok((ext, resp))
     }
 
@@ -1017,10 +1048,14 @@ impl<'a> ReposApi<'a> {
         &self,
         owner: &str,
         repo: &str,
-        id: i64,
+        remote_name: &str,
     ) -> crate::Result<(PushMirrorResponse, Response)> {
-        let escaped = crate::internal::escape::validate_and_escape_segments(&[owner, repo])?;
-        let path = format!("/repos/{}/{}/push_mirrors/{id}", escaped[0], escaped[1]);
+        let escaped =
+            crate::internal::escape::validate_and_escape_segments(&[owner, repo, remote_name])?;
+        let path = format!(
+            "/repos/{}/{}/push_mirrors/{}",
+            escaped[0], escaped[1], escaped[2]
+        );
         self.client()
             .get_parsed_response(reqwest::Method::GET, &path, None, None::<&str>)
             .await
@@ -1031,10 +1066,14 @@ impl<'a> ReposApi<'a> {
         &self,
         owner: &str,
         repo: &str,
-        id: i64,
+        remote_name: &str,
     ) -> crate::Result<Response> {
-        let escaped = crate::internal::escape::validate_and_escape_segments(&[owner, repo])?;
-        let path = format!("/repos/{}/{}/push_mirrors/{id}", escaped[0], escaped[1]);
+        let escaped =
+            crate::internal::escape::validate_and_escape_segments(&[owner, repo, remote_name])?;
+        let path = format!(
+            "/repos/{}/{}/push_mirrors/{}",
+            escaped[0], escaped[1], escaped[2]
+        );
         self.client()
             .do_request_with_status_handle(reqwest::Method::DELETE, &path, None, None::<&str>)
             .await
@@ -2136,9 +2175,23 @@ impl<'a> ReposApi<'a> {
             "/repos/{}/{}/git/refs/{}",
             escaped[0], escaped[1], ref_escaped
         );
-        self.client()
-            .get_parsed_response(reqwest::Method::GET, &path, None, None::<&str>)
-            .await
+        let (data, resp) = self
+            .client()
+            .get_response(reqwest::Method::GET, &path, None, None::<&str>)
+            .await?;
+        if let Ok(single) = serde_json::from_slice::<Reference>(&data) {
+            Ok((single, resp))
+        } else {
+            let mut refs: Vec<Reference> = serde_json::from_slice(&data)?;
+            refs.pop()
+                .map(|reference| (reference, resp))
+                .ok_or_else(|| {
+                    crate::Error::Json(serde_json::Error::io(std::io::Error::new(
+                        std::io::ErrorKind::InvalidData,
+                        "empty ref array response",
+                    )))
+                })
+        }
     }
 
     /// GetRepoRefs get list of ref's information of one repository
@@ -4412,6 +4465,38 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn test_get_contents_ext_flat_file_payload() {
+        let server = MockServer::start().await;
+        let body = json!({
+            "name": "file.txt",
+            "path": "file.txt",
+            "sha": "abc",
+            "type": "file",
+            "size": 5,
+            "last_commit_sha": ""
+        });
+        Mock::given(method("GET"))
+            .and(path("/api/v1/repos/owner/repo/contents/file%2Etxt"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(&body))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = GetContentsExtOptions::default();
+        let (ext, resp) = client
+            .repos()
+            .get_contents_ext("owner", "repo", "file.txt", "main", opt)
+            .await
+            .unwrap();
+        assert_eq!(
+            ext.file_contents
+                .expect("flat file payload should map")
+                .path,
+            "file.txt"
+        );
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
     async fn test_get_contents_ext_error() {
         let server = MockServer::start().await;
         Mock::given(method("GET"))
@@ -5096,14 +5181,14 @@ mod tests {
     async fn test_get_push_mirror_happy() {
         let server = MockServer::start().await;
         Mock::given(method("GET"))
-            .and(path("/api/v1/repos/owner/repo/push_mirrors/1"))
+            .and(path("/api/v1/repos/owner/repo/push_mirrors/origin"))
             .respond_with(ResponseTemplate::new(200).set_body_json(minimal_push_mirror_json()))
             .mount(&server)
             .await;
         let client = create_test_client(&server);
         let (mirror, resp) = client
             .repos()
-            .get_push_mirror("owner", "repo", 1)
+            .get_push_mirror("owner", "repo", "origin")
             .await
             .unwrap();
         assert_eq!(mirror.interval, "8h");
@@ -5114,12 +5199,15 @@ mod tests {
     async fn test_get_push_mirror_error() {
         let server = MockServer::start().await;
         Mock::given(method("GET"))
-            .and(path("/api/v1/repos/owner/repo/push_mirrors/1"))
+            .and(path("/api/v1/repos/owner/repo/push_mirrors/origin"))
             .respond_with(ResponseTemplate::new(404).set_body_json(json!({"message": "Not Found"})))
             .mount(&server)
             .await;
         let client = create_test_client(&server);
-        let result = client.repos().get_push_mirror("owner", "repo", 1).await;
+        let result = client
+            .repos()
+            .get_push_mirror("owner", "repo", "origin")
+            .await;
         assert!(result.is_err());
     }
 
@@ -5129,12 +5217,15 @@ mod tests {
     async fn test_delete_push_mirror_happy() {
         let server = MockServer::start().await;
         Mock::given(method("DELETE"))
-            .and(path("/api/v1/repos/owner/repo/push_mirrors/1"))
+            .and(path("/api/v1/repos/owner/repo/push_mirrors/origin"))
             .respond_with(ResponseTemplate::new(204))
             .mount(&server)
             .await;
         let client = create_test_client(&server);
-        let result = client.repos().delete_push_mirror("owner", "repo", 1).await;
+        let result = client
+            .repos()
+            .delete_push_mirror("owner", "repo", "origin")
+            .await;
         assert!(result.is_ok());
         assert_eq!(result.unwrap().status, 204);
     }
@@ -5143,12 +5234,15 @@ mod tests {
     async fn test_delete_push_mirror_error() {
         let server = MockServer::start().await;
         Mock::given(method("DELETE"))
-            .and(path("/api/v1/repos/owner/repo/push_mirrors/1"))
+            .and(path("/api/v1/repos/owner/repo/push_mirrors/origin"))
             .respond_with(ResponseTemplate::new(404).set_body_json(json!({"message": "Not Found"})))
             .mount(&server)
             .await;
         let client = create_test_client(&server);
-        let result = client.repos().delete_push_mirror("owner", "repo", 1).await;
+        let result = client
+            .repos()
+            .delete_push_mirror("owner", "repo", "origin")
+            .await;
         assert!(result.is_err());
     }
 
@@ -6363,7 +6457,7 @@ mod tests {
 
     fn minimal_reference_json() -> serde_json::Value {
         serde_json::json!({
-            "ref_": "refs/heads/main",
+            "ref": "refs/heads/main",
             "url": "https://example.com/api/v1/repos/o/r/git/refs/heads/main",
             "object": {
                 "type": "commit",
@@ -7541,6 +7635,28 @@ mod tests {
         Mock::given(method("GET"))
             .and(path("/api/v1/repos/owner/repo/git/refs/heads/main"))
             .respond_with(ResponseTemplate::new(200).set_body_json(minimal_reference_json()))
+            .mount(&server)
+            .await;
+        let result = client
+            .repos()
+            .get_repo_ref("owner", "repo", "refs/heads/main")
+            .await;
+        assert!(result.is_ok());
+        let (ref_, resp) = result.unwrap();
+        assert_eq!(ref_.ref_, "refs/heads/main");
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_get_repo_ref_happy_with_array_payload() {
+        let server = MockServer::start().await;
+        let client = create_test_client(&server);
+        Mock::given(method("GET"))
+            .and(path("/api/v1/repos/owner/repo/git/refs/heads/main"))
+            .respond_with(
+                ResponseTemplate::new(200)
+                    .set_body_json(serde_json::json!([minimal_reference_json()])),
+            )
             .mount(&server)
             .await;
         let result = client

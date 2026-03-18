@@ -13,12 +13,14 @@ pub struct Secret {
     /// the secret's name
     pub name: String,
     /// the secret's data
+    #[serde(default)]
     pub data: String,
     /// the secret's description
+    #[serde(default)]
     pub description: String,
     /// Date and Time of secret creation
-    #[serde(with = "rfc3339")]
-    pub created: OffsetDateTime,
+    #[serde(default, with = "rfc3339::option")]
+    pub created: Option<OffsetDateTime>,
 }
 
 #[cfg(test)]
@@ -31,10 +33,10 @@ mod tests {
             name: "MY_SECRET".to_string(),
             data: "supersecretvalue".to_string(),
             description: "A secret value".to_string(),
-            created: OffsetDateTime::new_utc(
+            created: Some(OffsetDateTime::new_utc(
                 time::Date::from_calendar_date(2024, time::Month::January, 15).unwrap(),
                 time::Time::from_hms(10, 0, 0).unwrap(),
-            ),
+            )),
         };
         let json = serde_json::to_string(&original).unwrap();
         let restored: Secret = serde_json::from_str(&json).unwrap();

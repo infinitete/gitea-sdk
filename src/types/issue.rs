@@ -8,7 +8,7 @@ use time::serde::rfc3339;
 
 use super::label::Label;
 use super::milestone::Milestone;
-use super::serde_helpers::nullable_rfc3339;
+use super::serde_helpers::{null_to_default, nullable_rfc3339};
 use super::user::User;
 use crate::types::enums::{IssueFormElementType, StateType};
 
@@ -65,7 +65,7 @@ pub struct Issue {
     pub labels: Vec<Label>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub milestone: Option<Milestone>,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub assignees: Vec<User>,
     /// Whether the issue is open or closed
     pub state: StateType,
@@ -178,13 +178,13 @@ pub struct TimelineComment {
     pub original_author_id: i64,
     #[serde(default)]
     pub body: String,
-    #[serde(with = "rfc3339")]
-    pub created: OffsetDateTime,
-    #[serde(with = "rfc3339")]
-    pub updated: OffsetDateTime,
+    #[serde(default, with = "nullable_rfc3339")]
+    pub created: Option<OffsetDateTime>,
+    #[serde(default, with = "nullable_rfc3339")]
+    pub updated: Option<OffsetDateTime>,
     #[serde(default)]
     pub r#type: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub label: Vec<Label>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub milestone: Option<Milestone>,
@@ -212,13 +212,17 @@ pub struct WatchInfo {
     pub watching: bool,
     #[serde(default)]
     pub ignored: bool,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub reason: String,
     #[serde(rename = "created_at", default, with = "nullable_rfc3339")]
     pub created_at: Option<OffsetDateTime>,
-    #[serde(default, rename = "url")]
+    #[serde(default, rename = "url", deserialize_with = "null_to_default")]
     pub url: String,
-    #[serde(default, rename = "repository_url")]
+    #[serde(
+        default,
+        rename = "repository_url",
+        deserialize_with = "null_to_default"
+    )]
     pub repository_url: String,
 }
 
@@ -432,6 +436,44 @@ mod tests {
     }
 
     #[test]
+    fn test_issue_deserialize_null_assignees() {
+        let json = r#"{
+            "id":5,
+            "url":"http://example.com/api/v1/repos/test/repo/issues/1",
+            "html_url":"http://example.com/test/repo/issues/1",
+            "number":1,
+            "user":null,
+            "original_author":"",
+            "original_author_id":0,
+            "title":"debug issue",
+            "body":"debug body",
+            "ref":"",
+            "labels":[],
+            "milestone":null,
+            "assignees":null,
+            "state":"open",
+            "is_locked":false,
+            "comments":0,
+            "created_at":"2026-03-18T11:48:01+08:00",
+            "updated_at":"2026-03-18T11:48:01+08:00",
+            "closed_at":null,
+            "due_date":null,
+            "pull_request":null,
+            "repository":{
+                "id":29,
+                "name":"debug-issue-json",
+                "owner":"gitea_tester",
+                "full_name":"gitea_tester/debug-issue-json"
+            }
+        }"#;
+
+        let restored: Issue = serde_json::from_str(json).unwrap();
+        assert_eq!(restored.index, 1);
+        assert!(restored.assignees.is_empty());
+        assert!(restored.repository.is_some());
+    }
+
+    #[test]
     fn test_issue_blocked_by_round_trip() {
         let original = IssueBlockedBy {
             index: 2,
@@ -499,8 +541,8 @@ mod tests {
             original_author: String::new(),
             original_author_id: 0,
             body: "comment".to_string(),
-            created: test_time(),
-            updated: test_time(),
+            created: Some(test_time()),
+            updated: Some(test_time()),
             r#type: "comment".to_string(),
             label: vec![],
             milestone: None,

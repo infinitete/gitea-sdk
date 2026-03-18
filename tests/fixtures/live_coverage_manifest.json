@@ -1,0 +1,2435 @@
+[
+  {
+    "module": "actions",
+    "method": "list_repo_action_runs",
+    "status": "covered",
+    "test": "live_actions_test.rs"
+  },
+  {
+    "module": "actions",
+    "method": "get_repo_action_run",
+    "status": "covered",
+    "test": "live_actions_test.rs"
+  },
+  {
+    "module": "actions",
+    "method": "delete_repo_action_run",
+    "status": "blocked_by_missing_seed_data",
+    "test": null,
+    "reason": "Live test on 2026-03-18 created a real workflow run and retried DELETE /actions/runs/{id} for roughly 60 seconds, but the configured instance kept returning HTTP 400 \"this workflow run is not done\""
+  },
+  {
+    "module": "actions",
+    "method": "list_repo_action_run_jobs",
+    "status": "covered",
+    "test": "live_actions_test.rs"
+  },
+  {
+    "module": "actions",
+    "method": "list_repo_action_tasks",
+    "status": "covered",
+    "test": "live_actions_test.rs"
+  },
+  {
+    "module": "actions",
+    "method": "list_repo_action_jobs",
+    "status": "covered",
+    "test": "live_actions_test.rs"
+  },
+  {
+    "module": "actions",
+    "method": "get_repo_action_job",
+    "status": "covered",
+    "test": "live_actions_test.rs"
+  },
+  {
+    "module": "actions",
+    "method": "get_repo_action_job_logs",
+    "status": "blocked_by_missing_seed_data",
+    "test": null,
+    "reason": "Live test on 2026-03-18 created a real workflow job and retried GET /actions/jobs/{id}/logs for roughly 60 seconds, but the configured instance kept returning HTTP 404 not found"
+  },
+  {
+    "module": "activitypub",
+    "method": "get_person",
+    "status": "blocked_by_missing_seed_data",
+    "test": null,
+    "reason": "Live test on 2026-03-18 resolved the current user id from /user, then GET /activitypub/user-id/{id} returned HTTP 404 page not found on the configured instance"
+  },
+  {
+    "module": "activitypub",
+    "method": "send_inbox",
+    "status": "blocked_by_missing_seed_data",
+    "test": null,
+    "reason": "Live test on 2026-03-18 posted a minimal Follow activity to /activitypub/user-id/{id}/inbox for the current user and the configured instance returned HTTP 404 (unexpected status: 404), indicating the inbox route is unavailable"
+  },
+  {
+    "module": "activitypub",
+    "method": "get_person_response",
+    "status": "blocked_by_missing_seed_data",
+    "test": null,
+    "reason": "Live test on 2026-03-18 resolved the current user id from /user, then raw GET /activitypub/user-id/{id} returned HTTP 404 page not found on the configured instance"
+  },
+  {
+    "module": "activitypub",
+    "method": "get_repository",
+    "status": "covered",
+    "test": "live_system_test.rs"
+  },
+  {
+    "module": "activitypub",
+    "method": "get_followers",
+    "status": "blocked_by_missing_seed_data",
+    "test": null,
+    "reason": "Live test on 2026-03-18 created a disposable repository, then GET /activitypub/{owner}/{repo}/followers returned HTTP 404 page not found on the configured instance"
+  },
+  {
+    "module": "admin",
+    "method": "list_users",
+    "status": "covered",
+    "test": "live_admin_test.rs"
+  },
+  {
+    "module": "admin",
+    "method": "create_user",
+    "status": "covered",
+    "test": "live_admin_test.rs"
+  },
+  {
+    "module": "admin",
+    "method": "edit_user",
+    "status": "covered",
+    "test": "live_admin_test.rs"
+  },
+  {
+    "module": "admin",
+    "method": "delete_user",
+    "status": "covered",
+    "test": "live_admin_test.rs"
+  },
+  {
+    "module": "admin",
+    "method": "rename_user",
+    "status": "covered",
+    "test": "live_admin_test.rs"
+  },
+  {
+    "module": "admin",
+    "method": "create_user_public_key",
+    "status": "covered",
+    "test": "live_admin_test.rs"
+  },
+  {
+    "module": "admin",
+    "method": "delete_user_public_key",
+    "status": "covered",
+    "test": "live_admin_test.rs"
+  },
+  {
+    "module": "admin",
+    "method": "list_unadopted_repos",
+    "status": "covered",
+    "test": "live_admin_test.rs"
+  },
+  {
+    "module": "admin",
+    "method": "adopt_unadopted_repo",
+    "status": "blocked_by_missing_seed_data",
+    "test": null,
+    "reason": "Live test on 2026-03-18 returned an empty unadopted repo list on the configured instance; adopt requires a host-level orphan repository seed"
+  },
+  {
+    "module": "admin",
+    "method": "delete_unadopted_repo",
+    "status": "blocked_by_missing_seed_data",
+    "test": null,
+    "reason": "Live test on 2026-03-18 returned an empty unadopted repo list on the configured instance; delete requires a host-level orphan repository seed"
+  },
+  {
+    "module": "admin",
+    "method": "list_orgs",
+    "status": "covered",
+    "test": "live_admin_test.rs"
+  },
+  {
+    "module": "admin",
+    "method": "create_org_for_user",
+    "status": "covered",
+    "test": "live_admin_test.rs"
+  },
+  {
+    "module": "admin",
+    "method": "create_repo_for_user",
+    "status": "covered",
+    "test": "live_admin_test.rs"
+  },
+  {
+    "module": "admin",
+    "method": "list_cron_tasks",
+    "status": "covered",
+    "test": "live_admin_test.rs"
+  },
+  {
+    "module": "admin",
+    "method": "run_cron_task",
+    "status": "covered",
+    "test": "live_admin_test.rs"
+  },
+  {
+    "module": "admin",
+    "method": "list_hooks",
+    "status": "covered",
+    "test": "live_admin_test.rs"
+  },
+  {
+    "module": "admin",
+    "method": "create_hook",
+    "status": "covered",
+    "test": "live_admin_test.rs"
+  },
+  {
+    "module": "admin",
+    "method": "get_hook",
+    "status": "covered",
+    "test": "live_admin_test.rs"
+  },
+  {
+    "module": "admin",
+    "method": "edit_hook",
+    "status": "covered",
+    "test": "live_admin_test.rs"
+  },
+  {
+    "module": "admin",
+    "method": "delete_hook",
+    "status": "covered",
+    "test": "live_admin_test.rs"
+  },
+  {
+    "module": "admin",
+    "method": "list_emails",
+    "status": "covered",
+    "test": "live_admin_test.rs"
+  },
+  {
+    "module": "admin",
+    "method": "search_emails",
+    "status": "covered",
+    "test": "live_admin_test.rs"
+  },
+  {
+    "module": "admin",
+    "method": "list_user_badges",
+    "status": "covered",
+    "test": "live_admin_test.rs"
+  },
+  {
+    "module": "admin",
+    "method": "add_user_badges",
+    "status": "blocked_by_missing_seed_data",
+    "test": null,
+    "reason": "Live test on 2026-03-18 found the main admin user had no badges, and raw POST /admin/users/{username}/badges returned HTTP 500 with message 'badge with slug contributor doesn't exist' and 'badge with slug reviewer doesn't exist' for the only known local slugs"
+  },
+  {
+    "module": "admin",
+    "method": "delete_user_badges",
+    "status": "blocked_by_missing_seed_data",
+    "test": null,
+    "reason": "Live test on 2026-03-18 against a disposable admin-created user showed raw DELETE /admin/users/{username}/badges returned HTTP 500 with message 'no such column: badge.slug' for both known local slugs contributor and reviewer, indicating an instance-side bug"
+  },
+  {
+    "module": "hooks",
+    "method": "list_org_hooks",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "hooks",
+    "method": "get_org_hook",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "hooks",
+    "method": "create_org_hook",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "hooks",
+    "method": "edit_org_hook",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "hooks",
+    "method": "delete_org_hook",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "hooks",
+    "method": "list_repo_hooks",
+    "status": "covered",
+    "test": "live_hooks_test.rs"
+  },
+  {
+    "module": "hooks",
+    "method": "get_repo_hook",
+    "status": "covered",
+    "test": "live_hooks_test.rs"
+  },
+  {
+    "module": "hooks",
+    "method": "create_repo_hook",
+    "status": "covered",
+    "test": "live_hooks_test.rs"
+  },
+  {
+    "module": "hooks",
+    "method": "edit_repo_hook",
+    "status": "covered",
+    "test": "live_hooks_test.rs"
+  },
+  {
+    "module": "hooks",
+    "method": "delete_repo_hook",
+    "status": "covered",
+    "test": "live_hooks_test.rs"
+  },
+  {
+    "module": "hooks",
+    "method": "list_my_hooks",
+    "status": "covered",
+    "test": "live_hooks_test.rs"
+  },
+  {
+    "module": "hooks",
+    "method": "get_my_hook",
+    "status": "covered",
+    "test": "live_hooks_test.rs"
+  },
+  {
+    "module": "hooks",
+    "method": "create_my_hook",
+    "status": "covered",
+    "test": "live_hooks_test.rs"
+  },
+  {
+    "module": "hooks",
+    "method": "edit_my_hook",
+    "status": "covered",
+    "test": "live_hooks_test.rs"
+  },
+  {
+    "module": "hooks",
+    "method": "delete_my_hook",
+    "status": "covered",
+    "test": "live_hooks_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "list_issues",
+    "status": "covered",
+    "test": "live_issues_list_delete_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "list_repo_issues",
+    "status": "covered",
+    "test": "live_issues_list_delete_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "get_issue",
+    "status": "covered",
+    "test": "live_workflows_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "create_issue",
+    "status": "covered",
+    "test": "live_workflows_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "edit_issue",
+    "status": "covered",
+    "test": "live_workflows_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "delete_issue",
+    "status": "covered",
+    "test": "live_issues_list_delete_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "list_issue_comments",
+    "status": "covered",
+    "test": "live_issues_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "list_repo_issue_comments",
+    "status": "covered",
+    "test": "live_issues_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "get_issue_comment",
+    "status": "covered",
+    "test": "live_issues_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "create_issue_comment",
+    "status": "covered",
+    "test": "live_issues_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "edit_issue_comment",
+    "status": "covered",
+    "test": "live_issues_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "delete_issue_comment",
+    "status": "covered",
+    "test": "live_issues_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "list_issue_comment_attachments",
+    "status": "covered",
+    "test": "live_issues_full_coverage_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "get_issue_comment_attachment",
+    "status": "covered",
+    "test": "live_issues_templates_attachments_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "edit_issue_comment_attachment",
+    "status": "covered",
+    "test": "live_issues_templates_attachments_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "delete_issue_comment_attachment",
+    "status": "covered",
+    "test": "live_issues_templates_attachments_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "get_issue_labels",
+    "status": "covered",
+    "test": "live_issues_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "add_issue_labels",
+    "status": "covered",
+    "test": "live_issues_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "replace_issue_labels",
+    "status": "covered",
+    "test": "live_issues_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "delete_issue_label",
+    "status": "covered",
+    "test": "live_issues_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "clear_issue_labels",
+    "status": "covered",
+    "test": "live_issues_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "list_repo_milestones",
+    "status": "covered",
+    "test": "live_issues_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "get_milestone",
+    "status": "covered",
+    "test": "live_issues_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "get_milestone_by_name",
+    "status": "covered",
+    "test": "live_issues_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "create_milestone",
+    "status": "covered",
+    "test": "live_issues_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "edit_milestone",
+    "status": "covered",
+    "test": "live_issues_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "edit_milestone_by_name",
+    "status": "covered",
+    "test": "live_issues_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "delete_milestone",
+    "status": "covered",
+    "test": "live_issues_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "delete_milestone_by_name",
+    "status": "covered",
+    "test": "live_issues_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "list_issue_reactions",
+    "status": "covered",
+    "test": "live_issues_advanced_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "get_issue_comment_reactions",
+    "status": "covered",
+    "test": "live_issues_extra_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "post_issue_reaction",
+    "status": "covered",
+    "test": "live_issues_advanced_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "delete_issue_reaction",
+    "status": "covered",
+    "test": "live_issues_advanced_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "post_issue_comment_reaction",
+    "status": "covered",
+    "test": "live_issues_advanced_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "delete_issue_comment_reaction",
+    "status": "covered",
+    "test": "live_issues_advanced_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "list_issue_subscribers",
+    "status": "covered",
+    "test": "live_issues_advanced_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "add_issue_subscription",
+    "status": "covered",
+    "test": "live_issues_full_coverage_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "delete_issue_subscription",
+    "status": "covered",
+    "test": "live_issues_full_coverage_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "check_issue_subscription",
+    "status": "covered",
+    "test": "live_issues_advanced_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "issue_subscribe",
+    "status": "covered",
+    "test": "live_issues_advanced_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "issue_unsubscribe",
+    "status": "covered",
+    "test": "live_issues_advanced_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "list_my_stopwatches",
+    "status": "covered",
+    "test": "live_issues_advanced_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "delete_issue_stopwatch",
+    "status": "covered",
+    "test": "live_issues_advanced_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "start_issue_stopwatch",
+    "status": "covered",
+    "test": "live_issues_advanced_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "stop_issue_stopwatch",
+    "status": "covered",
+    "test": "live_issues_advanced_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "list_repo_tracked_times",
+    "status": "covered",
+    "test": "live_issues_extra_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "list_my_tracked_times",
+    "status": "covered",
+    "test": "live_issues_extra_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "add_time",
+    "status": "covered",
+    "test": "live_issues_advanced_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "list_issue_tracked_times",
+    "status": "covered",
+    "test": "live_issues_full_coverage_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "reset_issue_time",
+    "status": "covered",
+    "test": "live_issues_extra_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "delete_time",
+    "status": "covered",
+    "test": "live_issues_full_coverage_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "list_issue_timeline",
+    "status": "covered",
+    "test": "live_issues_full_coverage_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "list_repo_pinned_issues",
+    "status": "covered",
+    "test": "live_issues_extra_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "pin_issue",
+    "status": "covered",
+    "test": "live_issues_extra_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "unpin_issue",
+    "status": "covered",
+    "test": "live_issues_extra_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "move_issue_pin",
+    "status": "covered",
+    "test": "live_issues_extra_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "list_issue_blocks",
+    "status": "blocked_by_missing_seed_data",
+    "test": null,
+    "reason": "Live tests on 2026-03-18 and 2026-03-19 hit HTTP 404 IsErrRepoNotExist for issue blocking/dependency endpoints even after enabling repository internal_tracker.enable_issue_dependencies on the live instance"
+  },
+  {
+    "module": "issues",
+    "method": "create_issue_blocking",
+    "status": "blocked_by_missing_seed_data",
+    "test": null,
+    "reason": "Live tests on 2026-03-18 and 2026-03-19 hit HTTP 404 IsErrRepoNotExist for issue blocking/dependency endpoints even after enabling repository internal_tracker.enable_issue_dependencies on the live instance"
+  },
+  {
+    "module": "issues",
+    "method": "remove_issue_blocking",
+    "status": "blocked_by_missing_seed_data",
+    "test": null,
+    "reason": "Live tests on 2026-03-18 and 2026-03-19 hit HTTP 404 IsErrRepoNotExist for issue blocking/dependency endpoints even after enabling repository internal_tracker.enable_issue_dependencies on the live instance"
+  },
+  {
+    "module": "issues",
+    "method": "list_issue_dependencies",
+    "status": "blocked_by_missing_seed_data",
+    "test": null,
+    "reason": "Live tests on 2026-03-18 and 2026-03-19 hit HTTP 404 IsErrRepoNotExist for issue blocking/dependency endpoints even after enabling repository internal_tracker.enable_issue_dependencies on the live instance"
+  },
+  {
+    "module": "issues",
+    "method": "create_issue_dependency",
+    "status": "blocked_by_missing_seed_data",
+    "test": null,
+    "reason": "Live tests on 2026-03-18 and 2026-03-19 hit HTTP 404 IsErrRepoNotExist for issue blocking/dependency endpoints even after enabling repository internal_tracker.enable_issue_dependencies on the live instance"
+  },
+  {
+    "module": "issues",
+    "method": "remove_issue_dependency",
+    "status": "blocked_by_missing_seed_data",
+    "test": null,
+    "reason": "Live tests on 2026-03-18 and 2026-03-19 hit HTTP 404 IsErrRepoNotExist for issue blocking/dependency endpoints even after enabling repository internal_tracker.enable_issue_dependencies on the live instance"
+  },
+  {
+    "module": "issues",
+    "method": "lock_issue",
+    "status": "covered",
+    "test": "live_issues_extra_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "unlock_issue",
+    "status": "covered",
+    "test": "live_issues_extra_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "update_issue_deadline",
+    "status": "covered",
+    "test": "live_issues_full_coverage_test.rs"
+  },
+  {
+    "module": "issues",
+    "method": "get_issue_templates",
+    "status": "covered",
+    "test": "live_issues_templates_attachments_test.rs"
+  },
+  {
+    "module": "miscellaneous",
+    "method": "render_markdown",
+    "status": "covered",
+    "test": "live_system_test.rs"
+  },
+  {
+    "module": "miscellaneous",
+    "method": "render_markdown_raw",
+    "status": "covered",
+    "test": "live_system_test.rs"
+  },
+  {
+    "module": "miscellaneous",
+    "method": "render_markup",
+    "status": "covered",
+    "test": "live_system_test.rs"
+  },
+  {
+    "module": "miscellaneous",
+    "method": "get_node_info",
+    "status": "covered",
+    "test": "live_system_test.rs"
+  },
+  {
+    "module": "miscellaneous",
+    "method": "get_signing_key_gpg",
+    "status": "blocked_by_missing_seed_data",
+    "test": null,
+    "reason": "Live test on 2026-03-19 returned HTTP 404 'no signing key' for /signing-key.gpg even after seeding a user GPG key, so the configured instance does not expose a default global GPG signing key"
+  },
+  {
+    "module": "miscellaneous",
+    "method": "get_signing_key_ssh",
+    "status": "blocked_by_missing_seed_data",
+    "test": null,
+    "reason": "Live test on 2026-03-19 returned HTTP 404 'no signing key' for /signing-key.pub even after seeding a user SSH public key, so the configured instance does not expose a default global SSH signing key"
+  },
+  {
+    "module": "miscellaneous",
+    "method": "list_gitignore_templates",
+    "status": "covered",
+    "test": "live_system_test.rs"
+  },
+  {
+    "module": "miscellaneous",
+    "method": "get_gitignore_template",
+    "status": "covered",
+    "test": "live_system_test.rs"
+  },
+  {
+    "module": "miscellaneous",
+    "method": "list_label_templates",
+    "status": "covered",
+    "test": "live_system_test.rs"
+  },
+  {
+    "module": "miscellaneous",
+    "method": "get_label_template",
+    "status": "covered",
+    "test": "live_system_test.rs"
+  },
+  {
+    "module": "miscellaneous",
+    "method": "get_version",
+    "status": "covered",
+    "test": "live_system_test.rs"
+  },
+  {
+    "module": "miscellaneous",
+    "method": "list_license_templates",
+    "status": "covered",
+    "test": "live_system_test.rs"
+  },
+  {
+    "module": "miscellaneous",
+    "method": "get_license_template",
+    "status": "covered",
+    "test": "live_system_test.rs"
+  },
+  {
+    "module": "notifications",
+    "method": "check_notifications",
+    "status": "covered",
+    "test": "live_notifications_test.rs"
+  },
+  {
+    "module": "notifications",
+    "method": "get_notification",
+    "status": "covered",
+    "test": "live_notifications_test.rs"
+  },
+  {
+    "module": "notifications",
+    "method": "read_notification",
+    "status": "covered",
+    "test": "live_notifications_test.rs"
+  },
+  {
+    "module": "notifications",
+    "method": "list_notifications",
+    "status": "covered",
+    "test": "live_notifications_test.rs"
+  },
+  {
+    "module": "notifications",
+    "method": "read_notifications",
+    "status": "covered",
+    "test": "live_notifications_test.rs"
+  },
+  {
+    "module": "notifications",
+    "method": "list_repo_notifications",
+    "status": "covered",
+    "test": "live_notifications_test.rs"
+  },
+  {
+    "module": "notifications",
+    "method": "read_repo_notifications",
+    "status": "covered",
+    "test": "live_notifications_test.rs"
+  },
+  {
+    "module": "oauth2",
+    "method": "list_applications",
+    "status": "covered",
+    "test": "live_oauth2_test.rs"
+  },
+  {
+    "module": "oauth2",
+    "method": "create_application",
+    "status": "covered",
+    "test": "live_oauth2_test.rs"
+  },
+  {
+    "module": "oauth2",
+    "method": "get_application",
+    "status": "covered",
+    "test": "live_oauth2_test.rs"
+  },
+  {
+    "module": "oauth2",
+    "method": "update_application",
+    "status": "covered",
+    "test": "live_oauth2_test.rs"
+  },
+  {
+    "module": "oauth2",
+    "method": "delete_application",
+    "status": "covered",
+    "test": "live_oauth2_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "list_orgs",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "list_my_orgs",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "list_user_orgs",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "get_org",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "create_org",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "edit_org",
+    "status": "covered",
+    "test": "live_orgs_extra_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "delete_org",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "list_org_teams",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "list_my_teams",
+    "status": "covered",
+    "test": "live_orgs_extra_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "get_team",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "search_org_teams",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "create_team",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "edit_team",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "delete_team",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "list_team_members",
+    "status": "covered",
+    "test": "live_org_team_members_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "get_team_member",
+    "status": "covered",
+    "test": "live_org_team_members_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "add_team_member",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "remove_team_member",
+    "status": "covered",
+    "test": "live_org_team_members_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "add_team_repo",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "remove_team_repo",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "delete_org_membership",
+    "status": "covered",
+    "test": "live_orgs_extra_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "list_org_membership",
+    "status": "covered",
+    "test": "live_orgs_extra_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "list_public_org_membership",
+    "status": "covered",
+    "test": "live_orgs_extra_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "check_org_membership",
+    "status": "covered",
+    "test": "live_orgs_extra_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "check_public_org_membership",
+    "status": "covered",
+    "test": "live_orgs_extra_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "set_public_org_membership",
+    "status": "covered",
+    "test": "live_orgs_extra_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "get_org_permissions",
+    "status": "covered",
+    "test": "live_orgs_extra_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "list_org_labels",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "create_org_label",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "get_org_label",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "edit_org_label",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "delete_org_label",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "list_org_action_secrets",
+    "status": "covered",
+    "test": "live_orgs_extra_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "list_org_action_variables",
+    "status": "covered",
+    "test": "live_orgs_extra_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "get_org_action_variable",
+    "status": "covered",
+    "test": "live_orgs_extra_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "create_org_action_variable",
+    "status": "covered",
+    "test": "live_orgs_extra_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "update_org_action_variable",
+    "status": "covered",
+    "test": "live_orgs_extra_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "create_org_action_secret",
+    "status": "covered",
+    "test": "live_orgs_extra_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "list_org_blocks",
+    "status": "covered",
+    "test": "live_orgs_extra_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "check_org_block",
+    "status": "covered",
+    "test": "live_orgs_extra_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "block_org_user",
+    "status": "covered",
+    "test": "live_orgs_extra_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "unblock_org_user",
+    "status": "covered",
+    "test": "live_orgs_extra_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "update_org_avatar",
+    "status": "covered",
+    "test": "live_orgs_extra_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "delete_org_avatar",
+    "status": "covered",
+    "test": "live_orgs_extra_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "rename_org",
+    "status": "covered",
+    "test": "live_orgs_extra_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "list_org_activity_feeds",
+    "status": "covered",
+    "test": "live_orgs_extra_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "list_team_activity_feeds",
+    "status": "covered",
+    "test": "live_orgs_extra_test.rs"
+  },
+  {
+    "module": "orgs",
+    "method": "list_team_repositories",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "packages",
+    "method": "list_packages",
+    "status": "covered",
+    "test": "live_packages_test.rs"
+  },
+  {
+    "module": "packages",
+    "method": "get_package",
+    "status": "covered",
+    "test": "live_packages_test.rs"
+  },
+  {
+    "module": "packages",
+    "method": "delete_package",
+    "status": "covered",
+    "test": "live_packages_test.rs"
+  },
+  {
+    "module": "packages",
+    "method": "list_package_files",
+    "status": "covered",
+    "test": "live_packages_test.rs"
+  },
+  {
+    "module": "packages",
+    "method": "get_latest_package",
+    "status": "covered",
+    "test": "live_packages_test.rs"
+  },
+  {
+    "module": "packages",
+    "method": "link_package",
+    "status": "covered",
+    "test": "live_packages_test.rs"
+  },
+  {
+    "module": "packages",
+    "method": "unlink_package",
+    "status": "covered",
+    "test": "live_packages_test.rs"
+  },
+  {
+    "module": "pulls",
+    "method": "list",
+    "status": "covered",
+    "test": "live_pulls_minimal_test.rs"
+  },
+  {
+    "module": "pulls",
+    "method": "get",
+    "status": "covered",
+    "test": "live_pulls_minimal_test.rs"
+  },
+  {
+    "module": "pulls",
+    "method": "create",
+    "status": "covered",
+    "test": "live_pulls_minimal_test.rs"
+  },
+  {
+    "module": "pulls",
+    "method": "edit",
+    "status": "covered",
+    "test": "live_pulls_minimal_test.rs"
+  },
+  {
+    "module": "pulls",
+    "method": "merge",
+    "status": "covered",
+    "test": "live_pulls_minimal_test.rs"
+  },
+  {
+    "module": "pulls",
+    "method": "is_merged",
+    "status": "covered",
+    "test": "live_pulls_minimal_test.rs"
+  },
+  {
+    "module": "pulls",
+    "method": "patch",
+    "status": "covered",
+    "test": "live_pulls_minimal_test.rs"
+  },
+  {
+    "module": "pulls",
+    "method": "diff",
+    "status": "covered",
+    "test": "live_pulls_minimal_test.rs"
+  },
+  {
+    "module": "pulls",
+    "method": "list_commits",
+    "status": "covered",
+    "test": "live_pulls_minimal_test.rs"
+  },
+  {
+    "module": "pulls",
+    "method": "list_files",
+    "status": "covered",
+    "test": "live_pulls_minimal_test.rs"
+  },
+  {
+    "module": "pulls",
+    "method": "list_reviews",
+    "status": "covered",
+    "test": "live_pulls_reviews_test.rs"
+  },
+  {
+    "module": "pulls",
+    "method": "get_review",
+    "status": "covered",
+    "test": "live_pulls_reviews_test.rs"
+  },
+  {
+    "module": "pulls",
+    "method": "list_review_comments",
+    "status": "covered",
+    "test": "live_pulls_reviews_test.rs"
+  },
+  {
+    "module": "pulls",
+    "method": "delete_review",
+    "status": "covered",
+    "test": "live_pulls_reviews_dual_test.rs"
+  },
+  {
+    "module": "pulls",
+    "method": "create_review",
+    "status": "covered",
+    "test": "live_pulls_reviews_test.rs"
+  },
+  {
+    "module": "pulls",
+    "method": "submit_review",
+    "status": "covered",
+    "test": "live_pulls_reviews_test.rs"
+  },
+  {
+    "module": "pulls",
+    "method": "create_review_requests",
+    "status": "covered",
+    "test": "live_pulls_reviews_test.rs"
+  },
+  {
+    "module": "pulls",
+    "method": "delete_review_requests",
+    "status": "covered",
+    "test": "live_pulls_reviews_test.rs"
+  },
+  {
+    "module": "pulls",
+    "method": "dismiss_review",
+    "status": "covered",
+    "test": "live_pulls_reviews_dual_test.rs"
+  },
+  {
+    "module": "pulls",
+    "method": "undismiss_review",
+    "status": "covered",
+    "test": "live_pulls_reviews_dual_test.rs"
+  },
+  {
+    "module": "releases",
+    "method": "list",
+    "status": "covered",
+    "test": "live_workflows_test.rs"
+  },
+  {
+    "module": "releases",
+    "method": "get",
+    "status": "covered",
+    "test": "live_workflows_test.rs"
+  },
+  {
+    "module": "releases",
+    "method": "get_latest",
+    "status": "covered",
+    "test": "live_releases_test.rs"
+  },
+  {
+    "module": "releases",
+    "method": "get_by_tag",
+    "status": "covered",
+    "test": "live_releases_test.rs"
+  },
+  {
+    "module": "releases",
+    "method": "create",
+    "status": "covered",
+    "test": "live_releases_test.rs"
+  },
+  {
+    "module": "releases",
+    "method": "edit",
+    "status": "covered",
+    "test": "live_releases_test.rs"
+  },
+  {
+    "module": "releases",
+    "method": "delete",
+    "status": "covered",
+    "test": "live_releases_test.rs"
+  },
+  {
+    "module": "releases",
+    "method": "delete_by_tag",
+    "status": "covered",
+    "test": "live_releases_test.rs"
+  },
+  {
+    "module": "releases",
+    "method": "list_attachments",
+    "status": "covered",
+    "test": "live_releases_test.rs"
+  },
+  {
+    "module": "releases",
+    "method": "get_attachment",
+    "status": "covered",
+    "test": "live_releases_test.rs"
+  },
+  {
+    "module": "releases",
+    "method": "create_attachment",
+    "status": "covered",
+    "test": "live_releases_test.rs"
+  },
+  {
+    "module": "releases",
+    "method": "edit_attachment",
+    "status": "covered",
+    "test": "live_releases_test.rs"
+  },
+  {
+    "module": "releases",
+    "method": "delete_attachment",
+    "status": "covered",
+    "test": "live_releases_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "list_my_repos",
+    "status": "covered",
+    "test": "live_repos_misc_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "list_user_repos",
+    "status": "covered",
+    "test": "live_repos_core_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "list_org_repos",
+    "status": "covered",
+    "test": "live_repos_management_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "search_repos",
+    "status": "covered",
+    "test": "live_repos_management_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "create_repo",
+    "status": "covered",
+    "test": "live_repos_core_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "create_org_repo",
+    "status": "covered",
+    "test": "live_repos_management_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_repo",
+    "status": "covered",
+    "test": "live_repos_core_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_repo_by_id",
+    "status": "covered",
+    "test": "live_repos_misc_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "edit_repo",
+    "status": "covered",
+    "test": "live_repos_misc_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "delete_repo",
+    "status": "covered",
+    "test": "live_repos_misc_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "mirror_sync",
+    "status": "covered",
+    "test": "live_repos_transfer_mirror_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_repo_languages",
+    "status": "covered",
+    "test": "live_repos_misc_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_archive",
+    "status": "covered",
+    "test": "live_repos_misc_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_archive_reader",
+    "status": "covered",
+    "test": "live_repos_misc_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "update_repo_avatar",
+    "status": "blocked_by_missing_seed_data",
+    "test": null,
+    "reason": "Live probe on 2026-03-18 returned HTTP 405 for PUT /repos/{owner}/{repo}/avatar on the configured instance"
+  },
+  {
+    "module": "repos",
+    "method": "delete_repo_avatar",
+    "status": "blocked_by_missing_seed_data",
+    "test": null,
+    "reason": "Live probe on 2026-03-18 returned HTTP 405 for repo avatar endpoints on the configured instance"
+  },
+  {
+    "module": "repos",
+    "method": "list_branches",
+    "status": "covered",
+    "test": "live_repos_content_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_branch",
+    "status": "covered",
+    "test": "live_repos_content_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "delete_branch",
+    "status": "covered",
+    "test": "live_repos_content_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "update_branch",
+    "status": "covered",
+    "test": "live_repos_management_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "create_branch",
+    "status": "covered",
+    "test": "live_repos_content_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "list_tags",
+    "status": "covered",
+    "test": "live_repo_tags_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_tag",
+    "status": "covered",
+    "test": "live_repo_tags_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_annotated_tag",
+    "status": "covered",
+    "test": "live_repo_tags_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "create_tag",
+    "status": "covered",
+    "test": "live_repo_tags_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "delete_tag",
+    "status": "covered",
+    "test": "live_repo_tags_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_file",
+    "status": "covered",
+    "test": "live_repos_content_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_file_reader",
+    "status": "covered",
+    "test": "live_repos_content_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_contents",
+    "status": "covered",
+    "test": "live_repos_content_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "list_contents",
+    "status": "covered",
+    "test": "live_repos_content_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "create_file",
+    "status": "covered",
+    "test": "live_repos_content_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "update_file",
+    "status": "covered",
+    "test": "live_repos_content_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "delete_file",
+    "status": "covered",
+    "test": "live_repos_content_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_contents_ext",
+    "status": "covered",
+    "test": "live_repos_content_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_editor_config",
+    "status": "blocked_by_missing_seed_data",
+    "test": null,
+    "reason": "Live test run 2026-03-18 against the configured instance returned HTTP 404 \"page not found\" even after seeding .editorconfig, so the capability is currently unavailable"
+  },
+  {
+    "module": "repos",
+    "method": "get_raw_file_or_lfs",
+    "status": "covered",
+    "test": "live_repos_content_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_raw_file",
+    "status": "covered",
+    "test": "live_repos_content_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "list_collaborators",
+    "status": "covered",
+    "test": "live_repos_topics_collab_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "is_collaborator",
+    "status": "covered",
+    "test": "live_repos_topics_collab_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_collaborator_permission",
+    "status": "covered",
+    "test": "live_repos_topics_collab_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "add_collaborator",
+    "status": "covered",
+    "test": "live_repos_collaborators_write_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "delete_collaborator",
+    "status": "covered",
+    "test": "live_repos_collaborators_write_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_reviewers",
+    "status": "covered",
+    "test": "live_repos_topics_collab_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_assignees",
+    "status": "covered",
+    "test": "live_repos_topics_collab_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_single_commit",
+    "status": "covered",
+    "test": "live_repos_content_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "list_commits",
+    "status": "covered",
+    "test": "live_repos_content_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_commit_diff",
+    "status": "covered",
+    "test": "live_repos_content_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_commit_patch",
+    "status": "covered",
+    "test": "live_repos_content_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "create_push_mirror",
+    "status": "covered",
+    "test": "live_repos_transfer_mirror_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "list_push_mirrors",
+    "status": "covered",
+    "test": "live_repos_transfer_mirror_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_push_mirror",
+    "status": "covered",
+    "test": "live_repos_transfer_mirror_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "delete_push_mirror",
+    "status": "covered",
+    "test": "live_repos_transfer_mirror_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "create_repo_from_template",
+    "status": "covered",
+    "test": "live_repos_fork_template_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "list_topics",
+    "status": "covered",
+    "test": "live_repos_topics_collab_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "set_topics",
+    "status": "covered",
+    "test": "live_repos_topics_collab_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "add_topic",
+    "status": "covered",
+    "test": "live_repos_topics_collab_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "delete_topic",
+    "status": "covered",
+    "test": "live_repos_topics_collab_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_watched_repos",
+    "status": "covered",
+    "test": "live_repo_watchers_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_my_watched_repos",
+    "status": "covered",
+    "test": "live_repo_watchers_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "check_repo_watch",
+    "status": "covered",
+    "test": "live_repo_watchers_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "watch_repo",
+    "status": "covered",
+    "test": "live_repo_watchers_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "unwatch_repo",
+    "status": "covered",
+    "test": "live_repo_watchers_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "list_stargazers",
+    "status": "covered",
+    "test": "live_repo_watchers_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_starred_repos",
+    "status": "covered",
+    "test": "live_repo_watchers_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_my_starred_repos",
+    "status": "covered",
+    "test": "live_repo_watchers_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "is_repo_starring",
+    "status": "covered",
+    "test": "live_repo_watchers_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "star_repo",
+    "status": "covered",
+    "test": "live_repo_watchers_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "unstar_repo",
+    "status": "covered",
+    "test": "live_repo_watchers_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "create_wiki_page",
+    "status": "covered",
+    "test": "live_repo_wiki_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_wiki_page",
+    "status": "covered",
+    "test": "live_repo_wiki_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "edit_wiki_page",
+    "status": "covered",
+    "test": "live_repo_wiki_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "delete_wiki_page",
+    "status": "covered",
+    "test": "live_repo_wiki_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "list_wiki_pages",
+    "status": "covered",
+    "test": "live_repo_wiki_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_wiki_revisions",
+    "status": "covered",
+    "test": "live_repo_wiki_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_trees",
+    "status": "covered",
+    "test": "live_repos_content_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "list_labels",
+    "status": "covered",
+    "test": "live_repos_core_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_label",
+    "status": "covered",
+    "test": "live_repos_core_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "create_label",
+    "status": "covered",
+    "test": "live_repos_core_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "edit_label",
+    "status": "covered",
+    "test": "live_repos_management_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "delete_label",
+    "status": "covered",
+    "test": "live_repos_core_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "migrate_repo",
+    "status": "covered",
+    "test": "live_repos_misc_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "list_branch_protections",
+    "status": "covered",
+    "test": "live_repo_protections_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_branch_protection",
+    "status": "covered",
+    "test": "live_repo_protections_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "create_branch_protection",
+    "status": "covered",
+    "test": "live_repo_protections_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "edit_branch_protection",
+    "status": "covered",
+    "test": "live_repo_protections_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "delete_branch_protection",
+    "status": "covered",
+    "test": "live_repo_protections_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "list_tag_protections",
+    "status": "covered",
+    "test": "live_repo_protections_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_tag_protection",
+    "status": "covered",
+    "test": "live_repo_protections_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "create_tag_protection",
+    "status": "covered",
+    "test": "live_repo_protections_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "edit_tag_protection",
+    "status": "covered",
+    "test": "live_repo_protections_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "delete_tag_protection",
+    "status": "covered",
+    "test": "live_repo_protections_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "transfer_repo",
+    "status": "covered",
+    "test": "live_repos_transfer_mirror_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "accept_repo_transfer",
+    "status": "blocked_by_missing_seed_data",
+    "test": null,
+    "reason": "Live probe on 2026-03-18 after a successful user-to-user transfer returned HTTP 404 repository doesn't have a pending transfer for /transfer/accept"
+  },
+  {
+    "module": "repos",
+    "method": "reject_repo_transfer",
+    "status": "blocked_by_missing_seed_data",
+    "test": null,
+    "reason": "Live probe on 2026-03-18 after a successful user-to-user transfer returned HTTP 404 repository doesn't have a pending transfer for /transfer/reject"
+  },
+  {
+    "module": "repos",
+    "method": "get_repo_teams",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "add_repo_team",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "remove_repo_team",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "check_repo_team",
+    "status": "covered",
+    "test": "live_orgs_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "list_deploy_keys",
+    "status": "covered",
+    "test": "live_repo_deploy_keys_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_deploy_key",
+    "status": "covered",
+    "test": "live_repo_deploy_keys_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "create_deploy_key",
+    "status": "covered",
+    "test": "live_repo_deploy_keys_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "delete_deploy_key",
+    "status": "covered",
+    "test": "live_repo_deploy_keys_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "list_forks",
+    "status": "covered",
+    "test": "live_repos_fork_template_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "create_fork",
+    "status": "covered",
+    "test": "live_repos_fork_template_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_blob",
+    "status": "covered",
+    "test": "live_repos_content_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "list_git_hooks",
+    "status": "blocked_by_missing_seed_data",
+    "test": null,
+    "reason": "Live test on 2026-03-18 returned HTTP 403 'must be allowed to edit Git hooks' on the configured instance"
+  },
+  {
+    "module": "repos",
+    "method": "get_git_hook",
+    "status": "blocked_by_missing_seed_data",
+    "test": null,
+    "reason": "Live test on 2026-03-18 returned HTTP 403 'must be allowed to edit Git hooks' on the configured instance"
+  },
+  {
+    "module": "repos",
+    "method": "edit_git_hook",
+    "status": "blocked_by_missing_seed_data",
+    "test": null,
+    "reason": "Live test on 2026-03-18 returned HTTP 403 'must be allowed to edit Git hooks' on the configured instance"
+  },
+  {
+    "module": "repos",
+    "method": "delete_git_hook",
+    "status": "blocked_by_missing_seed_data",
+    "test": null,
+    "reason": "Live test on 2026-03-18 returned HTTP 403 'must be allowed to edit Git hooks' on the configured instance"
+  },
+  {
+    "module": "repos",
+    "method": "get_repo_ref",
+    "status": "covered",
+    "test": "live_repos_content_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_repo_refs",
+    "status": "covered",
+    "test": "live_repos_content_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "list_all_git_refs",
+    "status": "covered",
+    "test": "live_repos_content_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "compare_commits",
+    "status": "covered",
+    "test": "live_repos_content_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_repo_note",
+    "status": "covered",
+    "test": "live_repos_content_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "list_action_secrets",
+    "status": "covered",
+    "test": "live_repos_management_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "list_action_variables",
+    "status": "covered",
+    "test": "live_repos_management_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "create_action_secret",
+    "status": "covered",
+    "test": "live_repos_management_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "delete_action_secret",
+    "status": "covered",
+    "test": "live_repos_management_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "get_action_variable",
+    "status": "covered",
+    "test": "live_repos_management_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "create_action_variable",
+    "status": "covered",
+    "test": "live_repos_management_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "update_action_variable",
+    "status": "covered",
+    "test": "live_repos_management_test.rs"
+  },
+  {
+    "module": "repos",
+    "method": "delete_action_variable",
+    "status": "covered",
+    "test": "live_repos_management_test.rs"
+  },
+  {
+    "module": "settings",
+    "method": "get_ui_settings",
+    "status": "covered",
+    "test": "live_system_test.rs"
+  },
+  {
+    "module": "settings",
+    "method": "get_repo_settings",
+    "status": "covered",
+    "test": "live_system_test.rs"
+  },
+  {
+    "module": "settings",
+    "method": "get_api_settings",
+    "status": "covered",
+    "test": "live_system_test.rs"
+  },
+  {
+    "module": "settings",
+    "method": "get_attachment_settings",
+    "status": "covered",
+    "test": "live_system_test.rs"
+  },
+  {
+    "module": "status",
+    "method": "create_status",
+    "status": "covered",
+    "test": "live_status_test.rs"
+  },
+  {
+    "module": "status",
+    "method": "list_statuses",
+    "status": "covered",
+    "test": "live_status_test.rs"
+  },
+  {
+    "module": "status",
+    "method": "get_combined_status",
+    "status": "covered",
+    "test": "live_status_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "get",
+    "status": "covered",
+    "test": "live_users_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "get_my_info",
+    "status": "covered",
+    "test": "live_integration_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "get_by_id",
+    "status": "covered",
+    "test": "live_users_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "search",
+    "status": "covered",
+    "test": "live_users_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "list_emails",
+    "status": "covered",
+    "test": "live_users_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "add_email",
+    "status": "covered",
+    "test": "live_users_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "delete_email",
+    "status": "covered",
+    "test": "live_users_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "list_public_keys",
+    "status": "covered",
+    "test": "live_users_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "list_my_public_keys",
+    "status": "covered",
+    "test": "live_integration_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "get_public_key",
+    "status": "covered",
+    "test": "live_integration_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "create_public_key",
+    "status": "covered",
+    "test": "live_integration_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "delete_public_key",
+    "status": "covered",
+    "test": "live_integration_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "list_my_followers",
+    "status": "covered",
+    "test": "live_users_follow_block_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "list_followers",
+    "status": "covered",
+    "test": "live_users_follow_block_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "list_my_following",
+    "status": "covered",
+    "test": "live_users_follow_block_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "get_user_heatmap",
+    "status": "covered",
+    "test": "live_users_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "list_user_activity_feeds",
+    "status": "covered",
+    "test": "live_users_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "list_following",
+    "status": "covered",
+    "test": "live_users_follow_block_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "is_following",
+    "status": "covered",
+    "test": "live_users_follow_block_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "is_user_following",
+    "status": "covered",
+    "test": "live_users_follow_block_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "follow",
+    "status": "covered",
+    "test": "live_users_follow_block_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "unfollow",
+    "status": "covered",
+    "test": "live_users_follow_block_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "list_access_tokens",
+    "status": "covered",
+    "test": "live_users_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "create_access_token",
+    "status": "covered",
+    "test": "live_users_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "delete_access_token",
+    "status": "covered",
+    "test": "live_users_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "get_settings",
+    "status": "covered",
+    "test": "live_users_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "update_settings",
+    "status": "covered",
+    "test": "live_users_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "list_my_blocks",
+    "status": "covered",
+    "test": "live_users_follow_block_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "check_user_block",
+    "status": "covered",
+    "test": "live_users_follow_block_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "block_user",
+    "status": "covered",
+    "test": "live_users_follow_block_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "unblock_user",
+    "status": "covered",
+    "test": "live_users_follow_block_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "list_gpg_keys",
+    "status": "covered",
+    "test": "live_users_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "list_my_gpg_keys",
+    "status": "covered",
+    "test": "live_users_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "get_gpg_key",
+    "status": "covered",
+    "test": "live_users_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "create_gpg_key",
+    "status": "covered",
+    "test": "live_users_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "delete_gpg_key",
+    "status": "covered",
+    "test": "live_users_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "get_gpg_key_verification_token",
+    "status": "covered",
+    "test": "live_users_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "verify_gpg_key",
+    "status": "covered",
+    "test": "live_users_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "update_avatar",
+    "status": "covered",
+    "test": "live_users_test.rs"
+  },
+  {
+    "module": "users",
+    "method": "delete_avatar",
+    "status": "covered",
+    "test": "live_users_test.rs"
+  }
+]
