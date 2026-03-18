@@ -7,6 +7,8 @@
 use crate::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+use super::serde_helpers::null_to_default;
+
 /// GitignoreTemplateInfo represents a gitignore template
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Gitignore Template Info payload type.
@@ -39,9 +41,9 @@ pub struct NodeInfoSoftware {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Node Info Services payload type.
 pub struct NodeInfoServices {
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub inbound: Vec<String>,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub outbound: Vec<String>,
 }
 
@@ -73,7 +75,7 @@ pub struct NodeInfoUsage {
 pub struct NodeInfo {
     pub version: String,
     pub software: NodeInfoSoftware,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub protocols: Vec<String>,
     pub services: NodeInfoServices,
     #[serde(rename = "openRegistrations")]

@@ -8,6 +8,7 @@ use std::collections::HashMap;
 
 use crate::Client;
 use crate::Response;
+use crate::internal::request::{json_body, json_header};
 use crate::options::org::CreateSecretOption;
 use crate::options::repo::*;
 use crate::pagination::{ListOptions, QueryEncode};
@@ -17,19 +18,6 @@ use crate::version::{
     VERSION_1_12_0, VERSION_1_13_0, VERSION_1_14_0, VERSION_1_15_0, VERSION_1_16_0, VERSION_1_22_0,
     VERSION_1_23_0,
 };
-
-fn json_body<T: serde::Serialize>(val: &T) -> crate::Result<String> {
-    Ok(serde_json::to_string(val)?)
-}
-
-fn json_header() -> reqwest::header::HeaderMap {
-    let mut headers = reqwest::header::HeaderMap::new();
-    headers.insert(
-        reqwest::header::CONTENT_TYPE,
-        reqwest::header::HeaderValue::from_static("application/json"),
-    );
-    headers
-}
 
 /// API methods for repositories. Access via [`Client::repos()`](crate::Client::repos).
 pub struct ReposApi<'a> {

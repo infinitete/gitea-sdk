@@ -63,7 +63,7 @@ pub struct Issue {
     pub body: String,
     #[serde(default)]
     pub ref_field: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub labels: Vec<Label>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub milestone: Option<Milestone>,
@@ -240,11 +240,12 @@ pub struct IssueTemplate {
     #[serde(rename = "file_name")]
     pub filename: String,
     pub title: String,
+    #[serde(default, deserialize_with = "null_to_default")]
     pub labels: Vec<String>,
     #[serde(default)]
     pub r#ref: String,
     /// If non-nil, this is a form-based template
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub form: Vec<IssueFormElement>,
     /// Should only be used when .Form is nil.
     #[serde(default, rename = "content")]
@@ -269,7 +270,7 @@ pub struct IssueFormElementAttributes {
     /// A brief description of the expected user input
     pub label: String,
     /// Options for dropdown and checkboxes
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub options: Vec<String>,
     /// Pre-filled value for markdown, textarea, input
     #[serde(default)]

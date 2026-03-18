@@ -8,6 +8,7 @@ use crate::{Deserialize, Serialize};
 use time::OffsetDateTime;
 use time::serde::rfc3339;
 
+use super::serde_helpers::null_to_default;
 use super::user::User;
 
 /// Attachment represents a generic attachment
@@ -55,7 +56,7 @@ pub struct Release {
     pub published_at: OffsetDateTime,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub publisher: Option<User>,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub attachments: Vec<Attachment>,
 }
 

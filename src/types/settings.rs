@@ -6,14 +6,24 @@
 
 use crate::{Deserialize, Serialize};
 
+use super::serde_helpers::null_to_default;
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Global UISettings payload type.
 pub struct GlobalUISettings {
     #[serde(rename = "default_theme")]
     pub default_theme: String,
-    #[serde(rename = "allowed_reactions", default)]
+    #[serde(
+        rename = "allowed_reactions",
+        default,
+        deserialize_with = "null_to_default"
+    )]
     pub allowed_reactions: Vec<String>,
-    #[serde(rename = "custom_emojis", default)]
+    #[serde(
+        rename = "custom_emojis",
+        default,
+        deserialize_with = "null_to_default"
+    )]
     pub custom_emojis: Vec<String>,
 }
 

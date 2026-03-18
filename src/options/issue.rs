@@ -4,16 +4,12 @@
 
 //! Request option types for issue API endpoints.
 
+use crate::internal::request::urlencoding;
 use crate::pagination::{ListOptions, QueryEncode};
 use crate::types::enums::StateType;
 use crate::types::serde_helpers::nullable_rfc3339;
 use crate::{Deserialize, Serialize};
 use time::OffsetDateTime;
-
-fn urlencoding(value: &str) -> String {
-    use percent_encoding::{NON_ALPHANUMERIC, utf8_percent_encode};
-    utf8_percent_encode(value, NON_ALPHANUMERIC).to_string()
-}
 
 // ── issue.go ─────────────────────────────────────────────────────
 

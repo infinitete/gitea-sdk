@@ -6,6 +6,7 @@
 
 use crate::Client;
 use crate::Response;
+use crate::internal::request::{json_body, json_header};
 use crate::options::org::*;
 use crate::pagination::QueryEncode;
 use crate::types::{Activity, Label, OrgPermissions, Organization, Secret, Team, User};
@@ -14,19 +15,6 @@ use crate::{Deserialize, Serialize};
 /// API methods for organizations. Access via [`Client::orgs()`](crate::Client::orgs).
 pub struct OrgsApi<'a> {
     client: &'a Client,
-}
-
-fn json_body<T: serde::Serialize>(val: &T) -> crate::Result<String> {
-    Ok(serde_json::to_string(val)?)
-}
-
-fn json_header() -> reqwest::header::HeaderMap {
-    let mut headers = reqwest::header::HeaderMap::new();
-    headers.insert(
-        reqwest::header::CONTENT_TYPE,
-        reqwest::header::HeaderValue::from_static("application/json"),
-    );
-    headers
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

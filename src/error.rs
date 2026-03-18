@@ -8,6 +8,7 @@ use thiserror::Error;
 
 /// Errors produced by the Gitea SDK.
 #[derive(Debug, Error)]
+#[non_exhaustive]
 pub enum Error {
     /// HTTP request failed.
     #[error("HTTP request failed: {0}")]

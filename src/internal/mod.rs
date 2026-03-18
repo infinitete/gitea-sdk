@@ -7,3 +7,4 @@
 pub(crate) mod escape;
 pub(crate) mod http;
 pub(crate) mod query;
+pub(crate) mod request;

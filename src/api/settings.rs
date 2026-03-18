@@ -6,6 +6,7 @@
 
 use crate::Client;
 use crate::Response;
+use crate::internal::request::json_header;
 use crate::types::settings::{
     GlobalAPISettings, GlobalAttachmentSettings, GlobalRepoSettings, GlobalUISettings,
 };
@@ -13,15 +14,6 @@ use crate::types::settings::{
 /// API methods for settings. Access via [`Client::settings()`](crate::Client::settings).
 pub struct SettingsApi<'a> {
     client: &'a Client,
-}
-
-fn json_header() -> reqwest::header::HeaderMap {
-    let mut headers = reqwest::header::HeaderMap::new();
-    headers.insert(
-        reqwest::header::CONTENT_TYPE,
-        reqwest::header::HeaderValue::from_static("application/json"),
-    );
-    headers
 }
 
 impl<'a> SettingsApi<'a> {

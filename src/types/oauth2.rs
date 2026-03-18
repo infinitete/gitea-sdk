@@ -8,6 +8,8 @@ use crate::{Deserialize, Serialize};
 use time::OffsetDateTime;
 use time::serde::rfc3339;
 
+use super::serde_helpers::null_to_default;
+
 /// Oauth2 represents an Oauth2 Application
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// OAuth2 payload type.
@@ -18,7 +20,11 @@ pub struct Oauth2 {
     pub client_id: String,
     #[serde(rename = "client_secret")]
     pub client_secret: String,
-    #[serde(rename = "redirect_uris", default)]
+    #[serde(
+        rename = "redirect_uris",
+        default,
+        deserialize_with = "null_to_default"
+    )]
     pub redirect_uris: Vec<String>,
     #[serde(rename = "confidential_client")]
     pub confidential_client: bool,

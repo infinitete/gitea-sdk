@@ -8,6 +8,7 @@ use crate::types::enums::{AccessMode, RepoUnitType};
 use crate::{Deserialize, Serialize};
 
 use super::organization::Organization;
+use super::serde_helpers::null_to_default;
 
 /// Team represents a team in an organization
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -23,7 +24,7 @@ pub struct Team {
     pub can_create_org_repo: bool,
     #[serde(rename = "includes_all_repositories")]
     pub includes_all_repositories: bool,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub units: Vec<RepoUnitType>,
 }
 

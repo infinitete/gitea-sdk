@@ -6,6 +6,7 @@
 
 use crate::Client;
 use crate::Response;
+use crate::internal::request::{json_body, json_header};
 use crate::options::issue::*;
 use crate::pagination::QueryEncode;
 use crate::types::{
@@ -16,19 +17,6 @@ use crate::types::{
 /// API methods for issues. Access via [`Client::issues()`](crate::Client::issues).
 pub struct IssuesApi<'a> {
     client: &'a Client,
-}
-
-fn json_body<T: serde::Serialize>(val: &T) -> crate::Result<String> {
-    Ok(serde_json::to_string(val)?)
-}
-
-fn json_header() -> reqwest::header::HeaderMap {
-    let mut headers = reqwest::header::HeaderMap::new();
-    headers.insert(
-        reqwest::header::CONTENT_TYPE,
-        reqwest::header::HeaderValue::from_static("application/json"),
-    );
-    headers
 }
 
 impl<'a> IssuesApi<'a> {

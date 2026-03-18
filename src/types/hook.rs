@@ -11,6 +11,8 @@ use time::serde::rfc3339;
 
 use crate::types::enums::HookType;
 
+use super::serde_helpers::null_to_default;
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Hook payload type.
 pub struct Hook {
@@ -23,7 +25,7 @@ pub struct Hook {
     pub branch_filter: String,
     #[serde(default)]
     pub config: HashMap<String, String>,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub events: Vec<String>,
     #[serde(rename = "authorization_header")]
     pub authorization_header: String,

@@ -6,19 +6,11 @@
 
 use crate::Client;
 use crate::Response;
+use crate::internal::request::json_header;
 
 /// API methods for ActivityPub. Access via [`Client::activitypub()`](crate::Client::activitypub).
 pub struct ActivityPubApi<'a> {
     client: &'a Client,
-}
-
-fn json_header() -> reqwest::header::HeaderMap {
-    let mut headers = reqwest::header::HeaderMap::new();
-    headers.insert(
-        reqwest::header::CONTENT_TYPE,
-        reqwest::header::HeaderValue::from_static("application/json"),
-    );
-    headers
 }
 
 impl<'a> ActivityPubApi<'a> {

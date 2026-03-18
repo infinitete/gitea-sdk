@@ -6,6 +6,7 @@
 
 use crate::Client;
 use crate::Response;
+use crate::internal::request::json_header;
 use crate::options::action::*;
 use crate::pagination::{ListOptions, QueryEncode};
 use crate::types::action::{
@@ -16,15 +17,6 @@ use crate::types::action::{
 /// API methods for actions. Access via [`Client::actions()`](crate::Client::actions).
 pub struct ActionsApi<'a> {
     client: &'a Client,
-}
-
-fn json_header() -> reqwest::header::HeaderMap {
-    let mut headers = reqwest::header::HeaderMap::new();
-    headers.insert(
-        reqwest::header::CONTENT_TYPE,
-        reqwest::header::HeaderValue::from_static("application/json"),
-    );
-    headers
 }
 
 impl<'a> ActionsApi<'a> {

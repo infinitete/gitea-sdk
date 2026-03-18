@@ -6,6 +6,7 @@
 
 use crate::Client;
 use crate::Response;
+use crate::internal::request::{json_body, json_header};
 use crate::options::admin::*;
 use crate::options::org::CreateOrgOption;
 use crate::options::repo::CreateRepoOption;
@@ -16,19 +17,6 @@ use crate::types::{Badge, CronTask, Email, Hook, Organization, PublicKey, Reposi
 /// API methods for admin tasks. Access via [`Client::admin()`](crate::Client::admin).
 pub struct AdminApi<'a> {
     client: &'a Client,
-}
-
-fn json_body<T: serde::Serialize>(val: &T) -> crate::Result<String> {
-    Ok(serde_json::to_string(val)?)
-}
-
-fn json_header() -> reqwest::header::HeaderMap {
-    let mut headers = reqwest::header::HeaderMap::new();
-    headers.insert(
-        reqwest::header::CONTENT_TYPE,
-        reqwest::header::HeaderValue::from_static("application/json"),
-    );
-    headers
 }
 
 impl<'a> AdminApi<'a> {

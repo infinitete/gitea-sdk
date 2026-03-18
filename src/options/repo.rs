@@ -4,6 +4,7 @@
 
 //! Request option types for repository API endpoints.
 
+use crate::internal::request::urlencoding;
 use crate::pagination::{ListOptions, QueryEncode};
 use crate::types::enums::{
     AccessMode, GitServiceType, MergeStyle, ProjectsMode, RepoType, TrustModel,
@@ -12,11 +13,6 @@ use crate::types::repository::{
     CommitDateOptions, ExternalTracker, ExternalWiki, Identity, InternalTracker,
 };
 use crate::{Deserialize, Serialize};
-
-fn urlencoding(value: &str) -> String {
-    use percent_encoding::{NON_ALPHANUMERIC, utf8_percent_encode};
-    utf8_percent_encode(value, NON_ALPHANUMERIC).to_string()
-}
 
 // ── repo.go ─────────────────────────────────────────────────────
 

@@ -6,6 +6,7 @@
 
 use crate::Client;
 use crate::Response;
+use crate::internal::request::{json_body, json_header};
 use crate::options::status::*;
 use crate::pagination::QueryEncode;
 use crate::types::{CombinedStatus, Status};
@@ -13,19 +14,6 @@ use crate::types::{CombinedStatus, Status};
 /// API methods for commit statuses. Access via [`Client::status()`](crate::Client::status).
 pub struct StatusApi<'a> {
     client: &'a Client,
-}
-
-fn json_body<T: serde::Serialize>(val: &T) -> crate::Result<String> {
-    Ok(serde_json::to_string(val)?)
-}
-
-fn json_header() -> reqwest::header::HeaderMap {
-    let mut headers = reqwest::header::HeaderMap::new();
-    headers.insert(
-        reqwest::header::CONTENT_TYPE,
-        reqwest::header::HeaderValue::from_static("application/json"),
-    );
-    headers
 }
 
 impl<'a> StatusApi<'a> {

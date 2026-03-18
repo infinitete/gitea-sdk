@@ -339,6 +339,7 @@ pub struct ClientBuilder<'a> {
     preset_version: Option<semver::Version>,
     http_client: Option<reqwest::Client>,
     ssh_signer: Option<crate::auth::ssh_sign::SshSigner>,
+    timeout: Option<std::time::Duration>,
 }
 
 impl std::fmt::Debug for ClientBuilder<'_> {
@@ -379,6 +380,7 @@ impl<'a> ClientBuilder<'a> {
             preset_version: None,
             http_client: None,
             ssh_signer: None,
+            timeout: None,
         }
     }
 
@@ -443,6 +445,14 @@ impl<'a> ClientBuilder<'a> {
     /// If not called, a default client is created by [`build()`](Self::build).
     pub fn http_client(mut self, client: reqwest::Client) -> Self {
         self.http_client = Some(client);
+        self
+    }
+
+    /// Set the request timeout for the HTTP client.
+    ///
+    /// If not set, defaults to 30 seconds. Set to `None` to disable timeouts.
+    pub fn timeout(mut self, timeout: std::time::Duration) -> Self {
+        self.timeout = Some(timeout);
         self
     }
 
@@ -558,7 +568,14 @@ impl<'a> ClientBuilder<'a> {
         // Strip trailing slash to match Go SDK behaviour.
         let base_url = parsed.as_str().trim_end_matches('/').to_string();
 
-        let http = self.http_client.unwrap_or_default();
+        let default_timeout = std::time::Duration::from_secs(30);
+        let timeout = self.timeout.unwrap_or(default_timeout);
+        let http = self.http_client.unwrap_or_else(|| {
+            reqwest::Client::builder()
+                .timeout(timeout)
+                .build()
+                .expect("failed to build default HTTP client")
+        });
 
         let config = ClientConfig {
             base_url,

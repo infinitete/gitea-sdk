@@ -41,7 +41,7 @@ pub struct ActionTask {
 pub struct ActionTaskResponse {
     #[serde(rename = "total_count")]
     pub total_count: i64,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub workflow_runs: Vec<ActionTask>,
 }
 
@@ -96,7 +96,7 @@ pub struct ActionWorkflowRun {
 pub struct ActionWorkflowRunsResponse {
     #[serde(rename = "total_count")]
     pub total_count: i64,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub workflow_runs: Vec<ActionWorkflowRun>,
 }
 
@@ -142,7 +142,7 @@ pub struct ActionWorkflowJob {
 pub struct ActionWorkflowJobsResponse {
     #[serde(rename = "total_count")]
     pub total_count: i64,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub jobs: Vec<ActionWorkflowJob>,
 }
 
@@ -263,14 +263,14 @@ mod tests {
     }
 
     #[test]
-    fn test_action_workflow_jobs_response_round_trip() {
-        let original = ActionWorkflowJobsResponse {
+    fn test_action_workflow_runs_response_round_trip() {
+        let original = ActionWorkflowRunsResponse {
             total_count: 0,
-            jobs: vec![],
+            workflow_runs: vec![],
         };
         let json = serde_json::to_string(&original).unwrap();
-        let restored: ActionWorkflowJobsResponse = serde_json::from_str(&json).unwrap();
-        assert!(restored.jobs.is_empty());
+        let restored: ActionWorkflowRunsResponse = serde_json::from_str(&json).unwrap();
+        assert!(restored.workflow_runs.is_empty());
     }
 
     #[test]

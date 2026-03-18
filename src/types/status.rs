@@ -10,6 +10,7 @@ use time::serde::rfc3339;
 
 use crate::types::enums::StatusState;
 
+use super::serde_helpers::null_to_default;
 use super::user::User;
 
 /// Status holds a single Status of a single Commit
@@ -40,7 +41,7 @@ pub struct CombinedStatus {
     pub sha: String,
     #[serde(rename = "total_count")]
     pub total_count: i32,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub statuses: Vec<Status>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub repository: Option<serde_json::Value>,

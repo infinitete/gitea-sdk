@@ -7,7 +7,7 @@
 use crate::{Deserialize, Serialize};
 use time::OffsetDateTime;
 
-use super::serde_helpers::nullable_rfc3339;
+use super::serde_helpers::{null_to_default, nullable_rfc3339};
 use crate::types::enums::AccessTokenScope;
 
 /// AccessToken represents an API access token
@@ -20,7 +20,7 @@ pub struct AccessToken {
     pub token: String,
     #[serde(rename = "token_last_eight")]
     pub token_last_eight: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub scopes: Vec<AccessTokenScope>,
     #[serde(
         default,
@@ -109,9 +109,9 @@ pub struct GPGKey {
     pub key_id: String,
     #[serde(rename = "public_key")]
     pub public_key: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub emails: Vec<GPGKeyEmail>,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub subs_key: Vec<GPGKey>,
     #[serde(rename = "can_sign")]
     pub can_sign: bool,

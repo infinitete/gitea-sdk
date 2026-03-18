@@ -4,6 +4,7 @@
 
 //! Request option types for user API endpoints.
 
+use crate::internal::request::urlencoding;
 use crate::pagination::{ListOptions, QueryEncode};
 use crate::types::enums::AccessTokenScope;
 use crate::{Deserialize, Serialize};
@@ -219,18 +220,13 @@ impl QueryEncode for SearchUsersOption {
             }
         }
         if !self.key_word.is_empty() {
-            out.push_str(&format!("&q={}", urlencoding(self.key_word.as_bytes())));
+            out.push_str(&format!("&q={}", urlencoding(&self.key_word)));
         }
         if self.uid > 0 {
             out.push_str(&format!("&uid={}", self.uid));
         }
         out
     }
-}
-
-fn urlencoding(bytes: &[u8]) -> String {
-    use percent_encoding::{NON_ALPHANUMERIC, utf8_percent_encode};
-    utf8_percent_encode(std::str::from_utf8(bytes).unwrap_or(""), NON_ALPHANUMERIC).to_string()
 }
 
 #[derive(Debug, Clone, Default)]
@@ -249,7 +245,7 @@ impl QueryEncode for ListUserActivityFeedsOptions {
         }
         if !self.date.is_empty() {
             query.push_str("&date=");
-            query.push_str(&urlencoding(self.date.as_bytes()));
+            query.push_str(&urlencoding(&self.date));
         }
         query
     }

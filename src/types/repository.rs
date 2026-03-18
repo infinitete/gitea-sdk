@@ -71,7 +71,7 @@ pub struct RepoTransfer {
     pub doer: Option<User>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub recipient: Option<User>,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub teams: Vec<Team>,
 }
 
@@ -189,9 +189,9 @@ pub struct Repository {
     pub default_delete_branch_after_merge: bool,
     #[serde(rename = "object_format_name")]
     pub object_format_name: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub topics: Vec<String>,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub licenses: Vec<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub repo_transfer: Option<RepoTransfer>,
@@ -255,7 +255,11 @@ pub struct Branch {
     pub required_approvals: i64,
     #[serde(rename = "enable_status_check")]
     pub enable_status_check: bool,
-    #[serde(rename = "status_check_contexts", default)]
+    #[serde(
+        rename = "status_check_contexts",
+        default,
+        deserialize_with = "null_to_default"
+    )]
     pub status_check_contexts: Vec<String>,
     #[serde(rename = "user_can_push")]
     pub user_can_push: bool,
@@ -468,7 +472,7 @@ pub struct FileCommitResponse {
     pub author: Option<CommitUser>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub committer: Option<CommitUser>,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub parents: Vec<CommitMeta>,
     pub message: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -513,29 +517,57 @@ pub struct BranchProtection {
     pub enable_push: bool,
     #[serde(rename = "enable_push_whitelist")]
     pub enable_push_whitelist: bool,
-    #[serde(rename = "push_whitelist_usernames", default)]
+    #[serde(
+        rename = "push_whitelist_usernames",
+        default,
+        deserialize_with = "null_to_default"
+    )]
     pub push_whitelist_usernames: Vec<String>,
-    #[serde(rename = "push_whitelist_teams", default)]
+    #[serde(
+        rename = "push_whitelist_teams",
+        default,
+        deserialize_with = "null_to_default"
+    )]
     pub push_whitelist_teams: Vec<String>,
     #[serde(rename = "push_whitelist_deploy_keys")]
     pub push_whitelist_deploy_keys: bool,
     #[serde(rename = "enable_merge_whitelist")]
     pub enable_merge_whitelist: bool,
-    #[serde(rename = "merge_whitelist_usernames", default)]
+    #[serde(
+        rename = "merge_whitelist_usernames",
+        default,
+        deserialize_with = "null_to_default"
+    )]
     pub merge_whitelist_usernames: Vec<String>,
-    #[serde(rename = "merge_whitelist_teams", default)]
+    #[serde(
+        rename = "merge_whitelist_teams",
+        default,
+        deserialize_with = "null_to_default"
+    )]
     pub merge_whitelist_teams: Vec<String>,
     #[serde(rename = "enable_status_check")]
     pub enable_status_check: bool,
-    #[serde(rename = "status_check_contexts", default)]
+    #[serde(
+        rename = "status_check_contexts",
+        default,
+        deserialize_with = "null_to_default"
+    )]
     pub status_check_contexts: Vec<String>,
     #[serde(rename = "required_approvals")]
     pub required_approvals: i64,
     #[serde(rename = "enable_approvals_whitelist")]
     pub enable_approvals_whitelist: bool,
-    #[serde(rename = "approvals_whitelist_username", default)]
+    #[serde(
+        rename = "approvals_whitelist_username",
+        default,
+        deserialize_with = "null_to_default"
+    )]
     pub approvals_whitelist_usernames: Vec<String>,
-    #[serde(rename = "approvals_whitelist_teams", default)]
+    #[serde(
+        rename = "approvals_whitelist_teams",
+        default,
+        deserialize_with = "null_to_default"
+    )]
     pub approvals_whitelist_teams: Vec<String>,
     #[serde(rename = "block_on_rejected_reviews")]
     pub block_on_rejected_reviews: bool,
@@ -566,9 +598,9 @@ pub struct TagProtection {
     pub id: i64,
     #[serde(rename = "name_pattern")]
     pub name_pattern: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub whitelist_usernames: Vec<String>,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub whitelist_teams: Vec<String>,
     #[serde(rename = "created_at", with = "rfc3339")]
     pub created: OffsetDateTime,
@@ -666,7 +698,7 @@ pub struct GitEntry {
 pub struct GitTreeResponse {
     pub sha: String,
     pub url: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub tree: Vec<GitEntry>,
     pub truncated: bool,
     pub page: i32,
@@ -774,7 +806,7 @@ pub struct WikiPageMetaData {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Wiki Commit List payload type.
 pub struct WikiCommitList {
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_to_default")]
     pub commits: Vec<WikiCommit>,
     pub count: i64,
 }
