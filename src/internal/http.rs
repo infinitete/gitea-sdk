@@ -249,7 +249,18 @@ impl Client {
             tracing::debug!("{}: {}", method, url);
         }
 
-        let resp = http_client.execute(req.build()?).await?;
+        let mut built_req = req.build()?;
+
+        {
+            // sign_request() is synchronous; do NOT add .await inside this scope
+            let signer = self.ssh_signer();
+            if let Some(ref signer) = *signer {
+                let use_legacy = self.should_use_legacy_ssh();
+                crate::auth::ssh_sign::sign_request(&mut built_req, signer, use_legacy)?;
+            }
+        }
+
+        let resp = http_client.execute(built_req).await?;
         let response = response_from_reqwest(&resp);
         let status = resp.status().as_u16();
 
