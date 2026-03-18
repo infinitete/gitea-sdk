@@ -75,6 +75,7 @@ pub mod nullable_rfc3339 {
         }
     }
 
+    /// Deserialize an optional RFC 3339 timestamp for serde.
     pub fn deserialize<'de, D>(deserializer: D) -> Result<Option<OffsetDateTime>, D::Error>
     where
         D: Deserializer<'de>,
@@ -82,6 +83,7 @@ pub mod nullable_rfc3339 {
         deserializer.deserialize_any(NullableRfc3339Visitor)
     }
 
+    /// Serialize an optional RFC 3339 timestamp for serde.
     pub fn serialize<S>(opt: &Option<OffsetDateTime>, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,

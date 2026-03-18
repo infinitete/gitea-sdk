@@ -10,6 +10,7 @@ use time::serde::rfc3339;
 use crate::types::enums::HookType;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Hook payload type.
 pub struct Hook {
     pub id: i64,
     #[serde(rename = "type")]

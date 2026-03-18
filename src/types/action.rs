@@ -7,6 +7,7 @@ use time::OffsetDateTime;
 use time::serde::rfc3339;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Action Task payload type.
 pub struct ActionTask {
     pub id: i64,
     pub name: String,
@@ -32,6 +33,7 @@ pub struct ActionTask {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Action Task Response payload type.
 pub struct ActionTaskResponse {
     #[serde(rename = "total_count")]
     pub total_count: i64,
@@ -40,6 +42,7 @@ pub struct ActionTaskResponse {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Action Workflow Run payload type.
 pub struct ActionWorkflowRun {
     pub id: i64,
     #[serde(rename = "display_title")]
@@ -84,6 +87,7 @@ pub struct ActionWorkflowRun {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Action Workflow Runs Response payload type.
 pub struct ActionWorkflowRunsResponse {
     #[serde(rename = "total_count")]
     pub total_count: i64,
@@ -92,6 +96,7 @@ pub struct ActionWorkflowRunsResponse {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Action Workflow Job payload type.
 pub struct ActionWorkflowJob {
     pub id: i64,
     #[serde(rename = "run_id")]
@@ -127,6 +132,7 @@ pub struct ActionWorkflowJob {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Action Workflow Jobs Response payload type.
 pub struct ActionWorkflowJobsResponse {
     #[serde(rename = "total_count")]
     pub total_count: i64,
@@ -135,6 +141,7 @@ pub struct ActionWorkflowJobsResponse {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Action Workflow Step payload type.
 pub struct ActionWorkflowStep {
     pub name: String,
     pub number: i64,

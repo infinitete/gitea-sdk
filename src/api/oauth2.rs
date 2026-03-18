@@ -8,6 +8,7 @@ use crate::options::oauth2::*;
 use crate::pagination::QueryEncode;
 use crate::types::Oauth2;
 
+/// API methods for OAuth2 application resources.
 pub struct Oauth2Api<'a> {
     client: &'a Client,
 }
@@ -26,6 +27,7 @@ fn json_header() -> reqwest::header::HeaderMap {
 }
 
 impl<'a> Oauth2Api<'a> {
+    /// Create a new `Oauth2Api` view.
     pub fn new(client: &'a Client) -> Self {
         Self { client }
     }
@@ -178,5 +180,151 @@ mod tests {
 
         let resp = client.oauth2().delete_application(2).await.unwrap();
         assert_eq!(resp.status, 204);
+    }
+
+    #[tokio::test]
+    async fn test_list_applications_empty() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/user/applications/oauth2"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(Vec::<serde_json::Value>::new()))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let (apps, resp) = client
+            .oauth2()
+            .list_applications(Default::default())
+            .await
+            .unwrap();
+        assert!(apps.is_empty());
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_list_applications_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/user/applications/oauth2"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(serde_json::json!({
+                "message": "Internal Server Error"
+            })))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client.oauth2().list_applications(Default::default()).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_create_application_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path("/api/v1/user/applications/oauth2"))
+            .respond_with(ResponseTemplate::new(422).set_body_json(serde_json::json!({
+                "message": "Validation failed"
+            })))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let opt = CreateOauth2Option {
+            name: "Valid App".to_string(),
+            confidential_client: false,
+            redirect_uris: vec![],
+        };
+        let result = client.oauth2().create_application(opt).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_get_application() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/user/applications/oauth2/42"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(oauth2_json(42, "Fetched App")))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let (app, resp) = client.oauth2().get_application(42).await.unwrap();
+        assert_eq!(app.id, 42);
+        assert_eq!(app.name, "Fetched App");
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_get_application_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/user/applications/oauth2/999"))
+            .respond_with(ResponseTemplate::new(404).set_body_json(serde_json::json!({
+                "message": "Not Found"
+            })))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client.oauth2().get_application(999).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_update_application() {
+        let server = MockServer::start().await;
+        Mock::given(method("PATCH"))
+            .and(path("/api/v1/user/applications/oauth2/5"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(oauth2_json(5, "Updated App")))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let opt = CreateOauth2Option {
+            name: "Updated App".to_string(),
+            confidential_client: true,
+            redirect_uris: vec!["https://example.com/new-callback".to_string()],
+        };
+        let (app, resp) = client.oauth2().update_application(5, opt).await.unwrap();
+        assert_eq!(app.id, 5);
+        assert_eq!(app.name, "Updated App");
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_update_application_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("PATCH"))
+            .and(path("/api/v1/user/applications/oauth2/5"))
+            .respond_with(ResponseTemplate::new(403).set_body_json(serde_json::json!({
+                "message": "Forbidden"
+            })))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let opt = CreateOauth2Option {
+            name: "Updated App".to_string(),
+            confidential_client: true,
+            redirect_uris: vec![],
+        };
+        let result = client.oauth2().update_application(5, opt).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_delete_application_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path("/api/v1/user/applications/oauth2/99"))
+            .respond_with(ResponseTemplate::new(404).set_body_json(serde_json::json!({
+                "message": "Not Found"
+            })))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client.oauth2().delete_application(99).await;
+        assert!(result.is_err());
     }
 }

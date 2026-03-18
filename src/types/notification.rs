@@ -10,6 +10,7 @@ use crate::types::enums::{NotifySubjectState, NotifySubjectType};
 
 /// NotificationSubject contains the notification subject (Issue/Pull/Commit)
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Notify Subject payload type.
 pub struct NotifySubject {
     pub title: String,
     pub url: String,
@@ -26,6 +27,7 @@ pub struct NotifySubject {
 
 /// NotificationThread represents a notification on the API
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Notification Thread payload type.
 pub struct NotificationThread {
     pub id: i64,
     #[serde(default, skip_serializing_if = "Option::is_none")]

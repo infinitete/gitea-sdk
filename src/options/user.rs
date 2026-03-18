@@ -7,6 +7,7 @@ use crate::types::enums::AccessTokenScope;
 use crate::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Default)]
+/// Options for List Emails Option.
 pub struct ListEmailsOptions {
     pub list_options: ListOptions,
 }
@@ -18,12 +19,14 @@ impl QueryEncode for ListEmailsOptions {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Create Email Option.
 pub struct CreateEmailOption {
     /// email addresses to add
     pub emails: Vec<String>,
 }
 
 impl CreateEmailOption {
+    /// Validate this `CreateEmailOption` payload.
     pub fn validate(&self) -> crate::Result<()> {
         if self.emails.is_empty() {
             return Err(crate::Error::Validation(
@@ -42,12 +45,14 @@ impl CreateEmailOption {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Delete Email Option.
 pub struct DeleteEmailOption {
     /// email addresses to delete
     pub emails: Vec<String>,
 }
 
 impl DeleteEmailOption {
+    /// Validate this `DeleteEmailOption` payload.
     pub fn validate(&self) -> crate::Result<()> {
         if self.emails.is_empty() {
             return Err(crate::Error::Validation(
@@ -66,6 +71,7 @@ impl DeleteEmailOption {
 }
 
 #[derive(Debug, Clone, Default)]
+/// Options for List Public Keys Option.
 pub struct ListPublicKeysOptions {
     pub list_options: ListOptions,
 }
@@ -77,6 +83,7 @@ impl QueryEncode for ListPublicKeysOptions {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Create Key Option.
 pub struct CreateKeyOption {
     /// Title of the key to add
     pub title: String,
@@ -88,6 +95,7 @@ pub struct CreateKeyOption {
 }
 
 impl CreateKeyOption {
+    /// Validate this `CreateKeyOption` payload.
     pub fn validate(&self) -> crate::Result<()> {
         if self.key.is_empty() {
             return Err(crate::Error::Validation("key is required".to_string()));
@@ -100,6 +108,7 @@ impl CreateKeyOption {
 }
 
 #[derive(Debug, Clone, Default)]
+/// Options for List Followers Option.
 pub struct ListFollowersOptions {
     pub list_options: ListOptions,
 }
@@ -111,6 +120,7 @@ impl QueryEncode for ListFollowersOptions {
 }
 
 #[derive(Debug, Clone, Default)]
+/// Options for List Following Option.
 pub struct ListFollowingOptions {
     pub list_options: ListOptions,
 }
@@ -122,6 +132,7 @@ impl QueryEncode for ListFollowingOptions {
 }
 
 #[derive(Debug, Clone, Default)]
+/// Options for List Access Tokens Option.
 pub struct ListAccessTokensOptions {
     pub list_options: ListOptions,
 }
@@ -133,6 +144,7 @@ impl QueryEncode for ListAccessTokensOptions {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Create Access Token Option.
 pub struct CreateAccessTokenOption {
     pub name: String,
     #[serde(default)]
@@ -140,6 +152,7 @@ pub struct CreateAccessTokenOption {
 }
 
 impl CreateAccessTokenOption {
+    /// Validate this `CreateAccessTokenOption` payload.
     pub fn validate(&self) -> crate::Result<()> {
         if self.name.is_empty() {
             return Err(crate::Error::Validation("name is required".to_string()));
@@ -149,6 +162,7 @@ impl CreateAccessTokenOption {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+/// Options for User Settings Option.
 pub struct UserSettingsOptions {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub full_name: Option<String>,
@@ -171,6 +185,7 @@ pub struct UserSettingsOptions {
 }
 
 #[derive(Debug, Clone, Default)]
+/// Options for List User Blocks Option.
 pub struct ListUserBlocksOptions {
     pub list_options: ListOptions,
 }
@@ -182,6 +197,7 @@ impl QueryEncode for ListUserBlocksOptions {
 }
 
 #[derive(Debug, Clone, Default)]
+/// Options for Search Users Option.
 pub struct SearchUsersOption {
     pub list_options: ListOptions,
     pub key_word: String,
@@ -194,8 +210,8 @@ impl QueryEncode for SearchUsersOption {
         let defaulted = self.list_options.with_defaults();
         if defaulted.page == Some(0) {
             out.push_str("page=0&limit=0");
-        } else {
-            out.push_str(&format!("page={}", defaulted.page.unwrap()));
+        } else if let Some(page) = defaulted.page {
+            out.push_str(&format!("page={page}"));
             if let Some(size) = defaulted.page_size {
                 out.push_str(&format!("&limit={size}"));
             }
@@ -216,6 +232,29 @@ fn urlencoding(bytes: &[u8]) -> String {
 }
 
 #[derive(Debug, Clone, Default)]
+/// Options for List User Activity Feeds Option.
+pub struct ListUserActivityFeedsOptions {
+    pub list_options: ListOptions,
+    pub only_performed_by: bool,
+    pub date: String,
+}
+
+impl QueryEncode for ListUserActivityFeedsOptions {
+    fn query_encode(&self) -> String {
+        let mut query = self.list_options.query_encode();
+        if self.only_performed_by {
+            query.push_str("&only-performed-by=true");
+        }
+        if !self.date.is_empty() {
+            query.push_str("&date=");
+            query.push_str(&urlencoding(self.date.as_bytes()));
+        }
+        query
+    }
+}
+
+#[derive(Debug, Clone, Default)]
+/// Options for List GPGKeys Option.
 pub struct ListGPGKeysOptions {
     pub list_options: ListOptions,
 }
@@ -227,6 +266,7 @@ impl QueryEncode for ListGPGKeysOptions {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Create GPGKey Option.
 pub struct CreateGPGKeyOption {
     /// An armored GPG key to add
     #[serde(rename = "armored_public_key")]
@@ -237,6 +277,7 @@ pub struct CreateGPGKeyOption {
 }
 
 impl CreateGPGKeyOption {
+    /// Validate this `CreateGPGKeyOption` payload.
     pub fn validate(&self) -> crate::Result<()> {
         if self.armored_key.is_empty() {
             return Err(crate::Error::Validation(
@@ -248,6 +289,7 @@ impl CreateGPGKeyOption {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Verify GPGKey Option.
 pub struct VerifyGPGKeyOption {
     #[serde(rename = "key_id")]
     pub key_id: String,
@@ -256,6 +298,7 @@ pub struct VerifyGPGKeyOption {
 }
 
 impl VerifyGPGKeyOption {
+    /// Validate this `VerifyGPGKeyOption` payload.
     pub fn validate(&self) -> crate::Result<()> {
         if self.key_id.is_empty() {
             return Err(crate::Error::Validation("key_id is required".to_string()));
@@ -270,12 +313,14 @@ impl VerifyGPGKeyOption {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Update User Avatar Option.
 pub struct UpdateUserAvatarOption {
     /// base64 encoded image
     pub image: String,
 }
 
 impl UpdateUserAvatarOption {
+    /// Validate this `UpdateUserAvatarOption` payload.
     pub fn validate(&self) -> crate::Result<()> {
         if self.image.is_empty() {
             return Err(crate::Error::Validation("image is required".to_string()));

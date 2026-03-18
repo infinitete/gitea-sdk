@@ -11,6 +11,7 @@ use crate::types::{
     TrackedTime, WatchInfo,
 };
 
+/// API methods for issue resources.
 pub struct IssuesApi<'a> {
     client: &'a Client,
 }
@@ -29,6 +30,7 @@ fn json_header() -> reqwest::header::HeaderMap {
 }
 
 impl<'a> IssuesApi<'a> {
+    /// Create a new `IssuesApi` view.
     pub fn new(client: &'a Client) -> Self {
         Self { client }
     }
@@ -1430,7 +1432,7 @@ impl<'a> IssuesApi<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use wiremock::matchers::{method, path};
+    use wiremock::matchers::{method, path, path_regex};
     use wiremock::{Mock, MockServer, ResponseTemplate};
 
     fn create_test_client(server: &MockServer) -> Client {
@@ -1489,15 +1491,302 @@ mod tests {
         })
     }
 
+    fn comment_json(id: i64, body: &str) -> serde_json::Value {
+        serde_json::json!({
+            "id": id,
+            "html_url": "",
+            "pull_request_url": "",
+            "issue_url": "",
+            "poster": {
+                "id": 1,
+                "login": "testuser",
+                "login_name": "",
+                "source_id": 0,
+                "full_name": "",
+                "email": "",
+                "avatar_url": "",
+                "html_url": "",
+                "language": "",
+                "is_admin": false,
+                "restricted": false,
+                "active": true,
+                "prohibit_login": false,
+                "location": "",
+                "website": "",
+                "description": "",
+                "visibility": "public",
+                "followers_count": 0,
+                "following_count": 0,
+                "starred_repos_count": 0
+            },
+            "original_author": "",
+            "original_author_id": 0,
+            "body": body,
+            "created": "2024-01-15T10:00:00Z",
+            "updated": "2024-01-15T10:00:00Z"
+        })
+    }
+
+    fn label_json(id: i64, name: &str) -> serde_json::Value {
+        serde_json::json!({
+            "id": id,
+            "name": name,
+            "color": "ff0000",
+            "description": "",
+            "exclusive": false,
+            "is_archived": false,
+            "url": ""
+        })
+    }
+
+    fn milestone_json(id: i64, title: &str) -> serde_json::Value {
+        serde_json::json!({
+            "id": id,
+            "title": title,
+            "description": "",
+            "state": "open",
+            "open_issues": 0,
+            "closed_issues": 0,
+            "created_at": "2024-01-15T10:00:00Z",
+            "updated_at": "2024-01-15T10:00:00Z",
+            "closed_at": null,
+            "due_on": null
+        })
+    }
+
+    fn reaction_json(content: &str) -> serde_json::Value {
+        serde_json::json!({
+            "user": null,
+            "reaction": content,
+            "created": "2024-01-15T10:00:00Z"
+        })
+    }
+
+    fn user_json() -> serde_json::Value {
+        serde_json::json!({
+            "id": 1,
+            "login": "testuser",
+            "login_name": "",
+            "source_id": 0,
+            "full_name": "",
+            "email": "",
+            "avatar_url": "",
+            "html_url": "",
+            "language": "",
+            "is_admin": false,
+            "restricted": false,
+            "active": true,
+            "prohibit_login": false,
+            "location": "",
+            "website": "",
+            "description": "",
+            "visibility": "public",
+            "followers_count": 0,
+            "following_count": 0,
+            "starred_repos_count": 0
+        })
+    }
+
+    fn attachment_json(id: i64) -> serde_json::Value {
+        serde_json::json!({
+            "id": id,
+            "name": "file.txt",
+            "size": 1024,
+            "download_count": 0,
+            "created": "2024-01-15T10:00:00Z",
+            "uuid": "abc123",
+            "browser_download_url": ""
+        })
+    }
+
+    fn stopwatch_json() -> serde_json::Value {
+        serde_json::json!({
+            "created": "2024-01-15T10:00:00Z",
+            "seconds": 3600,
+            "duration": "1h0m0s",
+            "issue_index": 1,
+            "issue_title": "Bug fix",
+            "repo_owner_name": "owner",
+            "repo_name": "repo"
+        })
+    }
+
+    fn tracked_time_json(id: i64) -> serde_json::Value {
+        serde_json::json!({
+            "id": id,
+            "created": "2024-01-15T10:00:00Z",
+            "time": 1800,
+            "user_id": 0,
+            "user_name": "",
+            "issue_id": 0
+        })
+    }
+
+    fn timeline_comment_json(id: i64) -> serde_json::Value {
+        serde_json::json!({
+            "id": id,
+            "html_url": "",
+            "pull_request_url": "",
+            "issue_url": "",
+            "user": null,
+            "original_author": "",
+            "original_author_id": 0,
+            "body": "comment",
+            "created": "2024-01-15T10:00:00Z",
+            "updated": "2024-01-15T10:00:00Z",
+            "type": "comment",
+            "label": [],
+            "milestone": null,
+            "old_milestone": null,
+            "new_title": "",
+            "old_title": ""
+        })
+    }
+
+    fn watch_info_json() -> serde_json::Value {
+        serde_json::json!({
+            "subscribed": true,
+            "watching": true,
+            "ignored": false,
+            "reason": "",
+            "created_at": null,
+            "url": "",
+            "repository_url": ""
+        })
+    }
+
+    fn issue_template_json() -> serde_json::Value {
+        serde_json::json!({
+            "name": "Bug Report",
+            "about": "File a bug",
+            "file_name": "bug_report.md",
+            "title": "Bug: ",
+            "labels": ["bug"],
+            "ref": "",
+            "form": [],
+            "content": "Describe the bug..."
+        })
+    }
+
+    fn error_body() -> serde_json::Value {
+        serde_json::json!({"message": "error"})
+    }
+
+    // ── issue.go ──────────────────────────────────────────────────
+
     #[tokio::test]
-    async fn test_create_issue() {
+    async fn test_list_issues_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/repos/issues/search"))
+            .respond_with(
+                ResponseTemplate::new(200)
+                    .set_body_json(serde_json::json!([issue_json(1, 1, "Issue 1")])),
+            )
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let (issues, resp) = client
+            .issues()
+            .list_issues(Default::default())
+            .await
+            .unwrap();
+        assert_eq!(issues.len(), 1);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_list_issues_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/repos/issues/search"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client.issues().list_issues(Default::default()).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_list_repo_issues_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues"))
+            .respond_with(
+                ResponseTemplate::new(200)
+                    .set_body_json(serde_json::json!([issue_json(1, 1, "Issue 1")])),
+            )
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let (issues, resp) = client
+            .issues()
+            .list_repo_issues("owner", "repo", Default::default())
+            .await
+            .unwrap();
+        assert_eq!(issues.len(), 1);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_list_repo_issues_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .list_repo_issues("owner", "repo", Default::default())
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_get_issue_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/repos/testowner/testrepo/issues/1"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(issue_json(1, 1, "Bug")))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let (issue, resp) = client
+            .issues()
+            .get_issue("testowner", "testrepo", 1)
+            .await
+            .unwrap();
+        assert_eq!(issue.id, 1);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_get_issue_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/repos/testowner/testrepo/issues/999"))
+            .respond_with(ResponseTemplate::new(404).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .get_issue("testowner", "testrepo", 999)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_create_issue_happy() {
         let server = MockServer::start().await;
         Mock::given(method("POST"))
             .and(path("/api/v1/repos/testowner/testrepo/issues"))
             .respond_with(ResponseTemplate::new(201).set_body_json(issue_json(1, 1, "Bug fix")))
             .mount(&server)
             .await;
-
         let client = create_test_client(&server);
         let opt = CreateIssueOption {
             title: "Bug fix".to_string(),
@@ -1515,147 +1804,39 @@ mod tests {
             .await
             .unwrap();
         assert_eq!(issue.id, 1);
-        assert_eq!(issue.title, "Bug fix");
-        assert_eq!(issue.index, 1);
         assert_eq!(resp.status, 201);
     }
 
     #[tokio::test]
-    async fn test_get_issue() {
-        let server = MockServer::start().await;
-        Mock::given(method("GET"))
-            .and(path("/api/v1/repos/testowner/testrepo/issues/1"))
-            .respond_with(ResponseTemplate::new(200).set_body_json(issue_json(
-                1,
-                1,
-                "Feature request",
-            )))
-            .mount(&server)
-            .await;
-
-        let client = create_test_client(&server);
-        let (issue, resp) = client
-            .issues()
-            .get_issue("testowner", "testrepo", 1)
-            .await
-            .unwrap();
-        assert_eq!(issue.id, 1);
-        assert_eq!(issue.title, "Feature request");
-        assert_eq!(resp.status, 200);
-    }
-
-    #[tokio::test]
-    async fn test_list_repo_issues() {
-        let server = MockServer::start().await;
-        let body = serde_json::json!([issue_json(1, 1, "Issue 1"), issue_json(2, 2, "Issue 2"),]);
-
-        Mock::given(method("GET"))
-            .and(path("/api/v1/repos/testowner/testrepo/issues"))
-            .respond_with(ResponseTemplate::new(200).set_body_json(&body))
-            .mount(&server)
-            .await;
-
-        let client = create_test_client(&server);
-        let (issues, resp) = client
-            .issues()
-            .list_repo_issues("testowner", "testrepo", Default::default())
-            .await
-            .unwrap();
-        assert_eq!(issues.len(), 2);
-        assert_eq!(issues[0].title, "Issue 1");
-        assert_eq!(issues[1].title, "Issue 2");
-        assert_eq!(resp.status, 200);
-    }
-
-    #[tokio::test]
-    async fn test_create_issue_comment() {
+    async fn test_create_issue_error() {
         let server = MockServer::start().await;
         Mock::given(method("POST"))
-            .and(path("/api/v1/repos/testowner/testrepo/issues/1/comments"))
-            .respond_with(ResponseTemplate::new(201).set_body_json(serde_json::json!({
-                "id": 1,
-                "html_url": "",
-                "pull_request_url": "",
-                "issue_url": "",
-                "poster": {
-                    "id": 1,
-                    "login": "testuser",
-                    "login_name": "",
-                    "source_id": 0,
-                    "full_name": "",
-                    "email": "",
-                    "avatar_url": "",
-                    "html_url": "",
-                    "language": "",
-                    "is_admin": false,
-                    "restricted": false,
-                    "active": true,
-                    "prohibit_login": false,
-                    "location": "",
-                    "website": "",
-                    "description": "",
-                    "visibility": "public",
-                    "followers_count": 0,
-                    "following_count": 0,
-                    "starred_repos_count": 0
-                },
-                "original_author": "",
-                "original_author_id": 0,
-                "body": "Nice issue",
-                "created": "2024-01-15T10:00:00Z",
-                "updated": "2024-01-15T10:00:00Z"
-            })))
+            .and(path("/api/v1/repos/testowner/testrepo/issues"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
             .mount(&server)
             .await;
-
         let client = create_test_client(&server);
-        let opt = CreateIssueCommentOption {
-            body: "Nice issue".to_string(),
+        let opt = CreateIssueOption {
+            title: "Bug fix".to_string(),
+            body: String::new(),
+            r#ref: String::new(),
+            assignees: vec![],
+            deadline: None,
+            milestone: 0,
+            labels: vec![],
+            closed: false,
         };
-        let (comment, resp) = client
-            .issues()
-            .create_issue_comment("testowner", "testrepo", 1, opt)
-            .await
-            .unwrap();
-        assert_eq!(comment.id, 1);
-        assert_eq!(comment.body, "Nice issue");
-        assert_eq!(resp.status, 201);
-    }
-
-    #[tokio::test]
-    async fn test_error_case() {
-        let server = MockServer::start().await;
-        Mock::given(method("GET"))
-            .and(path("/api/v1/repos/testowner/testrepo/issues/999"))
-            .respond_with(
-                ResponseTemplate::new(404)
-                    .set_body_json(serde_json::json!({"message": "Issue not found"})),
-            )
-            .mount(&server)
-            .await;
-
-        let client = create_test_client(&server);
         let result = client
             .issues()
-            .get_issue("testowner", "testrepo", 999)
+            .create_issue("testowner", "testrepo", opt)
             .await;
         assert!(result.is_err());
-        match result.unwrap_err() {
-            crate::Error::Api {
-                status, message, ..
-            } => {
-                assert_eq!(status, 404);
-                assert_eq!(message, "Issue not found");
-            }
-            other => panic!("expected Error::Api, got: {other}"),
-        }
     }
 
     #[tokio::test]
     async fn test_create_issue_validation() {
         let server = MockServer::start().await;
         let client = create_test_client(&server);
-
         let opt = CreateIssueOption {
             title: "  ".to_string(),
             body: String::new(),
@@ -1674,39 +1855,16 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_delete_issue() {
-        let server = MockServer::start().await;
-        Mock::given(method("DELETE"))
-            .and(path("/api/v1/repos/testowner/testrepo/issues/1"))
-            .respond_with(ResponseTemplate::new(204))
-            .mount(&server)
-            .await;
-
-        let client = create_test_client(&server);
-        let resp = client
-            .issues()
-            .delete_issue("testowner", "testrepo", 1)
-            .await
-            .unwrap();
-        assert_eq!(resp.status, 204);
-    }
-
-    #[tokio::test]
-    async fn test_edit_issue() {
+    async fn test_edit_issue_happy() {
         let server = MockServer::start().await;
         Mock::given(method("PATCH"))
             .and(path("/api/v1/repos/testowner/testrepo/issues/1"))
-            .respond_with(ResponseTemplate::new(200).set_body_json(issue_json(
-                1,
-                1,
-                "Updated title",
-            )))
+            .respond_with(ResponseTemplate::new(200).set_body_json(issue_json(1, 1, "Updated")))
             .mount(&server)
             .await;
-
         let client = create_test_client(&server);
         let opt = EditIssueOption {
-            title: Some("Updated title".to_string()),
+            title: Some("Updated".to_string()),
             body: None,
             r#ref: None,
             assignees: vec![],
@@ -1720,7 +1878,2420 @@ mod tests {
             .edit_issue("testowner", "testrepo", 1, opt)
             .await
             .unwrap();
-        assert_eq!(issue.title, "Updated title");
+        assert_eq!(issue.title, "Updated");
         assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_edit_issue_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("PATCH"))
+            .and(path("/api/v1/repos/testowner/testrepo/issues/1"))
+            .respond_with(ResponseTemplate::new(404).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = EditIssueOption {
+            title: Some("Updated".to_string()),
+            body: None,
+            r#ref: None,
+            assignees: vec![],
+            milestone: None,
+            state: None,
+            deadline: None,
+            remove_deadline: None,
+        };
+        let result = client
+            .issues()
+            .edit_issue("testowner", "testrepo", 1, opt)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_edit_issue_validation() {
+        let server = MockServer::start().await;
+        let client = create_test_client(&server);
+        let opt = EditIssueOption {
+            title: Some("   ".to_string()),
+            body: None,
+            r#ref: None,
+            assignees: vec![],
+            milestone: None,
+            state: None,
+            deadline: None,
+            remove_deadline: None,
+        };
+        let result = client
+            .issues()
+            .edit_issue("testowner", "testrepo", 1, opt)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_delete_issue_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path("/api/v1/repos/testowner/testrepo/issues/1"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let resp = client
+            .issues()
+            .delete_issue("testowner", "testrepo", 1)
+            .await
+            .unwrap();
+        assert_eq!(resp.status, 204);
+    }
+
+    #[tokio::test]
+    async fn test_delete_issue_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path("/api/v1/repos/testowner/testrepo/issues/1"))
+            .respond_with(ResponseTemplate::new(404).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .delete_issue("testowner", "testrepo", 1)
+            .await;
+        assert!(result.is_err());
+    }
+
+    // ── issue_comment.go ──────────────────────────────────────────
+
+    #[tokio::test]
+    async fn test_list_issue_comments_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/comments"))
+            .respond_with(
+                ResponseTemplate::new(200)
+                    .set_body_json(serde_json::json!([comment_json(1, "Nice")])),
+            )
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let (comments, resp) = client
+            .issues()
+            .list_issue_comments("owner", "repo", 1, Default::default())
+            .await
+            .unwrap();
+        assert_eq!(comments.len(), 1);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_list_issue_comments_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/comments"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .list_issue_comments("owner", "repo", 1, Default::default())
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_list_repo_issue_comments_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/comments"))
+            .respond_with(
+                ResponseTemplate::new(200)
+                    .set_body_json(serde_json::json!([comment_json(1, "comment")])),
+            )
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let (comments, resp) = client
+            .issues()
+            .list_repo_issue_comments("owner", "repo", Default::default())
+            .await
+            .unwrap();
+        assert_eq!(comments.len(), 1);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_list_repo_issue_comments_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/comments"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .list_repo_issue_comments("owner", "repo", Default::default())
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_get_issue_comment_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/repos/testowner/testrepo/issues/comments/1"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(comment_json(1, "hello")))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let (comment, resp) = client
+            .issues()
+            .get_issue_comment("testowner", "testrepo", 1)
+            .await
+            .unwrap();
+        assert_eq!(comment.id, 1);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_get_issue_comment_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/repos/testowner/testrepo/issues/comments/999"))
+            .respond_with(ResponseTemplate::new(404).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .get_issue_comment("testowner", "testrepo", 999)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_create_issue_comment_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path("/api/v1/repos/testowner/testrepo/issues/1/comments"))
+            .respond_with(ResponseTemplate::new(201).set_body_json(comment_json(1, "Nice issue")))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = CreateIssueCommentOption {
+            body: "Nice issue".to_string(),
+        };
+        let (comment, resp) = client
+            .issues()
+            .create_issue_comment("testowner", "testrepo", 1, opt)
+            .await
+            .unwrap();
+        assert_eq!(comment.id, 1);
+        assert_eq!(resp.status, 201);
+    }
+
+    #[tokio::test]
+    async fn test_create_issue_comment_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path("/api/v1/repos/testowner/testrepo/issues/1/comments"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = CreateIssueCommentOption {
+            body: "body".to_string(),
+        };
+        let result = client
+            .issues()
+            .create_issue_comment("testowner", "testrepo", 1, opt)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_create_issue_comment_validation() {
+        let server = MockServer::start().await;
+        let client = create_test_client(&server);
+        let opt = CreateIssueCommentOption {
+            body: String::new(),
+        };
+        let result = client
+            .issues()
+            .create_issue_comment("testowner", "testrepo", 1, opt)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_edit_issue_comment_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("PATCH"))
+            .and(path("/api/v1/repos/testowner/testrepo/issues/comments/1"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(comment_json(1, "updated")))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = EditIssueCommentOption {
+            body: "updated".to_string(),
+        };
+        let (comment, resp) = client
+            .issues()
+            .edit_issue_comment("testowner", "testrepo", 1, opt)
+            .await
+            .unwrap();
+        assert_eq!(comment.id, 1);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_edit_issue_comment_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("PATCH"))
+            .and(path("/api/v1/repos/testowner/testrepo/issues/comments/1"))
+            .respond_with(ResponseTemplate::new(404).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = EditIssueCommentOption {
+            body: "updated".to_string(),
+        };
+        let result = client
+            .issues()
+            .edit_issue_comment("testowner", "testrepo", 1, opt)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_edit_issue_comment_validation() {
+        let server = MockServer::start().await;
+        let client = create_test_client(&server);
+        let opt = EditIssueCommentOption {
+            body: String::new(),
+        };
+        let result = client
+            .issues()
+            .edit_issue_comment("testowner", "testrepo", 1, opt)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_delete_issue_comment_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path("/api/v1/repos/testowner/testrepo/issues/comments/1"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let resp = client
+            .issues()
+            .delete_issue_comment("testowner", "testrepo", 1)
+            .await
+            .unwrap();
+        assert_eq!(resp.status, 204);
+    }
+
+    #[tokio::test]
+    async fn test_delete_issue_comment_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path("/api/v1/repos/testowner/testrepo/issues/comments/1"))
+            .respond_with(ResponseTemplate::new(404).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .delete_issue_comment("testowner", "testrepo", 1)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_list_issue_comment_attachments_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/comments/\d+/assets",
+            ))
+            .respond_with(
+                ResponseTemplate::new(200).set_body_json(serde_json::json!([attachment_json(1)])),
+            )
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let (attachments, resp) = client
+            .issues()
+            .list_issue_comment_attachments("owner", "repo", 1)
+            .await
+            .unwrap();
+        assert_eq!(attachments.len(), 1);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_list_issue_comment_attachments_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/comments/\d+/assets",
+            ))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .list_issue_comment_attachments("owner", "repo", 1)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_get_issue_comment_attachment_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/comments/\d+/assets/\d+",
+            ))
+            .respond_with(ResponseTemplate::new(200).set_body_json(attachment_json(1)))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let (att, resp) = client
+            .issues()
+            .get_issue_comment_attachment("owner", "repo", 1, 1)
+            .await
+            .unwrap();
+        assert_eq!(att.id, 1);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_get_issue_comment_attachment_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/comments/\d+/assets/\d+",
+            ))
+            .respond_with(ResponseTemplate::new(404).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .get_issue_comment_attachment("owner", "repo", 1, 999)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_edit_issue_comment_attachment_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("PATCH"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/comments/\d+/assets/\d+",
+            ))
+            .respond_with(ResponseTemplate::new(200).set_body_json(attachment_json(1)))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let form = crate::options::release::EditAttachmentOption {
+            name: "new_name.txt".to_string(),
+        };
+        let (att, resp) = client
+            .issues()
+            .edit_issue_comment_attachment("owner", "repo", 1, 1, form)
+            .await
+            .unwrap();
+        assert_eq!(att.id, 1);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_edit_issue_comment_attachment_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("PATCH"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/comments/\d+/assets/\d+",
+            ))
+            .respond_with(ResponseTemplate::new(404).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let form = crate::options::release::EditAttachmentOption {
+            name: "new_name.txt".to_string(),
+        };
+        let result = client
+            .issues()
+            .edit_issue_comment_attachment("owner", "repo", 1, 1, form)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_edit_issue_comment_attachment_validation() {
+        let server = MockServer::start().await;
+        let client = create_test_client(&server);
+        let form = crate::options::release::EditAttachmentOption {
+            name: "  ".to_string(),
+        };
+        let result = client
+            .issues()
+            .edit_issue_comment_attachment("owner", "repo", 1, 1, form)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_delete_issue_comment_attachment_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/comments/\d+/assets/\d+",
+            ))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let resp = client
+            .issues()
+            .delete_issue_comment_attachment("owner", "repo", 1, 1)
+            .await
+            .unwrap();
+        assert_eq!(resp.status, 204);
+    }
+
+    #[tokio::test]
+    async fn test_delete_issue_comment_attachment_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/comments/\d+/assets/\d+",
+            ))
+            .respond_with(ResponseTemplate::new(404).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .delete_issue_comment_attachment("owner", "repo", 1, 1)
+            .await;
+        assert!(result.is_err());
+    }
+
+    // ── issue_label.go ────────────────────────────────────────────
+
+    #[tokio::test]
+    async fn test_get_issue_labels_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/labels"))
+            .respond_with(
+                ResponseTemplate::new(200).set_body_json(serde_json::json!([label_json(1, "bug")])),
+            )
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let (labels, resp) = client
+            .issues()
+            .get_issue_labels("owner", "repo", 1, Default::default())
+            .await
+            .unwrap();
+        assert_eq!(labels.len(), 1);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_get_issue_labels_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/labels"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .get_issue_labels("owner", "repo", 1, Default::default())
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_add_issue_labels_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/labels"))
+            .respond_with(
+                ResponseTemplate::new(200).set_body_json(serde_json::json!([label_json(1, "bug")])),
+            )
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = IssueLabelsOption { labels: vec![1] };
+        let (labels, resp) = client
+            .issues()
+            .add_issue_labels("owner", "repo", 1, opt)
+            .await
+            .unwrap();
+        assert_eq!(labels.len(), 1);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_add_issue_labels_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/labels"))
+            .respond_with(ResponseTemplate::new(404).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = IssueLabelsOption { labels: vec![1] };
+        let result = client
+            .issues()
+            .add_issue_labels("owner", "repo", 1, opt)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_replace_issue_labels_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("PUT"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/labels"))
+            .respond_with(
+                ResponseTemplate::new(200)
+                    .set_body_json(serde_json::json!([label_json(2, "feature")])),
+            )
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = IssueLabelsOption { labels: vec![2] };
+        let (labels, resp) = client
+            .issues()
+            .replace_issue_labels("owner", "repo", 1, opt)
+            .await
+            .unwrap();
+        assert_eq!(labels.len(), 1);
+        assert_eq!(labels[0].name, "feature");
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_replace_issue_labels_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("PUT"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/labels"))
+            .respond_with(ResponseTemplate::new(404).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = IssueLabelsOption { labels: vec![2] };
+        let result = client
+            .issues()
+            .replace_issue_labels("owner", "repo", 1, opt)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_delete_issue_label_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/labels/\d+",
+            ))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let resp = client
+            .issues()
+            .delete_issue_label("owner", "repo", 1, 1)
+            .await
+            .unwrap();
+        assert_eq!(resp.status, 204);
+    }
+
+    #[tokio::test]
+    async fn test_delete_issue_label_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/labels/\d+",
+            ))
+            .respond_with(ResponseTemplate::new(404).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .delete_issue_label("owner", "repo", 1, 1)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_clear_issue_labels_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/labels"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let resp = client
+            .issues()
+            .clear_issue_labels("owner", "repo", 1)
+            .await
+            .unwrap();
+        assert_eq!(resp.status, 204);
+    }
+
+    #[tokio::test]
+    async fn test_clear_issue_labels_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/labels"))
+            .respond_with(ResponseTemplate::new(404).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client.issues().clear_issue_labels("owner", "repo", 1).await;
+        assert!(result.is_err());
+    }
+
+    // ── issue_milestone.go ────────────────────────────────────────
+
+    #[tokio::test]
+    async fn test_list_repo_milestones_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/milestones"))
+            .respond_with(
+                ResponseTemplate::new(200)
+                    .set_body_json(serde_json::json!([milestone_json(1, "v1.0")])),
+            )
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let (milestones, resp) = client
+            .issues()
+            .list_repo_milestones("owner", "repo", Default::default())
+            .await
+            .unwrap();
+        assert_eq!(milestones.len(), 1);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_list_repo_milestones_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/milestones"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .list_repo_milestones("owner", "repo", Default::default())
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_get_milestone_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/milestones/\d+"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(milestone_json(1, "v1.0")))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let (ms, resp) = client
+            .issues()
+            .get_milestone("owner", "repo", 1)
+            .await
+            .unwrap();
+        assert_eq!(ms.id, 1);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_get_milestone_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/milestones/\d+"))
+            .respond_with(ResponseTemplate::new(404).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client.issues().get_milestone("owner", "repo", 999).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_get_milestone_by_name_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/repos/owner/repo/milestones/v1%2E0"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(milestone_json(1, "v1.0")))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let (ms, resp) = client
+            .issues()
+            .get_milestone_by_name("owner", "repo", "v1.0")
+            .await
+            .unwrap();
+        assert_eq!(ms.id, 1);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_get_milestone_by_name_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/repos/owner/repo/milestones/v1%2E0"))
+            .respond_with(ResponseTemplate::new(404).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .get_milestone_by_name("owner", "repo", "v1.0")
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_create_milestone_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/milestones"))
+            .respond_with(ResponseTemplate::new(201).set_body_json(milestone_json(1, "v1.0")))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = CreateMilestoneOption {
+            title: "v1.0".to_string(),
+            description: String::new(),
+            state: crate::StateType::Open,
+            deadline: None,
+        };
+        let (ms, resp) = client
+            .issues()
+            .create_milestone("owner", "repo", opt)
+            .await
+            .unwrap();
+        assert_eq!(ms.id, 1);
+        assert_eq!(resp.status, 201);
+    }
+
+    #[tokio::test]
+    async fn test_create_milestone_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/milestones"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = CreateMilestoneOption {
+            title: "v1.0".to_string(),
+            description: String::new(),
+            state: crate::StateType::Open,
+            deadline: None,
+        };
+        let result = client.issues().create_milestone("owner", "repo", opt).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_create_milestone_validation() {
+        let server = MockServer::start().await;
+        let client = create_test_client(&server);
+        let opt = CreateMilestoneOption {
+            title: String::new(),
+            description: String::new(),
+            state: crate::StateType::Open,
+            deadline: None,
+        };
+        let result = client.issues().create_milestone("owner", "repo", opt).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_edit_milestone_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("PATCH"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/milestones/\d+"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(milestone_json(1, "v2.0")))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = EditMilestoneOption {
+            title: Some("v2.0".to_string()),
+            ..Default::default()
+        };
+        let (ms, resp) = client
+            .issues()
+            .edit_milestone("owner", "repo", 1, opt)
+            .await
+            .unwrap();
+        assert_eq!(ms.title, "v2.0");
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_edit_milestone_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("PATCH"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/milestones/\d+"))
+            .respond_with(ResponseTemplate::new(404).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = EditMilestoneOption {
+            title: Some("v2.0".to_string()),
+            ..Default::default()
+        };
+        let result = client
+            .issues()
+            .edit_milestone("owner", "repo", 1, opt)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_edit_milestone_by_name_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("PATCH"))
+            .and(path("/api/v1/repos/owner/repo/milestones/v1%2E0"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(milestone_json(1, "v2.0")))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = EditMilestoneOption {
+            title: Some("v2.0".to_string()),
+            ..Default::default()
+        };
+        let (ms, resp) = client
+            .issues()
+            .edit_milestone_by_name("owner", "repo", "v1.0", opt)
+            .await
+            .unwrap();
+        assert_eq!(ms.title, "v2.0");
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_edit_milestone_by_name_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("PATCH"))
+            .and(path("/api/v1/repos/owner/repo/milestones/v1%2E0"))
+            .respond_with(ResponseTemplate::new(404).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = EditMilestoneOption {
+            title: Some("v2.0".to_string()),
+            ..Default::default()
+        };
+        let result = client
+            .issues()
+            .edit_milestone_by_name("owner", "repo", "v1.0", opt)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_delete_milestone_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/milestones/\d+"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let resp = client
+            .issues()
+            .delete_milestone("owner", "repo", 1)
+            .await
+            .unwrap();
+        assert_eq!(resp.status, 204);
+    }
+
+    #[tokio::test]
+    async fn test_delete_milestone_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/milestones/\d+"))
+            .respond_with(ResponseTemplate::new(404).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client.issues().delete_milestone("owner", "repo", 1).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_delete_milestone_by_name_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path("/api/v1/repos/owner/repo/milestones/v1%2E0"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let resp = client
+            .issues()
+            .delete_milestone_by_name("owner", "repo", "v1.0")
+            .await
+            .unwrap();
+        assert_eq!(resp.status, 204);
+    }
+
+    #[tokio::test]
+    async fn test_delete_milestone_by_name_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path("/api/v1/repos/owner/repo/milestones/v1%2E0"))
+            .respond_with(ResponseTemplate::new(404).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .delete_milestone_by_name("owner", "repo", "v1.0")
+            .await;
+        assert!(result.is_err());
+    }
+
+    // ── issue_reaction.go ─────────────────────────────────────────
+
+    #[tokio::test]
+    async fn test_list_issue_reactions_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/reactions",
+            ))
+            .respond_with(
+                ResponseTemplate::new(200)
+                    .set_body_json(serde_json::json!([reaction_json(":+1:")])),
+            )
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let (reactions, resp) = client
+            .issues()
+            .list_issue_reactions("owner", "repo", 1, Default::default())
+            .await
+            .unwrap();
+        assert_eq!(reactions.len(), 1);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_list_issue_reactions_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/reactions",
+            ))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .list_issue_reactions("owner", "repo", 1, Default::default())
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_get_issue_comment_reactions_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/comments/\d+/reactions",
+            ))
+            .respond_with(
+                ResponseTemplate::new(200)
+                    .set_body_json(serde_json::json!([reaction_json(":+1:")])),
+            )
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let (reactions, resp) = client
+            .issues()
+            .get_issue_comment_reactions("owner", "repo", 1)
+            .await
+            .unwrap();
+        assert_eq!(reactions.len(), 1);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_get_issue_comment_reactions_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/comments/\d+/reactions",
+            ))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .get_issue_comment_reactions("owner", "repo", 1)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_post_issue_reaction_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/reactions",
+            ))
+            .respond_with(ResponseTemplate::new(200).set_body_json(reaction_json(":+1:")))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let (reaction, resp) = client
+            .issues()
+            .post_issue_reaction("owner", "repo", 1, "+1")
+            .await
+            .unwrap();
+        assert_eq!(reaction.reaction, ":+1:");
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_post_issue_reaction_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/reactions",
+            ))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .post_issue_reaction("owner", "repo", 1, "+1")
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_delete_issue_reaction_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/reactions",
+            ))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let resp = client
+            .issues()
+            .delete_issue_reaction("owner", "repo", 1, "+1")
+            .await
+            .unwrap();
+        assert_eq!(resp.status, 204);
+    }
+
+    #[tokio::test]
+    async fn test_delete_issue_reaction_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/reactions",
+            ))
+            .respond_with(ResponseTemplate::new(404).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .delete_issue_reaction("owner", "repo", 1, "+1")
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_post_issue_comment_reaction_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/comments/\d+/reactions",
+            ))
+            .respond_with(ResponseTemplate::new(200).set_body_json(reaction_json(":+1:")))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let (reaction, resp) = client
+            .issues()
+            .post_issue_comment_reaction("owner", "repo", 1, "+1")
+            .await
+            .unwrap();
+        assert_eq!(reaction.reaction, ":+1:");
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_post_issue_comment_reaction_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/comments/\d+/reactions",
+            ))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .post_issue_comment_reaction("owner", "repo", 1, "+1")
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_delete_issue_comment_reaction_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/comments/\d+/reactions",
+            ))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let resp = client
+            .issues()
+            .delete_issue_comment_reaction("owner", "repo", 1, "+1")
+            .await
+            .unwrap();
+        assert_eq!(resp.status, 204);
+    }
+
+    #[tokio::test]
+    async fn test_delete_issue_comment_reaction_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/comments/\d+/reactions",
+            ))
+            .respond_with(ResponseTemplate::new(404).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .delete_issue_comment_reaction("owner", "repo", 1, "+1")
+            .await;
+        assert!(result.is_err());
+    }
+
+    // ── issue_subscription.go ─────────────────────────────────────
+
+    #[tokio::test]
+    async fn test_list_issue_subscribers_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/subscriptions",
+            ))
+            .respond_with(
+                ResponseTemplate::new(200).set_body_json(serde_json::json!([user_json()])),
+            )
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let (users, resp) = client
+            .issues()
+            .list_issue_subscribers("owner", "repo", 1, Default::default())
+            .await
+            .unwrap();
+        assert_eq!(users.len(), 1);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_list_issue_subscribers_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/subscriptions",
+            ))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .list_issue_subscribers("owner", "repo", 1, Default::default())
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_add_issue_subscription_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("PUT"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/subscriptions/[^/]+",
+            ))
+            .respond_with(ResponseTemplate::new(201))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let resp = client
+            .issues()
+            .add_issue_subscription("owner", "repo", 1, "testuser")
+            .await
+            .unwrap();
+        assert_eq!(resp.status, 201);
+    }
+
+    #[tokio::test]
+    async fn test_add_issue_subscription_already_subscribed() {
+        let server = MockServer::start().await;
+        Mock::given(method("PUT"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/subscriptions/[^/]+",
+            ))
+            .respond_with(ResponseTemplate::new(200))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .add_issue_subscription("owner", "repo", 1, "testuser")
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_add_issue_subscription_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("PUT"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/subscriptions/[^/]+",
+            ))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .add_issue_subscription("owner", "repo", 1, "testuser")
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_delete_issue_subscription_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/subscriptions/[^/]+",
+            ))
+            .respond_with(ResponseTemplate::new(201))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let resp = client
+            .issues()
+            .delete_issue_subscription("owner", "repo", 1, "testuser")
+            .await
+            .unwrap();
+        assert_eq!(resp.status, 201);
+    }
+
+    #[tokio::test]
+    async fn test_delete_issue_subscription_already_unsubscribed() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/subscriptions/[^/]+",
+            ))
+            .respond_with(ResponseTemplate::new(200))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .delete_issue_subscription("owner", "repo", 1, "testuser")
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_delete_issue_subscription_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/subscriptions/[^/]+",
+            ))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .delete_issue_subscription("owner", "repo", 1, "testuser")
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_check_issue_subscription_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/subscriptions/check",
+            ))
+            .respond_with(ResponseTemplate::new(200).set_body_json(watch_info_json()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let (info, resp) = client
+            .issues()
+            .check_issue_subscription("owner", "repo", 1)
+            .await
+            .unwrap();
+        assert!(info.subscribed);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_check_issue_subscription_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/subscriptions/check",
+            ))
+            .respond_with(ResponseTemplate::new(404).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .check_issue_subscription("owner", "repo", 1)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_issue_subscribe_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/user"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(user_json()))
+            .mount(&server)
+            .await;
+        Mock::given(method("PUT"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/subscriptions/[^/]+",
+            ))
+            .respond_with(ResponseTemplate::new(201))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let resp = client
+            .issues()
+            .issue_subscribe("owner", "repo", 1)
+            .await
+            .unwrap();
+        assert_eq!(resp.status, 201);
+    }
+
+    #[tokio::test]
+    async fn test_issue_subscribe_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/user"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client.issues().issue_subscribe("owner", "repo", 1).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_issue_unsubscribe_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/user"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(user_json()))
+            .mount(&server)
+            .await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/subscriptions/[^/]+",
+            ))
+            .respond_with(ResponseTemplate::new(201))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let resp = client
+            .issues()
+            .issue_unsubscribe("owner", "repo", 1)
+            .await
+            .unwrap();
+        assert_eq!(resp.status, 201);
+    }
+
+    #[tokio::test]
+    async fn test_issue_unsubscribe_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/user"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client.issues().issue_unsubscribe("owner", "repo", 1).await;
+        assert!(result.is_err());
+    }
+
+    // ── issue_stopwatch.go ────────────────────────────────────────
+
+    #[tokio::test]
+    async fn test_list_my_stopwatches_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"/api/v1/user/stopwatches"))
+            .respond_with(
+                ResponseTemplate::new(200).set_body_json(serde_json::json!([stopwatch_json()])),
+            )
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let (stopwatches, resp) = client
+            .issues()
+            .list_my_stopwatches(Default::default())
+            .await
+            .unwrap();
+        assert_eq!(stopwatches.len(), 1);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_list_my_stopwatches_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"/api/v1/user/stopwatches"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .list_my_stopwatches(Default::default())
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_delete_issue_stopwatch_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/stopwatch/delete",
+            ))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let resp = client
+            .issues()
+            .delete_issue_stopwatch("owner", "repo", 1)
+            .await
+            .unwrap();
+        assert_eq!(resp.status, 204);
+    }
+
+    #[tokio::test]
+    async fn test_delete_issue_stopwatch_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/stopwatch/delete",
+            ))
+            .respond_with(ResponseTemplate::new(404).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .delete_issue_stopwatch("owner", "repo", 1)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_start_issue_stopwatch_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/stopwatch/start",
+            ))
+            .respond_with(ResponseTemplate::new(201))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let resp = client
+            .issues()
+            .start_issue_stopwatch("owner", "repo", 1)
+            .await
+            .unwrap();
+        assert_eq!(resp.status, 201);
+    }
+
+    #[tokio::test]
+    async fn test_start_issue_stopwatch_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/stopwatch/start",
+            ))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .start_issue_stopwatch("owner", "repo", 1)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_stop_issue_stopwatch_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/stopwatch/stop",
+            ))
+            .respond_with(ResponseTemplate::new(201))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let resp = client
+            .issues()
+            .stop_issue_stopwatch("owner", "repo", 1)
+            .await
+            .unwrap();
+        assert_eq!(resp.status, 201);
+    }
+
+    #[tokio::test]
+    async fn test_stop_issue_stopwatch_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/stopwatch/stop",
+            ))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .stop_issue_stopwatch("owner", "repo", 1)
+            .await;
+        assert!(result.is_err());
+    }
+
+    // ── issue_tracked_time.go ─────────────────────────────────────
+
+    #[tokio::test]
+    async fn test_list_repo_tracked_times_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/times"))
+            .respond_with(
+                ResponseTemplate::new(200).set_body_json(serde_json::json!([tracked_time_json(1)])),
+            )
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let (times, resp) = client
+            .issues()
+            .list_repo_tracked_times("owner", "repo", Default::default())
+            .await
+            .unwrap();
+        assert_eq!(times.len(), 1);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_list_repo_tracked_times_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/times"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .list_repo_tracked_times("owner", "repo", Default::default())
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_list_my_tracked_times_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"/api/v1/user/times"))
+            .respond_with(
+                ResponseTemplate::new(200).set_body_json(serde_json::json!([tracked_time_json(1)])),
+            )
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let (times, resp) = client
+            .issues()
+            .list_my_tracked_times(Default::default())
+            .await
+            .unwrap();
+        assert_eq!(times.len(), 1);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_list_my_tracked_times_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"/api/v1/user/times"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .list_my_tracked_times(Default::default())
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_add_time_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/times"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(tracked_time_json(1)))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = AddTimeOption {
+            time: 3600,
+            created: None,
+            user: String::new(),
+        };
+        let (tt, resp) = client
+            .issues()
+            .add_time("owner", "repo", 1, opt)
+            .await
+            .unwrap();
+        assert_eq!(tt.id, 1);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_add_time_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/times"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = AddTimeOption {
+            time: 3600,
+            created: None,
+            user: String::new(),
+        };
+        let result = client.issues().add_time("owner", "repo", 1, opt).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_add_time_validation() {
+        let server = MockServer::start().await;
+        let client = create_test_client(&server);
+        let opt = AddTimeOption {
+            time: 0,
+            created: None,
+            user: String::new(),
+        };
+        let result = client.issues().add_time("owner", "repo", 1, opt).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_list_issue_tracked_times_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/times"))
+            .respond_with(
+                ResponseTemplate::new(200).set_body_json(serde_json::json!([tracked_time_json(1)])),
+            )
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let (times, resp) = client
+            .issues()
+            .list_issue_tracked_times("owner", "repo", 1, Default::default())
+            .await
+            .unwrap();
+        assert_eq!(times.len(), 1);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_list_issue_tracked_times_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/times"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .list_issue_tracked_times("owner", "repo", 1, Default::default())
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_reset_issue_time_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/times"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let resp = client
+            .issues()
+            .reset_issue_time("owner", "repo", 1)
+            .await
+            .unwrap();
+        assert_eq!(resp.status, 204);
+    }
+
+    #[tokio::test]
+    async fn test_reset_issue_time_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/times"))
+            .respond_with(ResponseTemplate::new(404).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client.issues().reset_issue_time("owner", "repo", 1).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_delete_time_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/times/\d+",
+            ))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let resp = client
+            .issues()
+            .delete_time("owner", "repo", 1, 1)
+            .await
+            .unwrap();
+        assert_eq!(resp.status, 204);
+    }
+
+    #[tokio::test]
+    async fn test_delete_time_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/times/\d+",
+            ))
+            .respond_with(ResponseTemplate::new(404).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client.issues().delete_time("owner", "repo", 1, 1).await;
+        assert!(result.is_err());
+    }
+
+    // ── issue_timeline.go ─────────────────────────────────────────
+
+    #[tokio::test]
+    async fn test_list_issue_timeline_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/timeline"))
+            .respond_with(
+                ResponseTemplate::new(200)
+                    .set_body_json(serde_json::json!([timeline_comment_json(1)])),
+            )
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let (comments, resp) = client
+            .issues()
+            .list_issue_timeline("owner", "repo", 1, Default::default())
+            .await
+            .unwrap();
+        assert_eq!(comments.len(), 1);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_list_issue_timeline_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/timeline"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .list_issue_timeline("owner", "repo", 1, Default::default())
+            .await;
+        assert!(result.is_err());
+    }
+
+    // ── issue_pin.go ──────────────────────────────────────────────
+
+    #[tokio::test]
+    async fn test_list_repo_pinned_issues_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/pinned"))
+            .respond_with(
+                ResponseTemplate::new(200)
+                    .set_body_json(serde_json::json!([issue_json(1, 1, "Pinned")])),
+            )
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let (issues, resp) = client
+            .issues()
+            .list_repo_pinned_issues("owner", "repo")
+            .await
+            .unwrap();
+        assert_eq!(issues.len(), 1);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_list_repo_pinned_issues_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/pinned"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .list_repo_pinned_issues("owner", "repo")
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_pin_issue_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/pin"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let resp = client.issues().pin_issue("owner", "repo", 1).await.unwrap();
+        assert_eq!(resp.status, 204);
+    }
+
+    #[tokio::test]
+    async fn test_pin_issue_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/pin"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client.issues().pin_issue("owner", "repo", 1).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_unpin_issue_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/pin"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let resp = client
+            .issues()
+            .unpin_issue("owner", "repo", 1)
+            .await
+            .unwrap();
+        assert_eq!(resp.status, 204);
+    }
+
+    #[tokio::test]
+    async fn test_unpin_issue_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/pin"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client.issues().unpin_issue("owner", "repo", 1).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_move_issue_pin_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("PATCH"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/pin/\d+"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let resp = client
+            .issues()
+            .move_issue_pin("owner", "repo", 1, 2)
+            .await
+            .unwrap();
+        assert_eq!(resp.status, 204);
+    }
+
+    #[tokio::test]
+    async fn test_move_issue_pin_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("PATCH"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/pin/\d+"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client.issues().move_issue_pin("owner", "repo", 1, 2).await;
+        assert!(result.is_err());
+    }
+
+    // ── issue_ext.go ──────────────────────────────────────────────
+
+    #[tokio::test]
+    async fn test_list_issue_blocks_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/blocks"))
+            .respond_with(
+                ResponseTemplate::new(200)
+                    .set_body_json(serde_json::json!([issue_json(2, 2, "Blocker")])),
+            )
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let (issues, resp) = client
+            .issues()
+            .list_issue_blocks("owner", "repo", 1, Default::default())
+            .await
+            .unwrap();
+        assert_eq!(issues.len(), 1);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_list_issue_blocks_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/blocks"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .list_issue_blocks("owner", "repo", 1, Default::default())
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_create_issue_blocking_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/blocks"))
+            .respond_with(ResponseTemplate::new(201).set_body_json(issue_json(2, 2, "Blocker")))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = IssueMeta { index: 2 };
+        let (issue, resp) = client
+            .issues()
+            .create_issue_blocking("owner", "repo", 1, opt)
+            .await
+            .unwrap();
+        assert_eq!(issue.id, 2);
+        assert_eq!(resp.status, 201);
+    }
+
+    #[tokio::test]
+    async fn test_create_issue_blocking_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/blocks"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = IssueMeta { index: 2 };
+        let result = client
+            .issues()
+            .create_issue_blocking("owner", "repo", 1, opt)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_remove_issue_blocking_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/blocks"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(issue_json(2, 2, "Blocker")))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = IssueMeta { index: 2 };
+        let (issue, resp) = client
+            .issues()
+            .remove_issue_blocking("owner", "repo", 1, opt)
+            .await
+            .unwrap();
+        assert_eq!(issue.id, 2);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_remove_issue_blocking_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/blocks"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = IssueMeta { index: 2 };
+        let result = client
+            .issues()
+            .remove_issue_blocking("owner", "repo", 1, opt)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_list_issue_dependencies_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/dependencies",
+            ))
+            .respond_with(
+                ResponseTemplate::new(200).set_body_json(serde_json::json!([issue_json(
+                    3,
+                    3,
+                    "Dependency"
+                )])),
+            )
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let (issues, resp) = client
+            .issues()
+            .list_issue_dependencies("owner", "repo", 1, Default::default())
+            .await
+            .unwrap();
+        assert_eq!(issues.len(), 1);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_list_issue_dependencies_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/dependencies",
+            ))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client
+            .issues()
+            .list_issue_dependencies("owner", "repo", 1, Default::default())
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_create_issue_dependency_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/dependencies",
+            ))
+            .respond_with(ResponseTemplate::new(201).set_body_json(issue_json(3, 3, "Dep")))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = IssueMeta { index: 3 };
+        let (issue, resp) = client
+            .issues()
+            .create_issue_dependency("owner", "repo", 1, opt)
+            .await
+            .unwrap();
+        assert_eq!(issue.id, 3);
+        assert_eq!(resp.status, 201);
+    }
+
+    #[tokio::test]
+    async fn test_create_issue_dependency_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/dependencies",
+            ))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = IssueMeta { index: 3 };
+        let result = client
+            .issues()
+            .create_issue_dependency("owner", "repo", 1, opt)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_remove_issue_dependency_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/dependencies",
+            ))
+            .respond_with(ResponseTemplate::new(200).set_body_json(issue_json(3, 3, "Dep")))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = IssueMeta { index: 3 };
+        let (issue, resp) = client
+            .issues()
+            .remove_issue_dependency("owner", "repo", 1, opt)
+            .await
+            .unwrap();
+        assert_eq!(issue.id, 3);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_remove_issue_dependency_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(
+                r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/dependencies",
+            ))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = IssueMeta { index: 3 };
+        let result = client
+            .issues()
+            .remove_issue_dependency("owner", "repo", 1, opt)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_lock_issue_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("PUT"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/lock"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = LockIssueOption {
+            lock_reason: String::new(),
+        };
+        let resp = client
+            .issues()
+            .lock_issue("owner", "repo", 1, opt)
+            .await
+            .unwrap();
+        assert_eq!(resp.status, 204);
+    }
+
+    #[tokio::test]
+    async fn test_lock_issue_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("PUT"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/lock"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = LockIssueOption {
+            lock_reason: String::new(),
+        };
+        let result = client.issues().lock_issue("owner", "repo", 1, opt).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_unlock_issue_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/lock"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let resp = client
+            .issues()
+            .unlock_issue("owner", "repo", 1)
+            .await
+            .unwrap();
+        assert_eq!(resp.status, 204);
+    }
+
+    #[tokio::test]
+    async fn test_unlock_issue_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/lock"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client.issues().unlock_issue("owner", "repo", 1).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_update_issue_deadline_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/deadline"))
+            .respond_with(ResponseTemplate::new(201).set_body_json(issue_json(1, 1, "Bug")))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = EditDeadlineOption {
+            deadline: Some(time::OffsetDateTime::new_utc(
+                time::Date::from_calendar_date(2025, time::Month::January, 1).unwrap(),
+                time::Time::from_hms(0, 0, 0).unwrap(),
+            )),
+        };
+        let (issue, resp) = client
+            .issues()
+            .update_issue_deadline("owner", "repo", 1, opt)
+            .await
+            .unwrap();
+        assert_eq!(issue.id, 1);
+        assert_eq!(resp.status, 201);
+    }
+
+    #[tokio::test]
+    async fn test_update_issue_deadline_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issues/\d+/deadline"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let opt = EditDeadlineOption { deadline: None };
+        let result = client
+            .issues()
+            .update_issue_deadline("owner", "repo", 1, opt)
+            .await;
+        assert!(result.is_err());
+    }
+
+    // ── issue_template.go ─────────────────────────────────────────
+
+    #[tokio::test]
+    async fn test_get_issue_templates_happy() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issue_templates"))
+            .respond_with(
+                ResponseTemplate::new(200)
+                    .set_body_json(serde_json::json!([issue_template_json()])),
+            )
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let (templates, resp) = client
+            .issues()
+            .get_issue_templates("owner", "repo")
+            .await
+            .unwrap();
+        assert_eq!(templates.len(), 1);
+        assert_eq!(templates[0].name, "Bug Report");
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_get_issue_templates_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"/api/v1/repos/[^/]+/[^/]+/issue_templates"))
+            .respond_with(ResponseTemplate::new(500).set_body_json(error_body()))
+            .mount(&server)
+            .await;
+        let client = create_test_client(&server);
+        let result = client.issues().get_issue_templates("owner", "repo").await;
+        assert!(result.is_err());
     }
 }

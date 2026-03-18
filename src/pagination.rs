@@ -34,8 +34,8 @@ impl QueryEncode for ListOptions {
         let mut out = String::new();
         if defaulted.page == Some(0) {
             out.push_str("page=0&limit=0");
-        } else {
-            out.push_str(&format!("page={}", defaulted.page.unwrap()));
+        } else if let Some(page) = defaulted.page {
+            out.push_str(&format!("page={page}"));
             if let Some(size) = defaulted.page_size {
                 out.push_str(&format!("&limit={size}"));
             }

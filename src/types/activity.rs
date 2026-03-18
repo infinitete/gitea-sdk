@@ -11,6 +11,7 @@ use super::user::User;
 
 /// Activity represents a user or organization activity
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Activity payload type.
 pub struct Activity {
     pub id: i64,
     #[serde(rename = "act_user_id")]

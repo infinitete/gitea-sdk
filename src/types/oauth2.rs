@@ -8,6 +8,7 @@ use time::serde::rfc3339;
 
 /// Oauth2 represents an Oauth2 Application
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// OAuth2 payload type.
 pub struct Oauth2 {
     pub id: i64,
     pub name: String,

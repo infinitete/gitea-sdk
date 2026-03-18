@@ -15,6 +15,7 @@ use crate::types::enums::{MergeStyle, ProjectsMode};
 
 /// Permission represents a set of permissions
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Permission payload type.
 pub struct Permission {
     pub admin: bool,
     pub push: bool,
@@ -23,6 +24,7 @@ pub struct Permission {
 
 /// InternalTracker represents settings for internal tracker
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Internal Tracker payload type.
 pub struct InternalTracker {
     /// Enable time tracking (Built-in issue tracker)
     #[serde(rename = "enable_time_tracker")]
@@ -37,6 +39,7 @@ pub struct InternalTracker {
 
 /// ExternalTracker represents settings for external tracker
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// External Tracker payload type.
 pub struct ExternalTracker {
     /// URL of external issue tracker
     #[serde(rename = "external_tracker_url")]
@@ -51,6 +54,7 @@ pub struct ExternalTracker {
 
 /// ExternalWiki represents setting for external wiki
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// External Wiki payload type.
 pub struct ExternalWiki {
     /// URL of external wiki
     #[serde(rename = "external_wiki_url")]
@@ -59,6 +63,7 @@ pub struct ExternalWiki {
 
 /// RepoTransfer represents a pending repository transfer
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Repo Transfer payload type.
 pub struct RepoTransfer {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub doer: Option<User>,
@@ -70,6 +75,7 @@ pub struct RepoTransfer {
 
 /// Repository represents a repository
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Repository payload type.
 pub struct Repository {
     pub id: i64,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -193,6 +199,7 @@ pub struct Repository {
 
 /// PayloadUser represents the author or committer of a commit
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Payload User payload type.
 pub struct PayloadUser {
     /// Full name of the commit author
     pub name: String,
@@ -202,6 +209,7 @@ pub struct PayloadUser {
 
 /// PayloadCommitVerification represents the GPG verification of a commit
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Payload Commit Verification payload type.
 pub struct PayloadCommitVerification {
     pub verified: bool,
     pub reason: String,
@@ -211,6 +219,7 @@ pub struct PayloadCommitVerification {
 
 /// PayloadCommit represents a commit
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Payload Commit payload type.
 pub struct PayloadCommit {
     /// sha1 hash of the commit
     pub id: String,
@@ -233,6 +242,7 @@ pub struct PayloadCommit {
 
 /// Branch represents a repository branch
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Branch payload type.
 pub struct Branch {
     pub name: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -256,6 +266,7 @@ pub struct Branch {
 
 /// Identity for a person's identity like an author or committer
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Identity payload type.
 pub struct Identity {
     pub name: String,
     pub email: String,
@@ -263,6 +274,7 @@ pub struct Identity {
 
 /// CommitMeta contains meta information of a commit in terms of API
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Commit Meta payload type.
 pub struct CommitMeta {
     pub url: String,
     pub sha: String,
@@ -272,6 +284,7 @@ pub struct CommitMeta {
 
 /// CommitUser contains information of a user in the context of a commit
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Commit User payload type.
 pub struct CommitUser {
     #[serde(flatten)]
     pub identity: Identity,
@@ -280,6 +293,7 @@ pub struct CommitUser {
 
 /// RepoCommit contains information of a commit in the context of a repository
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Repo Commit payload type.
 pub struct RepoCommit {
     pub url: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -295,6 +309,7 @@ pub struct RepoCommit {
 
 /// CommitStats contains stats from a Git commit
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Commit Stats payload type.
 pub struct CommitStats {
     pub total: i32,
     pub additions: i32,
@@ -303,12 +318,14 @@ pub struct CommitStats {
 
 /// CommitAffectedFiles store information about files affected by the commit
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Commit Affected Files payload type.
 pub struct CommitAffectedFiles {
     pub filename: String,
 }
 
 /// CommitDateOptions store dates for GIT_AUTHOR_DATE and GIT_COMMITTER_DATE
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Commit Date Options payload type.
 pub struct CommitDateOptions {
     pub author: OffsetDateTime,
     pub committer: OffsetDateTime,
@@ -316,6 +333,7 @@ pub struct CommitDateOptions {
 
 /// Commit contains information generated from a Git commit
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Commit payload type.
 pub struct Commit {
     #[serde(flatten)]
     pub commit_meta: CommitMeta,
@@ -339,6 +357,7 @@ pub struct Commit {
 
 /// Tag represents a repository tag
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Tag payload type.
 pub struct Tag {
     pub name: String,
     pub message: String,
@@ -353,6 +372,7 @@ pub struct Tag {
 
 /// AnnotatedTag represents an annotated tag
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Annotated Tag payload type.
 pub struct AnnotatedTag {
     pub tag: String,
     pub sha: String,
@@ -368,6 +388,7 @@ pub struct AnnotatedTag {
 
 /// AnnotatedTagObject contains meta information of the tag object
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Annotated Tag Object payload type.
 pub struct AnnotatedTagObject {
     #[serde(rename = "type")]
     pub type_: String,
@@ -379,6 +400,7 @@ pub struct AnnotatedTagObject {
 
 /// FileLinksResponse contains the links for a repo's file
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// File Links Response payload type.
 pub struct FileLinksResponse {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub self_: Option<String>,
@@ -390,6 +412,7 @@ pub struct FileLinksResponse {
 
 /// ContentsResponse contains information about a repo's entry's metadata and content
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Contents Response payload type.
 pub struct ContentsResponse {
     pub name: String,
     pub path: String,
@@ -430,6 +453,7 @@ pub struct ContentsResponse {
 
 /// FileCommitResponse contains information generated from a Git commit for a repo's file
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// File Commit Response payload type.
 pub struct FileCommitResponse {
     #[serde(flatten)]
     pub commit_meta: CommitMeta,
@@ -448,6 +472,7 @@ pub struct FileCommitResponse {
 
 /// FileResponse contains information about a repo's file
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// File Response payload type.
 pub struct FileResponse {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub content: Option<ContentsResponse>,
@@ -461,6 +486,7 @@ pub struct FileResponse {
 
 /// ContentsExtResponse contains extended information about a repo's contents
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Contents Ext Response payload type.
 pub struct ContentsExtResponse {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dir_contents: Option<Vec<ContentsResponse>>,
@@ -472,6 +498,7 @@ pub struct ContentsExtResponse {
 
 /// BranchProtection represents a branch protection for a repository
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Branch Protection payload type.
 pub struct BranchProtection {
     #[serde(rename = "branch_name")]
     pub branch_name: String,
@@ -529,6 +556,7 @@ pub struct BranchProtection {
 
 /// TagProtection represents a tag protection for a repository
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Tag Protection payload type.
 pub struct TagProtection {
     pub id: i64,
     #[serde(rename = "name_pattern")]
@@ -547,6 +575,7 @@ pub struct TagProtection {
 
 /// DeployKey a deploy key
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Deploy Key payload type.
 pub struct DeployKey {
     pub id: i64,
     #[serde(rename = "key_id")]
@@ -567,6 +596,7 @@ pub struct DeployKey {
 
 /// GitHook represents a Git repository hook
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Git Hook payload type.
 pub struct GitHook {
     pub name: String,
     #[serde(rename = "is_active")]
@@ -579,6 +609,7 @@ pub struct GitHook {
 
 /// CollaboratorPermissionResult result type for CollaboratorPermission
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Collaborator Permission Result payload type.
 pub struct CollaboratorPermissionResult {
     pub permission: crate::types::enums::AccessMode,
     #[serde(rename = "role_name")]
@@ -591,6 +622,7 @@ pub struct CollaboratorPermissionResult {
 
 /// PushMirrorResponse returns a git push mirror
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Push Mirror Response payload type.
 pub struct PushMirrorResponse {
     pub created: String,
     pub interval: String,
@@ -612,6 +644,7 @@ pub struct PushMirrorResponse {
 
 /// GitEntry represents a git tree entry
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Git Entry payload type.
 pub struct GitEntry {
     pub path: String,
     pub mode: String,
@@ -624,6 +657,7 @@ pub struct GitEntry {
 
 /// GitTreeResponse returns a git tree
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Git Tree Response payload type.
 pub struct GitTreeResponse {
     pub sha: String,
     pub url: String,
@@ -639,6 +673,7 @@ pub struct GitTreeResponse {
 
 /// GitObject represents a Git object
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Git Object payload type.
 pub struct GitObject {
     #[serde(rename = "type")]
     pub type_: String,
@@ -648,6 +683,7 @@ pub struct GitObject {
 
 /// Reference represents a Git reference
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Reference payload type.
 pub struct Reference {
     pub ref_: String,
     pub url: String,
@@ -659,6 +695,7 @@ pub struct Reference {
 
 /// GitBlobResponse represents a git blob
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Git Blob Response payload type.
 pub struct GitBlobResponse {
     pub content: String,
     pub encoding: String,
@@ -671,6 +708,7 @@ pub struct GitBlobResponse {
 
 /// Compare represents a comparison between two commits
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Compare payload type.
 pub struct Compare {
     /// Total number of commits in the comparison
     #[serde(rename = "total_commits")]
@@ -684,6 +722,7 @@ pub struct Compare {
 
 /// WikiCommit represents a wiki commit/revision
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Wiki Commit payload type.
 pub struct WikiCommit {
     pub sha: String,
     pub message: String,
@@ -695,6 +734,7 @@ pub struct WikiCommit {
 
 /// WikiPage represents a wiki page
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Wiki Page payload type.
 pub struct WikiPage {
     pub title: String,
     #[serde(rename = "content_base64")]
@@ -713,6 +753,7 @@ pub struct WikiPage {
 
 /// WikiPageMetaData represents metadata for a wiki page (without content)
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Wiki Page Meta Data payload type.
 pub struct WikiPageMetaData {
     pub title: String,
     #[serde(rename = "html_url")]
@@ -725,6 +766,7 @@ pub struct WikiPageMetaData {
 
 /// WikiCommitList represents a list of wiki commits
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Wiki Commit List payload type.
 pub struct WikiCommitList {
     #[serde(default)]
     pub commits: Vec<WikiCommit>,
@@ -735,6 +777,7 @@ pub struct WikiCommitList {
 
 /// Note represents a git note
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Note payload type.
 pub struct Note {
     pub message: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -745,6 +788,7 @@ pub struct Note {
 
 /// RepoActionVariable represents a action variable
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Repo Action Variable payload type.
 pub struct RepoActionVariable {
     #[serde(rename = "owner_id")]
     pub owner_id: i64,

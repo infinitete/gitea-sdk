@@ -5,8 +5,11 @@
 use crate::Client;
 use crate::Response;
 use crate::options::miscellaneous::*;
-use crate::types::{GitignoreTemplateInfo, LabelTemplate, NodeInfo};
+use crate::types::{
+    GitignoreTemplateInfo, LabelTemplate, LicenseTemplateInfo, LicensesTemplateListEntry, NodeInfo,
+};
 
+/// API methods for miscellaneous resources.
 pub struct MiscApi<'a> {
     client: &'a Client,
 }
@@ -25,11 +28,13 @@ fn json_header() -> reqwest::header::HeaderMap {
 }
 
 #[derive(Debug, Clone, serde::Deserialize)]
+/// Server Version payload type.
 pub struct ServerVersion {
     pub version: String,
 }
 
 impl<'a> MiscApi<'a> {
+    /// Create a new `MiscApi` view.
     pub fn new(client: &'a Client) -> Self {
         Self { client }
     }
@@ -188,6 +193,37 @@ impl<'a> MiscApi<'a> {
             .await?;
         Ok((ver.version, resp))
     }
+
+    /// ListLicenseTemplates lists the available license templates
+    pub async fn list_license_templates(
+        &self,
+    ) -> crate::Result<(Vec<LicensesTemplateListEntry>, Response)> {
+        self.client()
+            .get_parsed_response(
+                reqwest::Method::GET,
+                "/licenses",
+                Some(&json_header()),
+                None::<&str>,
+            )
+            .await
+    }
+
+    /// GetLicenseTemplateInfo fetches a specific license template
+    pub async fn get_license_template(
+        &self,
+        name: &str,
+    ) -> crate::Result<(LicenseTemplateInfo, Response)> {
+        let escaped = crate::internal::escape::validate_and_escape_segments(&[name])?;
+        let path = format!("/licenses/{}", escaped[0]);
+        self.client()
+            .get_parsed_response(
+                reqwest::Method::GET,
+                &path,
+                Some(&json_header()),
+                None::<&str>,
+            )
+            .await
+    }
 }
 
 #[cfg(test)]
@@ -259,5 +295,476 @@ mod tests {
         let (version, resp) = client.miscellaneous().get_version().await.unwrap();
         assert_eq!(version, "1.22.0");
         assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_list_license_templates() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/licenses"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!([
+                {"key": "mit", "name": "MIT", "url": "https://example.com/mit"}
+            ])))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let (templates, resp) = client
+            .miscellaneous()
+            .list_license_templates()
+            .await
+            .unwrap();
+        assert_eq!(templates.len(), 1);
+        assert_eq!(templates[0].key, "mit");
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_get_license_template() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/licenses/mit"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+                "key": "mit",
+                "name": "MIT",
+                "url": "https://example.com/mit",
+                "body": "MIT license body",
+                "implementation": "Gpl"
+            })))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let (license, resp) = client
+            .miscellaneous()
+            .get_license_template("mit")
+            .await
+            .unwrap();
+        assert_eq!(license.key, "mit");
+        assert_eq!(license.body, "MIT license body");
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_render_markdown_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path("/api/v1/markdown"))
+            .respond_with(
+                ResponseTemplate::new(500).set_body_json(serde_json::json!({"message": "error"})),
+            )
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let opt = MarkdownOption {
+            text: "# Hello".to_string(),
+            mode: None,
+            context: None,
+            wiki: false,
+        };
+        let result = client.miscellaneous().render_markdown(opt).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_render_markdown_raw() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path("/api/v1/markdown/raw"))
+            .respond_with(ResponseTemplate::new(200).set_body_string("<p>raw markdown</p>"))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let (html, resp) = client
+            .miscellaneous()
+            .render_markdown_raw("**bold text**")
+            .await
+            .unwrap();
+        assert_eq!(html, "<p>raw markdown</p>");
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_render_markdown_raw_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path("/api/v1/markdown/raw"))
+            .respond_with(
+                ResponseTemplate::new(500).set_body_json(serde_json::json!({"message": "error"})),
+            )
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client
+            .miscellaneous()
+            .render_markdown_raw("**bold text**")
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_render_markup() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path("/api/v1/markup"))
+            .respond_with(ResponseTemplate::new(200).set_body_string("<h1>Markup</h1>"))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let opt = MarkupOption {
+            text: "# Markup".to_string(),
+            mode: Some("markdown".to_string()),
+            context: None,
+            file_path: None,
+            wiki: false,
+        };
+        let (html, resp) = client.miscellaneous().render_markup(opt).await.unwrap();
+        assert_eq!(html, "<h1>Markup</h1>");
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_render_markup_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path("/api/v1/markup"))
+            .respond_with(
+                ResponseTemplate::new(500).set_body_json(serde_json::json!({"message": "error"})),
+            )
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let opt = MarkupOption {
+            text: "# Markup".to_string(),
+            mode: None,
+            context: None,
+            file_path: None,
+            wiki: false,
+        };
+        let result = client.miscellaneous().render_markup(opt).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_get_node_info() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/nodeinfo"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+                "version": "2.1",
+                "software": {
+                    "name": "gitea",
+                    "version": "1.22.0",
+                    "repository": "https://gitea.com/gitea/gitea",
+                    "homepage": "https://gitea.io"
+                },
+                "protocols": ["activitypub"],
+                "services": {
+                    "inbound": [],
+                    "outbound": []
+                },
+                "openRegistrations": true,
+                "usage": {
+                    "users": {
+                        "total": 100,
+                        "activeHalfyear": 50,
+                        "activeMonth": 20
+                    },
+                    "localPosts": 500,
+                    "localComments": 1000
+                },
+                "metadata": {}
+            })))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let (info, resp) = client.miscellaneous().get_node_info().await.unwrap();
+        assert_eq!(info.version, "2.1");
+        assert_eq!(info.software.name, "gitea");
+        assert_eq!(info.software.version, "1.22.0");
+        assert_eq!(info.usage.users.total, 100);
+        assert!(info.open_registrations);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_get_node_info_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/nodeinfo"))
+            .respond_with(
+                ResponseTemplate::new(500).set_body_json(serde_json::json!({"message": "error"})),
+            )
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client.miscellaneous().get_node_info().await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_get_signing_key_gpg() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/signing-key.gpg"))
+            .respond_with(ResponseTemplate::new(200).set_body_string(
+                "-----BEGIN PGP PUBLIC KEY BLOCK-----\n-----END PGP PUBLIC KEY BLOCK-----",
+            ))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let (key, resp) = client.miscellaneous().get_signing_key_gpg().await.unwrap();
+        assert!(key.contains("BEGIN PGP PUBLIC KEY BLOCK"));
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_get_signing_key_gpg_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/signing-key.gpg"))
+            .respond_with(
+                ResponseTemplate::new(500).set_body_json(serde_json::json!({"message": "error"})),
+            )
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client.miscellaneous().get_signing_key_gpg().await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_get_signing_key_ssh() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/signing-key.pub"))
+            .respond_with(
+                ResponseTemplate::new(200).set_body_string("ssh-ed25519 AAAAC3NzaC1lZDI1NTE5 test"),
+            )
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let (key, resp) = client.miscellaneous().get_signing_key_ssh().await.unwrap();
+        assert!(key.starts_with("ssh-ed25519"));
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_get_signing_key_ssh_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/signing-key.pub"))
+            .respond_with(
+                ResponseTemplate::new(500).set_body_json(serde_json::json!({"message": "error"})),
+            )
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client.miscellaneous().get_signing_key_ssh().await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_list_gitignore_templates_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/gitignore/templates"))
+            .respond_with(
+                ResponseTemplate::new(500).set_body_json(serde_json::json!({"message": "error"})),
+            )
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client.miscellaneous().list_gitignore_templates().await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_get_gitignore_template() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/gitignore/templates/Rust"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+                "name": "Rust",
+                "source": "/target/\n**/*.rs.bk\n"
+            })))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let (tmpl, resp) = client
+            .miscellaneous()
+            .get_gitignore_template("Rust")
+            .await
+            .unwrap();
+        assert_eq!(tmpl.name, "Rust");
+        assert!(tmpl.source.contains("/target/"));
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_get_gitignore_template_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/gitignore/templates/Unknown"))
+            .respond_with(
+                ResponseTemplate::new(500).set_body_json(serde_json::json!({"message": "error"})),
+            )
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client
+            .miscellaneous()
+            .get_gitignore_template("Unknown")
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_list_label_templates() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/label/templates"))
+            .respond_with(
+                ResponseTemplate::new(200).set_body_json(vec!["Default", "bug", "feature"]),
+            )
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let (templates, resp) = client.miscellaneous().list_label_templates().await.unwrap();
+        assert_eq!(templates.len(), 3);
+        assert_eq!(templates[0], "Default");
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_list_label_templates_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/label/templates"))
+            .respond_with(
+                ResponseTemplate::new(500).set_body_json(serde_json::json!({"message": "error"})),
+            )
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client.miscellaneous().list_label_templates().await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_get_label_template() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/label/templates/Default"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!([
+                {
+                    "name": "bug",
+                    "color": "ff0000",
+                    "description": "Something is broken",
+                    "exclusive": false
+                },
+                {
+                    "name": "feature",
+                    "color": "00ff00",
+                    "description": "New feature request",
+                    "exclusive": false
+                }
+            ])))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let (labels, resp) = client
+            .miscellaneous()
+            .get_label_template("Default")
+            .await
+            .unwrap();
+        assert_eq!(labels.len(), 2);
+        assert_eq!(labels[0].name, "bug");
+        assert_eq!(labels[1].color, "00ff00");
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_get_label_template_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/label/templates/Unknown"))
+            .respond_with(
+                ResponseTemplate::new(500).set_body_json(serde_json::json!({"message": "error"})),
+            )
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client.miscellaneous().get_label_template("Unknown").await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_get_version_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/version"))
+            .respond_with(
+                ResponseTemplate::new(500).set_body_json(serde_json::json!({"message": "error"})),
+            )
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client.miscellaneous().get_version().await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_list_license_templates_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/licenses"))
+            .respond_with(
+                ResponseTemplate::new(500).set_body_json(serde_json::json!({"message": "error"})),
+            )
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client.miscellaneous().list_license_templates().await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_get_license_template_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/licenses/nonexistent"))
+            .respond_with(
+                ResponseTemplate::new(500).set_body_json(serde_json::json!({"message": "error"})),
+            )
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client
+            .miscellaneous()
+            .get_license_template("nonexistent")
+            .await;
+        assert!(result.is_err());
     }
 }

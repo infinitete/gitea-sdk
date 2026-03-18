@@ -82,8 +82,18 @@ impl Client {
             tracing::debug!("{}: {}", method, url);
         }
 
-        // SSH signing placeholder — Phase 1c.
-        let resp = http_client.execute(req.build()?).await?;
+        let mut built_req = req.build()?;
+
+        {
+            // sign_request() is synchronous; do NOT add .await inside this scope
+            let signer = self.ssh_signer();
+            if let Some(ref signer) = *signer {
+                let use_legacy = self.should_use_legacy_ssh();
+                crate::auth::ssh_sign::sign_request(&mut built_req, signer, use_legacy)?;
+            }
+        }
+
+        let resp = http_client.execute(built_req).await?;
         Ok(resp)
     }
 
@@ -385,5 +395,70 @@ mod tests {
             matches!(err, crate::Error::UnknownApi { .. }),
             "expected Error::UnknownApi when message is not a string, got: {err}"
         );
+    }
+
+    #[tokio::test]
+    async fn test_do_request_raw_signs_when_ssh_signer_present() {
+        use wiremock::matchers::{header_exists, method, path};
+        use wiremock::{Mock, MockServer, ResponseTemplate};
+
+        let server = MockServer::start().await;
+
+        Mock::given(method("GET"))
+            .and(path("/api/v1/version"))
+            .and(header_exists("Signature"))
+            .respond_with(
+                ResponseTemplate::new(200).set_body_json(serde_json::json!({"version": "1.22.0"})),
+            )
+            .mount(&server)
+            .await;
+
+        let tmp = std::env::temp_dir().join("gitea_sdk_test_ssh_wiremock_sign");
+        std::fs::write(
+            &tmp,
+            include_bytes!("../../tests/ssh_fixtures/id_ed25519_test"),
+        )
+        .expect("write temp key");
+
+        let client = crate::Client::builder(&server.uri())
+            .ssh_cert("test-principal", &tmp, None::<&str>)
+            .expect("ssh_cert should succeed")
+            .build()
+            .expect("build should succeed");
+
+        let (version, _resp) = client
+            .miscellaneous()
+            .get_version()
+            .await
+            .expect("get_version should succeed");
+        assert_eq!(version, "1.22.0");
+        let _ = std::fs::remove_file(&tmp);
+    }
+
+    #[tokio::test]
+    async fn test_do_request_raw_no_signature_when_no_ssh_signer() {
+        use wiremock::matchers::{method, path};
+        use wiremock::{Mock, MockServer, ResponseTemplate};
+
+        let server = MockServer::start().await;
+
+        Mock::given(method("GET"))
+            .and(path("/api/v1/version"))
+            .respond_with(
+                ResponseTemplate::new(200).set_body_json(serde_json::json!({"version": "1.22.0"})),
+            )
+            .mount(&server)
+            .await;
+
+        let client = crate::Client::builder(&server.uri())
+            .build()
+            .expect("build should succeed");
+
+        let (version, _resp) = client
+            .miscellaneous()
+            .get_version()
+            .await
+            .expect("get_version should succeed");
+        assert_eq!(version, "1.22.0");
     }
 }

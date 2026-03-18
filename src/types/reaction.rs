@@ -10,6 +10,7 @@ use super::user::User;
 
 /// Reaction contains one reaction
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Reaction payload type.
 pub struct Reaction {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub user: Option<User>,

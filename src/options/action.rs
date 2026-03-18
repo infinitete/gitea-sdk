@@ -5,6 +5,7 @@
 use crate::pagination::{ListOptions, QueryEncode};
 
 #[derive(Debug, Clone, Default)]
+/// Options for List Repo Action Runs Option.
 pub struct ListRepoActionRunsOptions {
     pub list_options: ListOptions,
     pub branch: Option<String>,
@@ -37,6 +38,7 @@ impl QueryEncode for ListRepoActionRunsOptions {
 }
 
 #[derive(Debug, Clone, Default)]
+/// Options for List Repo Action Jobs Option.
 pub struct ListRepoActionJobsOptions {
     pub list_options: ListOptions,
     pub status: Option<String>,

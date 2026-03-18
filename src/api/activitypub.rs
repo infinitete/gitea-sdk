@@ -5,6 +5,7 @@
 use crate::Client;
 use crate::Response;
 
+/// API methods for ActivityPub resources.
 pub struct ActivityPubApi<'a> {
     client: &'a Client,
 }
@@ -19,6 +20,7 @@ fn json_header() -> reqwest::header::HeaderMap {
 }
 
 impl<'a> ActivityPubApi<'a> {
+    /// Create a new `ActivityPubApi` view.
     pub fn new(client: &'a Client) -> Self {
         Self { client }
     }
@@ -125,6 +127,108 @@ mod tests {
 
         let client = create_test_client(&server);
         let result = client.activitypub().get_person(1).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_get_repository() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/activitypub/testowner/testrepo/repository"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+                "@context": "https://www.w3.org/ns/activitystreams",
+                "type": "Repository",
+                "id": "https://gitea.example.com/api/v1/activitypub/testowner/testrepo/repository",
+                "name": "testrepo",
+                "summary": "A test repository"
+            })))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let (repo, resp) = client
+            .activitypub()
+            .get_repository("testowner", "testrepo")
+            .await
+            .unwrap();
+        assert_eq!(repo["type"], "Repository");
+        assert_eq!(repo["name"], "testrepo");
+        assert_eq!(repo["summary"], "A test repository");
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_get_repository_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/activitypub/testowner/testrepo/repository"))
+            .respond_with(ResponseTemplate::new(404).set_body_json(serde_json::json!({
+                "message": "Not Found"
+            })))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client
+            .activitypub()
+            .get_repository("testowner", "testrepo")
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_get_followers() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/activitypub/testowner/testrepo/followers"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+                "@context": "https://www.w3.org/ns/activitystreams",
+                "type": "OrderedCollection",
+                "id": "https://gitea.example.com/api/v1/activitypub/testowner/testrepo/followers",
+                "totalItems": 2,
+                "orderedItems": [
+                    {
+                        "type": "Person",
+                        "id": "https://gitea.example.com/api/v1/activitypub/user-id/1",
+                        "preferredUsername": "follower1"
+                    },
+                    {
+                        "type": "Person",
+                        "id": "https://gitea.example.com/api/v1/activitypub/user-id/2",
+                        "preferredUsername": "follower2"
+                    }
+                ]
+            })))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let (followers, resp) = client
+            .activitypub()
+            .get_followers("testowner", "testrepo")
+            .await
+            .unwrap();
+        assert_eq!(followers["type"], "OrderedCollection");
+        assert_eq!(followers["totalItems"], 2);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_get_followers_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/activitypub/testowner/testrepo/followers"))
+            .respond_with(ResponseTemplate::new(404).set_body_json(serde_json::json!({
+                "message": "Not Found"
+            })))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client
+            .activitypub()
+            .get_followers("testowner", "testrepo")
+            .await;
         assert!(result.is_err());
     }
 }

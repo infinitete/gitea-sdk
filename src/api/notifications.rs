@@ -8,6 +8,7 @@ use crate::options::notification::*;
 use crate::pagination::QueryEncode;
 use crate::types::NotificationThread;
 
+/// API methods for notification resources.
 pub struct NotificationsApi<'a> {
     client: &'a Client,
 }
@@ -19,6 +20,7 @@ struct NewNotificationCount {
 }
 
 impl<'a> NotificationsApi<'a> {
+    /// Create a new `NotificationsApi` view.
     pub fn new(client: &'a Client) -> Self {
         Self { client }
     }
@@ -197,5 +199,192 @@ mod tests {
         let (thread, resp) = client.notifications().read_notification(1).await.unwrap();
         assert_eq!(thread.id, 1);
         assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_check_notifications_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/notifications/new"))
+            .respond_with(ResponseTemplate::new(500))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client.notifications().check_notifications().await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_get_notification() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/notifications/threads/42"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(notification_json(42)))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let (thread, resp) = client.notifications().get_notification(42).await.unwrap();
+        assert_eq!(thread.id, 42);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_get_notification_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/notifications/threads/1"))
+            .respond_with(ResponseTemplate::new(404))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client.notifications().get_notification(1).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_read_notification_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("PATCH"))
+            .and(path("/api/v1/notifications/threads/1"))
+            .respond_with(ResponseTemplate::new(500))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client.notifications().read_notification(1).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_list_notifications_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/notifications"))
+            .respond_with(ResponseTemplate::new(500))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client
+            .notifications()
+            .list_notifications(Default::default())
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_read_notifications() {
+        let server = MockServer::start().await;
+        Mock::given(method("PUT"))
+            .and(path("/api/v1/notifications"))
+            .respond_with(
+                ResponseTemplate::new(205)
+                    .set_body_json(vec![notification_json(1), notification_json(2)]),
+            )
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let (threads, resp) = client
+            .notifications()
+            .read_notifications(Default::default())
+            .await
+            .unwrap();
+        assert_eq!(threads.len(), 2);
+        assert_eq!(resp.status, 205);
+    }
+
+    #[tokio::test]
+    async fn test_read_notifications_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("PUT"))
+            .and(path("/api/v1/notifications"))
+            .respond_with(ResponseTemplate::new(500))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client
+            .notifications()
+            .read_notifications(Default::default())
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_list_repo_notifications() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/repos/testowner/testrepo/notifications"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(vec![notification_json(1)]))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let (threads, resp) = client
+            .notifications()
+            .list_repo_notifications("testowner", "testrepo", Default::default())
+            .await
+            .unwrap();
+        assert_eq!(threads.len(), 1);
+        assert_eq!(threads[0].id, 1);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_list_repo_notifications_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/repos/testowner/testrepo/notifications"))
+            .respond_with(ResponseTemplate::new(500))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client
+            .notifications()
+            .list_repo_notifications("testowner", "testrepo", Default::default())
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_read_repo_notifications() {
+        let server = MockServer::start().await;
+        Mock::given(method("PUT"))
+            .and(path("/api/v1/repos/testowner/testrepo/notifications"))
+            .respond_with(ResponseTemplate::new(205).set_body_json(vec![notification_json(3)]))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let (threads, resp) = client
+            .notifications()
+            .read_repo_notifications("testowner", "testrepo", Default::default())
+            .await
+            .unwrap();
+        assert_eq!(threads.len(), 1);
+        assert_eq!(threads[0].id, 3);
+        assert_eq!(resp.status, 205);
+    }
+
+    #[tokio::test]
+    async fn test_read_repo_notifications_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("PUT"))
+            .and(path("/api/v1/repos/testowner/testrepo/notifications"))
+            .respond_with(ResponseTemplate::new(500))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client
+            .notifications()
+            .read_repo_notifications("testowner", "testrepo", Default::default())
+            .await;
+        assert!(result.is_err());
     }
 }

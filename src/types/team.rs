@@ -9,6 +9,7 @@ use super::organization::Organization;
 
 /// Team represents a team in an organization
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Team payload type.
 pub struct Team {
     pub id: i64,
     pub name: String,

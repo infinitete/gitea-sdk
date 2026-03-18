@@ -26,6 +26,8 @@ pub use issue::{
 #[allow(unused_imports)]
 pub use label::Label;
 #[allow(unused_imports)]
+pub use license::{LicenseTemplateInfo, LicensesTemplateListEntry};
+#[allow(unused_imports)]
 pub use milestone::Milestone;
 #[allow(unused_imports)]
 pub use node_info::{
@@ -70,7 +72,7 @@ pub use status::{CombinedStatus, Status};
 #[allow(unused_imports)]
 pub use team::Team;
 #[allow(unused_imports)]
-pub use user::{AccessToken, Email, GPGKey, GPGKeyEmail, PublicKey, User};
+pub use user::{AccessToken, Email, GPGKey, GPGKeyEmail, PublicKey, User, UserHeatmapData};
 #[allow(unused_imports)]
 pub use user_settings::UserSettings;
 
@@ -85,6 +87,7 @@ pub mod cron_task;
 pub mod hook;
 pub mod issue;
 pub mod label;
+pub mod license;
 pub mod milestone;
 pub mod node_info;
 pub mod notification;

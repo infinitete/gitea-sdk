@@ -17,6 +17,7 @@ fn urlencoding(value: &str) -> String {
 
 /// ListIssueOption list issue options
 #[derive(Debug, Clone, Default)]
+/// Options for List Issue Option.
 pub struct ListIssueOption {
     pub list_options: ListOptions,
     pub state: Option<StateType>,
@@ -100,6 +101,7 @@ impl QueryEncode for ListIssueOption {
 
 /// CreateIssueOption options to create one issue
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Create Issue Option.
 pub struct CreateIssueOption {
     pub title: String,
     pub body: String,
@@ -136,6 +138,7 @@ impl CreateIssueOption {
 
 /// EditIssueOption options for editing an issue
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Edit Issue Option.
 pub struct EditIssueOption {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
@@ -180,6 +183,7 @@ impl EditIssueOption {
 
 /// ListIssueCommentOptions list comment options
 #[derive(Debug, Clone, Default)]
+/// Options for List Issue Comment Option.
 pub struct ListIssueCommentOptions {
     pub list_options: ListOptions,
     pub since: Option<OffsetDateTime>,
@@ -207,6 +211,7 @@ impl QueryEncode for ListIssueCommentOptions {
 
 /// CreateIssueCommentOption options for creating a comment on an issue
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Create Issue Comment Option.
 pub struct CreateIssueCommentOption {
     pub body: String,
 }
@@ -223,6 +228,7 @@ impl CreateIssueCommentOption {
 
 /// EditIssueCommentOption options for editing a comment
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Edit Issue Comment Option.
 pub struct EditIssueCommentOption {
     pub body: String,
 }
@@ -241,6 +247,7 @@ impl EditIssueCommentOption {
 
 /// IssueLabelsOption a collection of labels
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Issue Labels Option.
 pub struct IssueLabelsOption {
     /// list of label IDs
     #[serde(default)]
@@ -251,6 +258,7 @@ pub struct IssueLabelsOption {
 
 /// ListMilestoneOption list milestone options
 #[derive(Debug, Clone, Default)]
+/// Options for List Milestone Option.
 pub struct ListMilestoneOption {
     pub list_options: ListOptions,
     /// open, closed, all
@@ -273,6 +281,7 @@ impl QueryEncode for ListMilestoneOption {
 
 /// CreateMilestoneOption options for creating a milestone
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Create Milestone Option.
 pub struct CreateMilestoneOption {
     pub title: String,
     #[serde(default)]
@@ -299,6 +308,7 @@ impl CreateMilestoneOption {
 
 /// EditMilestoneOption options for editing a milestone
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+/// Options for Edit Milestone Option.
 pub struct EditMilestoneOption {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
@@ -331,6 +341,7 @@ impl EditMilestoneOption {
 
 /// ListIssueReactionsOptions options for listing issue reactions
 #[derive(Debug, Clone, Default)]
+/// Options for List Issue Reactions Option.
 pub struct ListIssueReactionsOptions {
     pub list_options: ListOptions,
 }
@@ -345,6 +356,7 @@ impl QueryEncode for ListIssueReactionsOptions {
 
 /// ListIssueSubscribersOptions options for listing issue subscribers
 #[derive(Debug, Clone, Default)]
+/// Options for List Issue Subscribers Option.
 pub struct ListIssueSubscribersOptions {
     pub list_options: ListOptions,
 }
@@ -359,6 +371,7 @@ impl QueryEncode for ListIssueSubscribersOptions {
 
 /// ListStopwatchesOptions options for listing stopwatches
 #[derive(Debug, Clone, Default)]
+/// Options for List Stopwatches Option.
 pub struct ListStopwatchesOptions {
     pub list_options: ListOptions,
 }
@@ -373,6 +386,7 @@ impl QueryEncode for ListStopwatchesOptions {
 
 /// ListTrackedTimesOptions options for listing repository's tracked times
 #[derive(Debug, Clone, Default)]
+/// Options for List Tracked Times Option.
 pub struct ListTrackedTimesOptions {
     pub list_options: ListOptions,
     pub since: Option<OffsetDateTime>,
@@ -405,6 +419,7 @@ impl QueryEncode for ListTrackedTimesOptions {
 
 /// AddTimeOption options for adding time to an issue
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Add Time Option.
 pub struct AddTimeOption {
     /// time in seconds
     pub time: i64,
@@ -434,6 +449,7 @@ impl AddTimeOption {
 
 /// ListIssueBlocksOptions options for listing issue blocks
 #[derive(Debug, Clone, Default)]
+/// Options for List Issue Blocks Option.
 pub struct ListIssueBlocksOptions {
     pub list_options: ListOptions,
 }
@@ -446,6 +462,7 @@ impl QueryEncode for ListIssueBlocksOptions {
 
 /// ListIssueDependenciesOptions options for listing issue dependencies
 #[derive(Debug, Clone, Default)]
+/// Options for List Issue Dependencies Option.
 pub struct ListIssueDependenciesOptions {
     pub list_options: ListOptions,
 }
@@ -458,6 +475,7 @@ impl QueryEncode for ListIssueDependenciesOptions {
 
 /// LockIssueOption represents options for locking an issue
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Lock Issue Option.
 pub struct LockIssueOption {
     #[serde(default, rename = "lock_reason")]
     pub lock_reason: String,
@@ -465,6 +483,7 @@ pub struct LockIssueOption {
 
 /// EditDeadlineOption represents options for updating issue deadline
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Edit Deadline Option.
 pub struct EditDeadlineOption {
     #[serde(
         rename = "due_date",

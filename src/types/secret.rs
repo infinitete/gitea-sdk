@@ -8,6 +8,7 @@ use time::serde::rfc3339;
 
 /// Secret represents a repository or organization secret
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Secret payload type.
 pub struct Secret {
     /// the secret's name
     pub name: String,

@@ -8,6 +8,7 @@ use crate::options::hook::*;
 use crate::pagination::QueryEncode;
 use crate::types::Hook;
 
+/// API methods for webhook resources.
 pub struct HooksApi<'a> {
     client: &'a Client,
 }
@@ -26,6 +27,7 @@ fn json_header() -> reqwest::header::HeaderMap {
 }
 
 impl<'a> HooksApi<'a> {
+    /// Create a new `HooksApi` view.
     pub fn new(client: &'a Client) -> Self {
         Self { client }
     }
@@ -284,6 +286,19 @@ mod tests {
         })
     }
 
+    fn create_hook_option() -> CreateHookOption {
+        let mut config = std::collections::HashMap::new();
+        config.insert("url".to_string(), "https://example.com/hook".to_string());
+        CreateHookOption {
+            hook_type: HookType::Gitea,
+            config,
+            events: vec!["push".to_string()],
+            branch_filter: None,
+            active: true,
+            authorization_header: None,
+        }
+    }
+
     #[tokio::test]
     async fn test_list_org_hooks() {
         let server = MockServer::start().await;
@@ -345,5 +360,514 @@ mod tests {
         let client = create_test_client(&server);
         let resp = client.hooks().delete_org_hook("testorg", 1).await.unwrap();
         assert_eq!(resp.status, 204);
+    }
+
+    #[tokio::test]
+    async fn test_get_org_hook() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/orgs/testorg/hooks/3"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(hook_json(3, "discord")))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let (hook, resp) = client.hooks().get_org_hook("testorg", 3).await.unwrap();
+        assert_eq!(hook.id, 3);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_create_org_hook() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path("/api/v1/orgs/testorg/hooks"))
+            .respond_with(ResponseTemplate::new(201).set_body_json(hook_json(10, "gitea")))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let opt = create_hook_option();
+        let (hook, resp) = client
+            .hooks()
+            .create_org_hook("testorg", opt)
+            .await
+            .unwrap();
+        assert_eq!(hook.id, 10);
+        assert_eq!(resp.status, 201);
+    }
+
+    #[tokio::test]
+    async fn test_edit_org_hook() {
+        let server = MockServer::start().await;
+        Mock::given(method("PATCH"))
+            .and(path("/api/v1/orgs/testorg/hooks/4"))
+            .respond_with(ResponseTemplate::new(200))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let opt = EditHookOption {
+            active: Some(true),
+            events: Some(vec!["pull_request".to_string()]),
+            ..Default::default()
+        };
+        let resp = client
+            .hooks()
+            .edit_org_hook("testorg", 4, opt)
+            .await
+            .unwrap();
+        assert_eq!(resp.status, 200);
+    }
+
+    // ── org hook error paths ──────────────────────────────────────────
+
+    #[tokio::test]
+    async fn test_list_org_hooks_empty_org() {
+        let client = create_test_client(&MockServer::start().await);
+        let result = client.hooks().list_org_hooks("", Default::default()).await;
+        assert!(result.is_err());
+        assert!(result.unwrap_err().to_string().contains("empty"));
+    }
+
+    #[tokio::test]
+    async fn test_get_org_hook_empty_org() {
+        let client = create_test_client(&MockServer::start().await);
+        let result = client.hooks().get_org_hook("", 1).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_create_org_hook_empty_org() {
+        let client = create_test_client(&MockServer::start().await);
+        let opt = create_hook_option();
+        let result = client.hooks().create_org_hook("", opt).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_create_org_hook_unknown_type() {
+        let server = MockServer::start().await;
+        let client = create_test_client(&server);
+        let mut config = std::collections::HashMap::new();
+        config.insert("url".to_string(), "https://example.com/hook".to_string());
+        let opt = CreateHookOption {
+            hook_type: HookType::Unknown,
+            config,
+            events: vec![],
+            branch_filter: None,
+            active: false,
+            authorization_header: None,
+        };
+        let result = client.hooks().create_org_hook("org", opt).await;
+        assert!(result.is_err());
+        assert!(result.unwrap_err().to_string().contains("hook type needed"));
+    }
+
+    #[tokio::test]
+    async fn test_edit_org_hook_empty_org() {
+        let client = create_test_client(&MockServer::start().await);
+        let result = client
+            .hooks()
+            .edit_org_hook("", 1, Default::default())
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_delete_org_hook_empty_org() {
+        let client = create_test_client(&MockServer::start().await);
+        let result = client.hooks().delete_org_hook("", 1).await;
+        assert!(result.is_err());
+    }
+
+    // ── repo hook happy paths ─────────────────────────────────────────
+
+    #[tokio::test]
+    async fn test_list_repo_hooks() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/repos/testowner/testrepo/hooks"))
+            .respond_with(
+                ResponseTemplate::new(200)
+                    .set_body_json(vec![hook_json(1, "slack"), hook_json(2, "discord")]),
+            )
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let (hooks, resp) = client
+            .hooks()
+            .list_repo_hooks("testowner", "testrepo", Default::default())
+            .await
+            .unwrap();
+        assert_eq!(hooks.len(), 2);
+        assert_eq!(hooks[0].id, 1);
+        assert_eq!(hooks[1].id, 2);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_get_repo_hook() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/repos/testowner/testrepo/hooks/5"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(hook_json(5, "telegram")))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let (hook, resp) = client
+            .hooks()
+            .get_repo_hook("testowner", "testrepo", 5)
+            .await
+            .unwrap();
+        assert_eq!(hook.id, 5);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_edit_repo_hook() {
+        let server = MockServer::start().await;
+        Mock::given(method("PATCH"))
+            .and(path("/api/v1/repos/testowner/testrepo/hooks/3"))
+            .respond_with(ResponseTemplate::new(200))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let opt = EditHookOption {
+            active: Some(false),
+            ..Default::default()
+        };
+        let resp = client
+            .hooks()
+            .edit_repo_hook("testowner", "testrepo", 3, opt)
+            .await
+            .unwrap();
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_delete_repo_hook() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path("/api/v1/repos/testowner/testrepo/hooks/7"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let resp = client
+            .hooks()
+            .delete_repo_hook("testowner", "testrepo", 7)
+            .await
+            .unwrap();
+        assert_eq!(resp.status, 204);
+    }
+
+    // ── repo hook error paths ─────────────────────────────────────────
+
+    #[tokio::test]
+    async fn test_list_repo_hooks_empty_owner() {
+        let client = create_test_client(&MockServer::start().await);
+        let result = client
+            .hooks()
+            .list_repo_hooks("", "repo", Default::default())
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_list_repo_hooks_empty_repo() {
+        let client = create_test_client(&MockServer::start().await);
+        let result = client
+            .hooks()
+            .list_repo_hooks("owner", "", Default::default())
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_get_repo_hook_empty_owner() {
+        let client = create_test_client(&MockServer::start().await);
+        let result = client.hooks().get_repo_hook("", "repo", 1).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_create_repo_hook_empty_owner() {
+        let client = create_test_client(&MockServer::start().await);
+        let opt = create_hook_option();
+        let result = client.hooks().create_repo_hook("", "repo", opt).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_edit_repo_hook_empty_owner() {
+        let client = create_test_client(&MockServer::start().await);
+        let result = client
+            .hooks()
+            .edit_repo_hook("", "repo", 1, Default::default())
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_delete_repo_hook_empty_owner() {
+        let client = create_test_client(&MockServer::start().await);
+        let result = client.hooks().delete_repo_hook("", "repo", 1).await;
+        assert!(result.is_err());
+    }
+
+    // ── user hook happy paths ─────────────────────────────────────────
+
+    #[tokio::test]
+    async fn test_list_my_hooks() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/user/hooks"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(vec![
+                hook_json(10, "gitea"),
+                hook_json(11, "slack"),
+                hook_json(12, "discord"),
+            ]))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let (hooks, resp) = client
+            .hooks()
+            .list_my_hooks(Default::default())
+            .await
+            .unwrap();
+        assert_eq!(hooks.len(), 3);
+        assert_eq!(hooks[2].id, 12);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_get_my_hook() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/user/hooks/42"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(hook_json(42, "dingtalk")))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let (hook, resp) = client.hooks().get_my_hook(42).await.unwrap();
+        assert_eq!(hook.id, 42);
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_create_my_hook() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path("/api/v1/user/hooks"))
+            .respond_with(ResponseTemplate::new(201).set_body_json(hook_json(99, "msteams")))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let opt = create_hook_option();
+        let (hook, resp) = client.hooks().create_my_hook(opt).await.unwrap();
+        assert_eq!(hook.id, 99);
+        assert_eq!(resp.status, 201);
+    }
+
+    #[tokio::test]
+    async fn test_edit_my_hook() {
+        let server = MockServer::start().await;
+        Mock::given(method("PATCH"))
+            .and(path("/api/v1/user/hooks/8"))
+            .respond_with(ResponseTemplate::new(200))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let opt = EditHookOption {
+            events: Some(vec!["issues".to_string()]),
+            ..Default::default()
+        };
+        let resp = client.hooks().edit_my_hook(8, opt).await.unwrap();
+        assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_delete_my_hook() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path("/api/v1/user/hooks/55"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let resp = client.hooks().delete_my_hook(55).await.unwrap();
+        assert_eq!(resp.status, 204);
+    }
+
+    // ── user hook error paths ─────────────────────────────────────────
+
+    #[tokio::test]
+    async fn test_get_my_hook_not_found() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/user/hooks/999"))
+            .respond_with(ResponseTemplate::new(404))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client.hooks().get_my_hook(999).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_edit_my_hook_server_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("PATCH"))
+            .and(path("/api/v1/user/hooks/8"))
+            .respond_with(ResponseTemplate::new(500))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let opt = EditHookOption {
+            events: Some(vec!["issues".to_string()]),
+            ..Default::default()
+        };
+        let result = client.hooks().edit_my_hook(8, opt).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_create_my_hook_unknown_type() {
+        let server = MockServer::start().await;
+        let client = create_test_client(&server);
+        let mut config = std::collections::HashMap::new();
+        config.insert("url".to_string(), "https://example.com/hook".to_string());
+        let opt = CreateHookOption {
+            hook_type: HookType::Unknown,
+            config,
+            events: vec![],
+            branch_filter: None,
+            active: false,
+            authorization_header: None,
+        };
+        let result = client.hooks().create_my_hook(opt).await;
+        assert!(result.is_err());
+        assert!(result.unwrap_err().to_string().contains("hook type needed"));
+    }
+
+    // ── server error paths ────────────────────────────────────────────
+
+    #[tokio::test]
+    async fn test_list_org_hooks_server_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/orgs/testorg/hooks"))
+            .respond_with(ResponseTemplate::new(500))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client
+            .hooks()
+            .list_org_hooks("testorg", Default::default())
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_get_org_hook_not_found() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/orgs/testorg/hooks/999"))
+            .respond_with(ResponseTemplate::new(404))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client.hooks().get_org_hook("testorg", 999).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_delete_org_hook_not_found() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path("/api/v1/orgs/testorg/hooks/999"))
+            .respond_with(ResponseTemplate::new(404))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client.hooks().delete_org_hook("testorg", 999).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_list_repo_hooks_server_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/repos/testowner/testrepo/hooks"))
+            .respond_with(ResponseTemplate::new(500))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client
+            .hooks()
+            .list_repo_hooks("testowner", "testrepo", Default::default())
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_delete_repo_hook_not_found() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path("/api/v1/repos/testowner/testrepo/hooks/999"))
+            .respond_with(ResponseTemplate::new(404))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client
+            .hooks()
+            .delete_repo_hook("testowner", "testrepo", 999)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_list_my_hooks_server_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/user/hooks"))
+            .respond_with(ResponseTemplate::new(500))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client.hooks().list_my_hooks(Default::default()).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_delete_my_hook_not_found() {
+        let server = MockServer::start().await;
+        Mock::given(method("DELETE"))
+            .and(path("/api/v1/user/hooks/999"))
+            .respond_with(ResponseTemplate::new(404))
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client.hooks().delete_my_hook(999).await;
+        assert!(result.is_err());
     }
 }

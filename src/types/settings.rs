@@ -5,6 +5,7 @@
 use crate::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Global UISettings payload type.
 pub struct GlobalUISettings {
     #[serde(rename = "default_theme")]
     pub default_theme: String,
@@ -15,6 +16,7 @@ pub struct GlobalUISettings {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Global Repo Settings payload type.
 pub struct GlobalRepoSettings {
     #[serde(rename = "mirrors_disabled")]
     pub mirrors_disabled: bool,
@@ -31,6 +33,7 @@ pub struct GlobalRepoSettings {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Global APISettings payload type.
 pub struct GlobalAPISettings {
     #[serde(rename = "max_response_items")]
     pub max_response_items: i32,
@@ -43,6 +46,7 @@ pub struct GlobalAPISettings {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Global Attachment Settings payload type.
 pub struct GlobalAttachmentSettings {
     pub enabled: bool,
     #[serde(rename = "allowed_types")]

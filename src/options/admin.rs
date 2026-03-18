@@ -10,6 +10,7 @@ use crate::{Deserialize, Serialize};
 
 /// Options for listing admin users
 #[derive(Debug, Clone, Default)]
+/// Options for Admin List Users Option.
 pub struct AdminListUsersOptions {
     pub list_options: ListOptions,
     pub source_id: i64,
@@ -67,6 +68,7 @@ impl QueryEncode for AdminListUsersOptions {
 
 /// Options for creating a user
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+/// Options for Create User Option.
 pub struct CreateUserOption {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub source_id: Option<i64>,
@@ -89,6 +91,7 @@ pub struct CreateUserOption {
 }
 
 impl CreateUserOption {
+    /// Validate this `CreateUserOption` payload.
     pub fn validate(&self) -> crate::Result<()> {
         if self.username.is_empty() {
             return Err(crate::Error::Validation("username is empty".to_string()));
@@ -105,6 +108,7 @@ impl CreateUserOption {
 
 /// Options for editing a user
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
+/// Options for Edit User Option.
 pub struct EditUserOption {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub source_id: Option<i64>,
@@ -152,6 +156,7 @@ pub struct EditUserOption {
 
 /// Options for renaming a user
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Rename User Option.
 pub struct RenameUserOption {
     #[serde(rename = "new_username")]
     pub new_username: String,
@@ -161,6 +166,7 @@ pub struct RenameUserOption {
 
 /// Options for listing unadopted repositories
 #[derive(Debug, Clone, Default)]
+/// Options for List Unadopted Repos Option.
 pub struct ListUnadoptedReposOptions {
     pub list_options: ListOptions,
     pub pattern: String,
@@ -180,6 +186,7 @@ impl QueryEncode for ListUnadoptedReposOptions {
 
 /// Options for listing admin organizations
 #[derive(Debug, Clone, Default)]
+/// Options for Admin List Orgs Option.
 pub struct AdminListOrgsOptions {
     pub list_options: ListOptions,
 }
@@ -194,6 +201,7 @@ impl QueryEncode for AdminListOrgsOptions {
 
 /// Options for listing cron tasks
 #[derive(Debug, Clone, Default)]
+/// Options for List Cron Tasks Option.
 pub struct ListCronTasksOptions {
     pub list_options: ListOptions,
 }
@@ -208,6 +216,7 @@ impl QueryEncode for ListCronTasksOptions {
 
 /// Options for listing admin hooks
 #[derive(Debug, Clone, Default)]
+/// Options for List Admin Hooks Option.
 pub struct ListAdminHooksOptions {
     pub list_options: ListOptions,
     pub hook_type: String,
@@ -225,6 +234,7 @@ impl QueryEncode for ListAdminHooksOptions {
 
 /// Options for creating a hook
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Create Hook Option.
 pub struct CreateHookOption {
     #[serde(rename = "type")]
     pub hook_type: HookType,
@@ -240,6 +250,7 @@ pub struct CreateHookOption {
 }
 
 impl CreateHookOption {
+    /// Validate this `CreateHookOption` payload.
     pub fn validate(&self) -> crate::Result<()> {
         // HookType::Unknown means empty, which is invalid
         if matches!(self.hook_type, HookType::Unknown) {
@@ -253,6 +264,7 @@ impl CreateHookOption {
 
 /// Options for editing a hook
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
+/// Options for Edit Hook Option.
 pub struct EditHookOption {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub config: Option<std::collections::HashMap<String, String>>,
@@ -270,6 +282,7 @@ pub struct EditHookOption {
 
 /// Options for listing admin emails
 #[derive(Debug, Clone, Default)]
+/// Options for List Admin Emails Option.
 pub struct ListAdminEmailsOptions {
     pub list_options: ListOptions,
 }
@@ -282,6 +295,7 @@ impl QueryEncode for ListAdminEmailsOptions {
 
 /// Options for searching admin emails
 #[derive(Debug, Clone, Default)]
+/// Options for Search Admin Emails Option.
 pub struct SearchAdminEmailsOptions {
     pub list_options: ListOptions,
     pub query: String,
@@ -301,6 +315,7 @@ impl QueryEncode for SearchAdminEmailsOptions {
 
 /// Options for adding user badges
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for User Badge Option.
 pub struct UserBadgeOption {
     #[serde(rename = "badge_slugs")]
     pub badge_slugs: Vec<String>,

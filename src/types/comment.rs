@@ -10,6 +10,7 @@ use super::user::User;
 
 /// Comment represents a comment on a commit or issue
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Comment payload type.
 pub struct Comment {
     pub id: i64,
     #[serde(rename = "html_url")]

@@ -5,6 +5,7 @@
 use crate::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Markdown Option.
 pub struct MarkdownOption {
     #[serde(rename = "Text")]
     pub text: String,
@@ -21,6 +22,7 @@ fn is_false(b: &bool) -> bool {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Markup Option.
 pub struct MarkupOption {
     #[serde(rename = "Text")]
     pub text: String,

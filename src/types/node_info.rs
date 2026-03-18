@@ -7,6 +7,7 @@ use std::collections::HashMap;
 
 /// GitignoreTemplateInfo represents a gitignore template
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Gitignore Template Info payload type.
 pub struct GitignoreTemplateInfo {
     pub name: String,
     pub source: String,
@@ -14,6 +15,7 @@ pub struct GitignoreTemplateInfo {
 
 /// LabelTemplate represents a label template
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Label Template payload type.
 pub struct LabelTemplate {
     pub name: String,
     pub color: String,
@@ -23,6 +25,7 @@ pub struct LabelTemplate {
 
 /// NodeInfoSoftware represents software information
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Node Info Software payload type.
 pub struct NodeInfoSoftware {
     pub name: String,
     pub version: String,
@@ -32,6 +35,7 @@ pub struct NodeInfoSoftware {
 
 /// NodeInfoServices represents third party services
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Node Info Services payload type.
 pub struct NodeInfoServices {
     #[serde(default)]
     pub inbound: Vec<String>,
@@ -41,6 +45,7 @@ pub struct NodeInfoServices {
 
 /// NodeInfoUsageUsers represents user statistics
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Node Info Usage Users payload type.
 pub struct NodeInfoUsageUsers {
     pub total: i64,
     #[serde(rename = "activeHalfyear")]
@@ -51,6 +56,7 @@ pub struct NodeInfoUsageUsers {
 
 /// NodeInfoUsage represents usage statistics
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Node Info Usage payload type.
 pub struct NodeInfoUsage {
     pub users: NodeInfoUsageUsers,
     #[serde(rename = "localPosts")]
@@ -61,6 +67,7 @@ pub struct NodeInfoUsage {
 
 /// NodeInfo represents nodeinfo about the server
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Node Info payload type.
 pub struct NodeInfo {
     pub version: String,
     pub software: NodeInfoSoftware,

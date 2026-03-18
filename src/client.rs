@@ -68,6 +68,8 @@ struct ClientInner {
     preset_version: Option<semver::Version>,
     /// Guards against concurrent `load_server_version` fetches.
     version_loading: tokio::sync::Mutex<()>,
+    /// SSH signer for HTTP Signature authentication, if configured.
+    ssh_signer: RwLock<Option<crate::auth::ssh_sign::SshSigner>>,
 }
 
 /// A thread-safe Gitea API client.
@@ -87,6 +89,7 @@ struct ClientInner {
 ///     .build()?;
 /// ```
 #[derive(Clone)]
+/// Client payload type.
 pub struct Client {
     inner: Arc<ClientInner>,
 }
@@ -147,6 +150,7 @@ impl Client {
         self.inner.config.write().user_agent = agent.into();
     }
 
+    /// Replace the underlying HTTP client used for requests.
     pub fn set_http_client(&self, client: reqwest::Client) {
         *self.inner.http.write() = client;
     }
@@ -194,67 +198,110 @@ impl Client {
     pub(crate) async fn version_loading_lock(&self) -> tokio::sync::MutexGuard<'_, ()> {
         self.inner.version_loading.lock().await
     }
+
+    pub(crate) fn ssh_signer(
+        &self,
+    ) -> parking_lot::RwLockReadGuard<'_, Option<crate::auth::ssh_sign::SshSigner>> {
+        self.inner.ssh_signer.read()
+    }
+
+    /// Determine whether to use legacy HTTP Signature format for SSH signing.
+    ///
+    /// Returns `true` (use legacy) when:
+    /// - Version checks are disabled (`ignore_version`), or
+    /// - The server version is known to be < 1.23.0.
+    ///
+    /// Returns `false` (use modern) when:
+    /// - The server version is known to be >= 1.23.0, or
+    /// - The version is unknown (optimistically assume modern).
+    pub(crate) fn should_use_legacy_ssh(&self) -> bool {
+        if self.ignore_version() {
+            return true;
+        }
+        if let Some(v) = self.preset_version() {
+            return v < &*crate::version::VERSION_1_23_0;
+        }
+        if let Some(v) = self.server_version_lock().get() {
+            return v < &*crate::version::VERSION_1_23_0;
+        }
+        false
+    }
 }
 
 // ── API accessor methods ────────────────────────────────────────────
 
 impl Client {
+    /// Access repository API methods.
     pub fn repos(&self) -> ReposApi<'_> {
         ReposApi::new(self)
     }
 
+    /// Access issue API methods.
     pub fn issues(&self) -> IssuesApi<'_> {
         IssuesApi::new(self)
     }
 
+    /// Access pull request API methods.
     pub fn pulls(&self) -> PullsApi<'_> {
         PullsApi::new(self)
     }
 
+    /// Access organization API methods.
     pub fn orgs(&self) -> OrgsApi<'_> {
         OrgsApi::new(self)
     }
 
+    /// Access user API methods.
     pub fn users(&self) -> UsersApi<'_> {
         UsersApi::new(self)
     }
 
+    /// Access admin API methods.
     pub fn admin(&self) -> AdminApi<'_> {
         AdminApi::new(self)
     }
 
+    /// Access webhook API methods.
     pub fn hooks(&self) -> HooksApi<'_> {
         HooksApi::new(self)
     }
 
+    /// Access notification API methods.
     pub fn notifications(&self) -> NotificationsApi<'_> {
         NotificationsApi::new(self)
     }
 
+    /// Access actions API methods.
     pub fn actions(&self) -> ActionsApi<'_> {
         ActionsApi::new(self)
     }
 
+    /// Access release API methods.
     pub fn releases(&self) -> ReleasesApi<'_> {
         ReleasesApi::new(self)
     }
 
+    /// Access settings API methods.
     pub fn settings(&self) -> SettingsApi<'_> {
         SettingsApi::new(self)
     }
 
+    /// Access OAuth2 application API methods.
     pub fn oauth2(&self) -> Oauth2Api<'_> {
         Oauth2Api::new(self)
     }
 
+    /// Access miscellaneous API methods.
     pub fn miscellaneous(&self) -> MiscApi<'_> {
         MiscApi::new(self)
     }
 
+    /// Access ActivityPub API methods.
     pub fn activitypub(&self) -> ActivityPubApi<'_> {
         ActivityPubApi::new(self)
     }
 
+    /// Access commit status API methods.
     pub fn status(&self) -> StatusApi<'_> {
         StatusApi::new(self)
     }
@@ -279,6 +326,7 @@ pub struct ClientBuilder<'a> {
     raw_preset_version: Option<String>,
     preset_version: Option<semver::Version>,
     http_client: Option<reqwest::Client>,
+    ssh_signer: Option<crate::auth::ssh_sign::SshSigner>,
 }
 
 impl std::fmt::Debug for ClientBuilder<'_> {
@@ -318,6 +366,7 @@ impl<'a> ClientBuilder<'a> {
             raw_preset_version: None,
             preset_version: None,
             http_client: None,
+            ssh_signer: None,
         }
     }
 
@@ -385,6 +434,87 @@ impl<'a> ClientBuilder<'a> {
         self
     }
 
+    /// Configure SSH certificate-based authentication.
+    ///
+    /// Reads the private key from `key_path` and stores a certificate signer
+    /// with the given `principal`. Optionally reads the certificate from
+    /// `cert_path` (needed for `x-ssh-certificate` header).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Error::SshSign`] if the key file cannot be read, parsed, or decrypted.
+    pub fn ssh_cert<P: AsRef<std::path::Path>>(
+        mut self,
+        principal: impl Into<String>,
+        key_path: P,
+        passphrase: Option<&str>,
+    ) -> crate::Result<Self> {
+        let key = crate::auth::ssh_sign::load_private_key(key_path.as_ref(), passphrase)?;
+        self.ssh_signer = Some(crate::auth::ssh_sign::SshSigner::Cert {
+            principal: principal.into(),
+            key,
+            certificate_bytes: None,
+        });
+        Ok(self)
+    }
+
+    /// Configure SSH certificate-based authentication with a certificate file.
+    ///
+    /// Like [`Self::ssh_cert`] but also reads the OpenSSH certificate from
+    /// `cert_path` and includes it as the `x-ssh-certificate` header in
+    /// signed requests.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Error::SshSign`] if the key or certificate file cannot be read.
+    pub fn ssh_cert_with_certificate<P1, P2>(
+        mut self,
+        principal: impl Into<String>,
+        key_path: P1,
+        cert_path: P2,
+        passphrase: Option<&str>,
+    ) -> crate::Result<Self>
+    where
+        P1: AsRef<std::path::Path>,
+        P2: AsRef<std::path::Path>,
+    {
+        let key = crate::auth::ssh_sign::load_private_key(key_path.as_ref(), passphrase)?;
+        let cert_bytes = std::fs::read(cert_path.as_ref()).map_err(|e| {
+            crate::Error::SshSign(format!(
+                "failed to read {}: {e}",
+                cert_path.as_ref().display()
+            ))
+        })?;
+        self.ssh_signer = Some(crate::auth::ssh_sign::SshSigner::Cert {
+            principal: principal.into(),
+            key,
+            certificate_bytes: Some(cert_bytes),
+        });
+        Ok(self)
+    }
+
+    /// Configure SSH public key-based authentication.
+    ///
+    /// Reads the private key from `key_path` and stores a public-key signer
+    /// with the given `fingerprint`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Error::SshSign`] if the key file cannot be read, parsed, or decrypted.
+    pub fn ssh_pubkey<P: AsRef<std::path::Path>>(
+        mut self,
+        fingerprint: impl Into<String>,
+        key_path: P,
+        passphrase: Option<&str>,
+    ) -> crate::Result<Self> {
+        let key = crate::auth::ssh_sign::load_private_key(key_path.as_ref(), passphrase)?;
+        self.ssh_signer = Some(crate::auth::ssh_sign::SshSigner::Pubkey {
+            fingerprint: fingerprint.into(),
+            key,
+        });
+        Ok(self)
+    }
+
     /// Consume the builder and produce a [`Client`].
     ///
     /// # Errors
@@ -437,6 +567,7 @@ impl<'a> ClientBuilder<'a> {
                 server_version: OnceLock::new(),
                 preset_version: self.preset_version,
                 version_loading: tokio::sync::Mutex::new(()),
+                ssh_signer: RwLock::new(self.ssh_signer),
             }),
         })
     }
@@ -613,5 +744,90 @@ mod tests {
 
         client.set_token("updated-token");
         assert_eq!(cloned.read_config().access_token, "updated-token");
+    }
+
+    #[test]
+    fn test_client_builder_ssh_cert() {
+        let tmp = std::env::temp_dir().join("gitea_sdk_test_ssh_cert_builder");
+        std::fs::write(
+            &tmp,
+            include_bytes!("../tests/ssh_fixtures/id_ed25519_test"),
+        )
+        .expect("write temp key");
+        let client = Client::builder("https://example.com")
+            .ssh_cert("test-principal", &tmp, None::<&str>)
+            .expect("ssh_cert should succeed with valid key")
+            .build()
+            .expect("build with ssh_cert should succeed");
+        let signer = client.ssh_signer();
+        assert!(
+            signer.is_some(),
+            "ssh_signer should be present after ssh_cert()"
+        );
+        let _ = std::fs::remove_file(&tmp);
+    }
+
+    #[test]
+    fn test_client_builder_ssh_pubkey() {
+        let tmp = std::env::temp_dir().join("gitea_sdk_test_ssh_pubkey_builder");
+        std::fs::write(
+            &tmp,
+            include_bytes!("../tests/ssh_fixtures/id_ed25519_test"),
+        )
+        .expect("write temp key");
+        let fp = crate::auth::ssh_sign::fingerprint(
+            &ssh_key::PrivateKey::from_openssh(include_bytes!(
+                "../tests/ssh_fixtures/id_ed25519_test"
+            ))
+            .expect("parse test key")
+            .public_key(),
+        );
+        let client = Client::builder("https://example.com")
+            .ssh_pubkey(&fp, &tmp, None::<&str>)
+            .expect("ssh_pubkey should succeed with valid key")
+            .build()
+            .expect("build with ssh_pubkey should succeed");
+        let signer = client.ssh_signer();
+        assert!(
+            signer.is_some(),
+            "ssh_signer should be present after ssh_pubkey()"
+        );
+        let _ = std::fs::remove_file(&tmp);
+    }
+
+    #[test]
+    fn test_client_builder_no_ssh() {
+        let client = Client::builder("https://example.com").build().unwrap();
+        let signer = client.ssh_signer();
+        assert!(
+            signer.is_none(),
+            "ssh_signer should be None when no SSH configured"
+        );
+    }
+
+    #[test]
+    fn test_client_builder_ssh_cert_invalid_path() {
+        let result = Client::builder("https://example.com").ssh_cert(
+            "principal",
+            "/nonexistent/key",
+            None::<&str>,
+        );
+        assert!(
+            result.is_err(),
+            "ssh_cert with nonexistent path should return Err"
+        );
+    }
+
+    #[test]
+    fn test_client_builder_ssh_pubkey_invalid_path() {
+        let result = Client::builder("https://example.com").ssh_pubkey(
+            "SHA256:abc",
+            "/nonexistent/key",
+            None::<&str>,
+        );
+        assert!(
+            result.is_err(),
+            "ssh_pubkey with nonexistent path should return Err"
+        );
     }
 }

@@ -5,6 +5,7 @@
 use crate::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Create OAuth2 Option.
 pub struct CreateOauth2Option {
     pub name: String,
     #[serde(rename = "confidential_client", default)]
@@ -18,6 +19,7 @@ pub struct CreateOauth2Option {
 }
 
 #[derive(Debug, Clone, Default)]
+/// Options for List OAuth2 Option.
 pub struct ListOauth2Option {
     pub list_options: crate::pagination::ListOptions,
 }
@@ -29,6 +31,7 @@ impl crate::pagination::QueryEncode for ListOauth2Option {
 }
 
 impl CreateOauth2Option {
+    /// Validate this `CreateOauth2Option` payload.
     pub fn validate(&self) -> crate::Result<()> {
         if self.name.trim().is_empty() {
             return Err(crate::Error::Validation("name is required".to_string()));

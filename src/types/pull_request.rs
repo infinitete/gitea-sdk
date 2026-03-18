@@ -17,6 +17,7 @@ use crate::types::enums::{ReviewStateType, StateType};
 
 /// PRBranchInfo information about a branch
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// PRBranch Info payload type.
 pub struct PRBranchInfo {
     #[serde(rename = "label")]
     pub name: String,
@@ -32,6 +33,7 @@ pub struct PRBranchInfo {
 
 /// PRBranchInfoRepo repository info embedded in PR branch info
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// PRBranch Info Repo payload type.
 pub struct PRBranchInfoRepo {
     pub id: i64,
     pub name: String,
@@ -43,6 +45,7 @@ pub struct PRBranchInfoRepo {
 
 /// PullRequest represents a pull request
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Pull Request payload type.
 pub struct PullRequest {
     pub id: i64,
     pub url: String,
@@ -145,6 +148,7 @@ pub struct PullRequest {
 
 /// ChangedFile is a changed file in a diff
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Changed File payload type.
 pub struct ChangedFile {
     pub filename: String,
     #[serde(default, rename = "previous_filename")]
@@ -165,6 +169,7 @@ pub struct ChangedFile {
 
 /// PullReview represents a pull request review
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Pull Review payload type.
 pub struct PullReview {
     pub id: i64,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -197,6 +202,7 @@ pub struct PullReview {
 
 /// PullReviewComment represents a comment on a pull request review
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Pull Review Comment payload type.
 pub struct PullReviewComment {
     pub id: i64,
     #[serde(default)]

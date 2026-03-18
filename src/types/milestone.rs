@@ -11,6 +11,7 @@ use crate::types::enums::StateType;
 
 /// Milestone represents a collection of issues on one repository
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Milestone payload type.
 pub struct Milestone {
     pub id: i64,
     pub title: String,

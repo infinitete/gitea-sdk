@@ -6,6 +6,7 @@ use crate::{Deserialize, Serialize};
 
 /// Label represents a label for an issue or a pull request
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Label payload type.
 pub struct Label {
     pub id: i64,
     pub name: String,

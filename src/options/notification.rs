@@ -7,6 +7,7 @@ use crate::types::enums::{NotifyStatus, NotifySubjectType};
 use time::OffsetDateTime;
 
 #[derive(Debug, Clone, Default)]
+/// Options for List Notification Option.
 pub struct ListNotificationOptions {
     pub list_options: ListOptions,
     pub since: Option<OffsetDateTime>,
@@ -18,21 +19,15 @@ pub struct ListNotificationOptions {
 impl crate::pagination::QueryEncode for ListNotificationOptions {
     fn query_encode(&self) -> String {
         let mut out = self.list_options.query_encode();
-        if let Some(since) = self.since {
-            out.push_str(&format!(
-                "&since={}",
-                since
-                    .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            ));
+        if let Some(since) = self.since
+            && let Ok(formatted) = since.format(&time::format_description::well_known::Rfc3339)
+        {
+            out.push_str(&format!("&since={formatted}"));
         }
-        if let Some(before) = self.before {
-            out.push_str(&format!(
-                "&before={}",
-                before
-                    .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            ));
+        if let Some(before) = self.before
+            && let Ok(formatted) = before.format(&time::format_description::well_known::Rfc3339)
+        {
+            out.push_str(&format!("&before={formatted}"));
         }
         for s in &self.status {
             out.push_str(&format!("&status-types={}", s.as_ref()));
@@ -45,6 +40,7 @@ impl crate::pagination::QueryEncode for ListNotificationOptions {
 }
 
 #[derive(Debug, Clone, Default)]
+/// Options for Mark Notification Option.
 pub struct MarkNotificationOptions {
     pub last_read_at: Option<OffsetDateTime>,
     pub status: Vec<NotifyStatus>,
@@ -54,13 +50,10 @@ pub struct MarkNotificationOptions {
 impl crate::pagination::QueryEncode for MarkNotificationOptions {
     fn query_encode(&self) -> String {
         let mut out = String::new();
-        if let Some(last_read) = self.last_read_at {
-            out.push_str(&format!(
-                "last_read_at={}",
-                last_read
-                    .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            ));
+        if let Some(last_read) = self.last_read_at
+            && let Ok(formatted) = last_read.format(&time::format_description::well_known::Rfc3339)
+        {
+            out.push_str(&format!("last_read_at={formatted}"));
         }
         for s in &self.status {
             if !out.is_empty() {

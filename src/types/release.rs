@@ -10,6 +10,7 @@ use super::user::User;
 
 /// Attachment represents a generic attachment
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Attachment payload type.
 pub struct Attachment {
     pub id: i64,
     pub name: String,
@@ -25,6 +26,7 @@ pub struct Attachment {
 
 /// Release represents a repository release
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Release payload type.
 pub struct Release {
     pub id: i64,
     #[serde(rename = "tag_name")]

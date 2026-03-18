@@ -10,6 +10,7 @@ use super::user::User;
 
 /// Package represents a package
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Package payload type.
 pub struct Package {
     /// the package's id
     pub id: i64,
@@ -34,6 +35,7 @@ pub struct Package {
 
 /// PackageFile represents a file from a package
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Package File payload type.
 pub struct PackageFile {
     /// the file's ID
     pub id: i64,

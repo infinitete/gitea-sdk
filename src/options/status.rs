@@ -7,6 +7,7 @@ use crate::types::enums::StatusState;
 use crate::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Create Status Option.
 pub struct CreateStatusOption {
     pub state: StatusState,
     #[serde(rename = "target_url", skip_serializing_if = "Option::is_none")]
@@ -18,6 +19,7 @@ pub struct CreateStatusOption {
 }
 
 #[derive(Debug, Clone, Default)]
+/// Options for List Statuses Option.
 pub struct ListStatusesOption {
     pub list_options: ListOptions,
 }

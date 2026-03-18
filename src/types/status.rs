@@ -12,6 +12,7 @@ use super::user::User;
 
 /// Status holds a single Status of a single Commit
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Status payload type.
 pub struct Status {
     pub id: i64,
     pub state: StatusState,
@@ -30,6 +31,7 @@ pub struct Status {
 
 /// CombinedStatus holds the combined state of several statuses for a single commit
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Combined Status payload type.
 pub struct CombinedStatus {
     pub state: StatusState,
     pub sha: String,

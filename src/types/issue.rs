@@ -16,6 +16,7 @@ use crate::types::enums::{IssueFormElementType, StateType};
 
 /// PullRequestMeta PR info if an issue is a PR
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Pull Request Meta payload type.
 pub struct PullRequestMeta {
     #[serde(rename = "merged")]
     pub has_merged: bool,
@@ -30,6 +31,7 @@ pub struct PullRequestMeta {
 
 /// RepositoryMeta basic repository information
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Repository Meta payload type.
 pub struct RepositoryMeta {
     pub id: i64,
     pub name: String,
@@ -40,6 +42,7 @@ pub struct RepositoryMeta {
 
 /// Issue represents an issue in a repository
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Issue payload type.
 pub struct Issue {
     pub id: i64,
     pub url: String,
@@ -97,6 +100,7 @@ pub struct Issue {
 
 /// IssueBlockedBy represents an issue that blocks another issue
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Issue Blocked By payload type.
 pub struct IssueBlockedBy {
     pub index: i64,
     pub title: String,
@@ -107,6 +111,7 @@ pub struct IssueBlockedBy {
 
 /// IssueMeta represents issue reference for blocking/dependency operations
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Issue Meta payload type.
 pub struct IssueMeta {
     pub index: i64,
 }
@@ -115,6 +120,7 @@ pub struct IssueMeta {
 
 /// StopWatch represents a running stopwatch of an issue / pr
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Stop Watch payload type.
 pub struct StopWatch {
     #[serde(with = "rfc3339")]
     pub created: OffsetDateTime,
@@ -134,6 +140,7 @@ pub struct StopWatch {
 
 /// TrackedTime worked time for an issue / pr
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Tracked Time payload type.
 pub struct TrackedTime {
     pub id: i64,
     #[serde(with = "rfc3339")]
@@ -154,6 +161,7 @@ pub struct TrackedTime {
 
 /// TimelineComment represents a timeline comment on an issue
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Timeline Comment payload type.
 pub struct TimelineComment {
     pub id: i64,
     #[serde(rename = "html_url")]
@@ -196,6 +204,7 @@ pub struct TimelineComment {
 
 /// WatchInfo represents the subscription state of an issue
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Watch Info payload type.
 pub struct WatchInfo {
     #[serde(default)]
     pub subscribed: bool,
@@ -218,6 +227,7 @@ pub struct WatchInfo {
 /// IssueTemplate provides metadata and content on an issue template.
 /// There are two types of issue templates: .Markdown- and .Form-based.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Issue Template payload type.
 pub struct IssueTemplate {
     pub name: String,
     pub about: String,
@@ -237,6 +247,7 @@ pub struct IssueTemplate {
 
 /// IssueFormElement describes a part of a IssueTemplate form
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Issue Form Element payload type.
 pub struct IssueFormElement {
     pub id: String,
     pub r#type: IssueFormElementType,
@@ -247,6 +258,7 @@ pub struct IssueFormElement {
 
 /// IssueFormElementAttributes contains the combined set of attributes available on all element types.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Issue Form Element Attributes payload type.
 pub struct IssueFormElementAttributes {
     /// A brief description of the expected user input
     pub label: String,
@@ -272,6 +284,7 @@ pub struct IssueFormElementAttributes {
 
 /// IssueFormElementValidations contains the combined set of validations available on all element types.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+/// Issue Form Element Validations payload type.
 pub struct IssueFormElementValidations {
     #[serde(default)]
     pub required: bool,

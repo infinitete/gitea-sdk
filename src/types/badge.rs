@@ -6,6 +6,7 @@ use crate::{Deserialize, Serialize};
 
 /// Badge represents a user badge
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Badge payload type.
 pub struct Badge {
     pub id: i64,
     pub slug: String,

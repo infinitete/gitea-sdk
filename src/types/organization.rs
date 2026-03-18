@@ -6,6 +6,7 @@ use crate::{Deserialize, Serialize};
 
 /// Organization represents an organization
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Organization payload type.
 pub struct Organization {
     pub id: i64,
     pub name: String,
@@ -26,6 +27,7 @@ pub struct Organization {
 
 /// OrgPermissions represents the permissions for a user in an organization
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Org Permissions payload type.
 pub struct OrgPermissions {
     #[serde(rename = "can_create_repository")]
     pub can_create_repository: bool,

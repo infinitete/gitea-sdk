@@ -10,6 +10,7 @@ use crate::{Deserialize, Serialize};
 
 /// ListPullRequestsOptions options for listing pull requests
 #[derive(Debug, Clone)]
+/// Options for List Pull Requests Option.
 pub struct ListPullRequestsOptions {
     pub list_options: ListOptions,
     pub state: StateType,
@@ -47,6 +48,7 @@ impl QueryEncode for ListPullRequestsOptions {
 
 /// CreatePullRequestOption options when creating a pull request
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Create Pull Request Option.
 pub struct CreatePullRequestOption {
     pub head: String,
     pub base: String,
@@ -78,6 +80,7 @@ mod nullable_rfc3339_option {
     use serde::{Deserializer, Serializer};
     use time::OffsetDateTime;
 
+    /// Serialize an optional RFC 3339 timestamp for serde.
     pub fn serialize<S>(opt: &Option<OffsetDateTime>, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
@@ -93,6 +96,7 @@ mod nullable_rfc3339_option {
         }
     }
 
+    /// Deserialize an optional RFC 3339 timestamp for serde.
     pub fn deserialize<'de, D>(deserializer: D) -> Result<Option<OffsetDateTime>, D::Error>
     where
         D: Deserializer<'de>,
@@ -112,6 +116,7 @@ mod nullable_rfc3339_option {
 
 /// EditPullRequestOption options when modify pull request
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+/// Options for Edit Pull Request Option.
 pub struct EditPullRequestOption {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
@@ -153,13 +158,13 @@ impl EditPullRequestOption {
         {
             return Err(crate::Error::Validation("title is empty".to_string()));
         }
-        // TODO: version gate for base change (requires Gitea >= 1.12)
         Ok(())
     }
 }
 
 /// MergePullRequestOption options when merging a pull request
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+/// Options for Merge Pull Request Option.
 pub struct MergePullRequestOption {
     #[serde(rename = "Do", skip_serializing_if = "Option::is_none")]
     pub style: Option<MergeStyle>,
@@ -181,6 +186,7 @@ pub struct MergePullRequestOption {
 
 /// PullRequestDiffOptions options for GET `/repos/<owner>/<repo>/pulls/<idx>.[diff|patch]`
 #[derive(Debug, Clone, Default)]
+/// Options for Pull Request Diff Option.
 pub struct PullRequestDiffOptions {
     /// Include binary file changes when requesting a .diff
     pub binary: bool,
@@ -194,6 +200,7 @@ impl QueryEncode for PullRequestDiffOptions {
 
 /// ListPullRequestCommitsOptions options for listing pull request commits
 #[derive(Debug, Clone, Default)]
+/// Options for List Pull Request Commits Option.
 pub struct ListPullRequestCommitsOptions {
     pub list_options: ListOptions,
 }
@@ -206,6 +213,7 @@ impl QueryEncode for ListPullRequestCommitsOptions {
 
 /// ListPullRequestFilesOptions options for listing pull request files
 #[derive(Debug, Clone, Default)]
+/// Options for List Pull Request Files Option.
 pub struct ListPullRequestFilesOptions {
     pub list_options: ListOptions,
 }
@@ -220,6 +228,7 @@ impl QueryEncode for ListPullRequestFilesOptions {
 
 /// ListPullReviewsOptions options for listing PullReviews
 #[derive(Debug, Clone, Default)]
+/// Options for List Pull Reviews Option.
 pub struct ListPullReviewsOptions {
     pub list_options: ListOptions,
 }
@@ -232,6 +241,7 @@ impl QueryEncode for ListPullReviewsOptions {
 
 /// CreatePullReviewOptions are options to create a pull review
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Create Pull Review Option.
 pub struct CreatePullReviewOptions {
     #[serde(rename = "event", skip_serializing_if = "Option::is_none")]
     pub state: Option<ReviewStateType>,
@@ -261,6 +271,7 @@ impl CreatePullReviewOptions {
 
 /// CreatePullReviewComment represent a review comment for creation api
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Create Pull Review Comment.
 pub struct CreatePullReviewComment {
     /// the tree path
     pub path: String,
@@ -290,6 +301,7 @@ impl CreatePullReviewComment {
 
 /// SubmitPullReviewOptions are options to submit a pending pull review
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Submit Pull Review Option.
 pub struct SubmitPullReviewOptions {
     #[serde(rename = "event", skip_serializing_if = "Option::is_none")]
     pub state: Option<ReviewStateType>,
@@ -311,6 +323,7 @@ impl SubmitPullReviewOptions {
 
 /// DismissPullReviewOptions are options to dismiss a pull review
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Dismiss Pull Review Option.
 pub struct DismissPullReviewOptions {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub message: Option<String>,
@@ -318,6 +331,7 @@ pub struct DismissPullReviewOptions {
 
 /// PullReviewRequestOptions are options to add or remove pull review requests
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+/// Options for Pull Review Request Option.
 pub struct PullReviewRequestOptions {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub reviewers: Vec<String>,

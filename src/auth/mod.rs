@@ -2,6 +2,11 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+pub(crate) mod httpsig;
+pub(crate) mod pageant;
+pub(crate) mod ssh_agent;
+pub(crate) mod ssh_sign;
+
 use hmac::{Hmac, Mac};
 use sha2::Sha256;
 use subtle::ConstantTimeEq;

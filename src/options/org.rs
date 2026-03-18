@@ -10,6 +10,7 @@ use crate::{Deserialize, Serialize};
 
 /// ListOrgsOptions options for listing organizations
 #[derive(Debug, Clone, Default)]
+/// Options for List Orgs Option.
 pub struct ListOrgsOptions {
     pub list_options: ListOptions,
 }
@@ -22,6 +23,7 @@ impl QueryEncode for ListOrgsOptions {
 
 /// CreateOrgOption options for creating an organization
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+/// Options for Create Org Option.
 pub struct CreateOrgOption {
     #[serde(rename = "username")]
     pub name: String,
@@ -45,6 +47,7 @@ pub struct CreateOrgOption {
 }
 
 impl CreateOrgOption {
+    /// Validate this `CreateOrgOption` payload.
     pub fn validate(&self) -> crate::Result<()> {
         if self.name.is_empty() {
             return Err(crate::Error::Validation("org name is required".to_string()));
@@ -65,6 +68,7 @@ impl CreateOrgOption {
 
 /// EditOrgOption options for editing an organization
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+/// Options for Edit Org Option.
 pub struct EditOrgOption {
     #[serde(rename = "full_name", skip_serializing_if = "Option::is_none")]
     pub full_name: Option<String>,
@@ -86,6 +90,7 @@ pub struct EditOrgOption {
 }
 
 impl EditOrgOption {
+    /// Validate this `EditOrgOption` payload.
     pub fn validate(&self) -> crate::Result<()> {
         if let Some(vis) = &self.visibility
             && !matches!(
@@ -105,6 +110,7 @@ impl EditOrgOption {
 
 /// ListTeamsOptions options for listing teams
 #[derive(Debug, Clone, Default)]
+/// Options for List Teams Option.
 pub struct ListTeamsOptions {
     pub list_options: ListOptions,
 }
@@ -117,6 +123,7 @@ impl QueryEncode for ListTeamsOptions {
 
 /// SearchTeamsOptions options for searching teams
 #[derive(Debug, Clone, Default)]
+/// Options for Search Teams Option.
 pub struct SearchTeamsOptions {
     pub list_options: ListOptions,
     pub query: String,
@@ -136,7 +143,8 @@ impl QueryEncode for SearchTeamsOptions {
 }
 
 /// CreateTeamOption options for creating a team
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+/// Options for Create Team Option.
 pub struct CreateTeamOption {
     pub name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -158,6 +166,7 @@ pub struct CreateTeamOption {
 }
 
 impl CreateTeamOption {
+    /// Validate this `CreateTeamOption` payload.
     pub fn validate(&self) -> crate::Result<()> {
         let perm = self.permission.unwrap_or(AccessMode::Read);
         match perm {
@@ -184,7 +193,8 @@ impl CreateTeamOption {
 }
 
 /// EditTeamOption options for editing a team
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+/// Options for Edit Team Option.
 pub struct EditTeamOption {
     pub name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -206,6 +216,7 @@ pub struct EditTeamOption {
 }
 
 impl EditTeamOption {
+    /// Validate this `EditTeamOption` payload.
     pub fn validate(&self) -> crate::Result<()> {
         let perm = self.permission.unwrap_or(AccessMode::Read);
         match perm {
@@ -233,6 +244,7 @@ impl EditTeamOption {
 
 /// ListTeamMembersOptions options for listing team's members
 #[derive(Debug, Clone, Default)]
+/// Options for List Team Members Option.
 pub struct ListTeamMembersOptions {
     pub list_options: ListOptions,
 }
@@ -245,6 +257,7 @@ impl QueryEncode for ListTeamMembersOptions {
 
 /// ListTeamRepositoriesOptions options for listing team's repositories
 #[derive(Debug, Clone, Default)]
+/// Options for List Team Repositories Option.
 pub struct ListTeamRepositoriesOptions {
     pub list_options: ListOptions,
 }
@@ -259,6 +272,7 @@ impl QueryEncode for ListTeamRepositoriesOptions {
 
 /// ListOrgMembershipOption list OrgMembership options
 #[derive(Debug, Clone, Default)]
+/// Options for List Org Membership Option.
 pub struct ListOrgMembershipOption {
     pub list_options: ListOptions,
 }
@@ -273,6 +287,7 @@ impl QueryEncode for ListOrgMembershipOption {
 
 /// ListOrgLabelsOptions options for listing organization labels
 #[derive(Debug, Clone, Default)]
+/// Options for List Org Labels Option.
 pub struct ListOrgLabelsOptions {
     pub list_options: ListOptions,
 }
@@ -284,7 +299,8 @@ impl QueryEncode for ListOrgLabelsOptions {
 }
 
 /// CreateOrgLabelOption options for creating an organization label
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+/// Options for Create Org Label Option.
 pub struct CreateOrgLabelOption {
     /// Name of the label
     pub name: String,
@@ -299,6 +315,7 @@ pub struct CreateOrgLabelOption {
 }
 
 impl CreateOrgLabelOption {
+    /// Validate this `CreateOrgLabelOption` payload.
     pub fn validate(&self) -> crate::Result<()> {
         let color = self.color.strip_prefix('#').unwrap_or(&self.color);
         if color.len() != 6 || !color.chars().all(|c| c.is_ascii_hexdigit()) {
@@ -315,6 +332,7 @@ impl CreateOrgLabelOption {
 
 /// EditOrgLabelOption options for editing an organization label
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
+/// Options for Edit Org Label Option.
 pub struct EditOrgLabelOption {
     /// New name of the label
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -334,6 +352,7 @@ pub struct EditOrgLabelOption {
 
 /// ListOrgActionSecretOption list OrgActionSecret options
 #[derive(Debug, Clone, Default)]
+/// Options for List Org Action Secret Option.
 pub struct ListOrgActionSecretOption {
     pub list_options: ListOptions,
 }
@@ -346,6 +365,7 @@ impl QueryEncode for ListOrgActionSecretOption {
 
 /// ListOrgActionVariableOption lists OrgActionVariable options
 #[derive(Debug, Clone, Default)]
+/// Options for List Org Action Variable Option.
 pub struct ListOrgActionVariableOption {
     pub list_options: ListOptions,
 }
@@ -358,6 +378,7 @@ impl QueryEncode for ListOrgActionVariableOption {
 
 /// OrgActionVariable represents an organization action variable
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Org Action Variable.
 pub struct OrgActionVariable {
     #[serde(rename = "owner_id")]
     pub owner_id: i64,
@@ -369,7 +390,8 @@ pub struct OrgActionVariable {
 }
 
 /// CreateOrgActionVariableOption options for creating an org action variable
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+/// Options for Create Org Action Variable Option.
 pub struct CreateOrgActionVariableOption {
     /// Name is the name of the variable
     pub name: String,
@@ -381,6 +403,7 @@ pub struct CreateOrgActionVariableOption {
 }
 
 impl CreateOrgActionVariableOption {
+    /// Validate this `CreateOrgActionVariableOption` payload.
     pub fn validate(&self) -> crate::Result<()> {
         if self.name.is_empty() {
             return Err(crate::Error::Validation("name required".to_string()));
@@ -396,7 +419,8 @@ impl CreateOrgActionVariableOption {
 }
 
 /// UpdateOrgActionVariableOption options for updating an org action variable
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+/// Options for Update Org Action Variable Option.
 pub struct UpdateOrgActionVariableOption {
     /// Value is the new value of the variable
     pub value: String,
@@ -406,6 +430,7 @@ pub struct UpdateOrgActionVariableOption {
 }
 
 impl UpdateOrgActionVariableOption {
+    /// Validate this `UpdateOrgActionVariableOption` payload.
     pub fn validate(&self) -> crate::Result<()> {
         if self.value.is_empty() {
             return Err(crate::Error::Validation("value required".to_string()));
@@ -415,7 +440,8 @@ impl UpdateOrgActionVariableOption {
 }
 
 /// CreateSecretOption options for creating a secret
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+/// Options for Create Secret Option.
 pub struct CreateSecretOption {
     /// Name is the name of the secret
     pub name: String,
@@ -427,6 +453,7 @@ pub struct CreateSecretOption {
 }
 
 impl CreateSecretOption {
+    /// Validate this `CreateSecretOption` payload.
     pub fn validate(&self) -> crate::Result<()> {
         if self.name.is_empty() {
             return Err(crate::Error::Validation("name required".to_string()));
@@ -445,6 +472,7 @@ impl CreateSecretOption {
 
 /// ListOrgBlocksOptions options for listing organization blocks
 #[derive(Debug, Clone, Default)]
+/// Options for List Org Blocks Option.
 pub struct ListOrgBlocksOptions {
     pub list_options: ListOptions,
 }
@@ -459,6 +487,7 @@ impl QueryEncode for ListOrgBlocksOptions {
 
 /// RenameOrgOption options for renaming an organization
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Rename Org Option.
 pub struct RenameOrgOption {
     #[serde(rename = "new_name")]
     pub new_name: String,
@@ -466,6 +495,7 @@ pub struct RenameOrgOption {
 
 /// ListOrgActivityFeedsOptions options for listing organization activity feeds
 #[derive(Debug, Clone, Default)]
+/// Options for List Org Activity Feeds Option.
 pub struct ListOrgActivityFeedsOptions {
     pub list_options: ListOptions,
     pub date: Option<String>,
@@ -483,6 +513,7 @@ impl QueryEncode for ListOrgActivityFeedsOptions {
 
 /// ListTeamActivityFeedsOptions options for listing team activity feeds
 #[derive(Debug, Clone, Default)]
+/// Options for List Team Activity Feeds Option.
 pub struct ListTeamActivityFeedsOptions {
     pub list_options: ListOptions,
     pub date: Option<String>,

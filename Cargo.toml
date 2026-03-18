@@ -12,9 +12,14 @@ reqwest = { version = "0.12", features = ["json", "stream", "multipart", "rustls
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 serde_urlencoded = "0.7"
+base64 = "0.22"
+data-encoding = "2"
 strum = { version = "0.27", features = ["derive"] }
 thiserror = "2"
 semver = { version = "1", features = ["serde"] }
+ssh-key = { version = "0.6", features = ["ed25519", "encryption", "rsa", "std", "rand_core"] }
+signature = "2"
+ssh-agent-client-rs = "0.9"
 parking_lot = "0.12"
 tokio = { version = "1", features = ["sync"] }
 hmac = "0.12"

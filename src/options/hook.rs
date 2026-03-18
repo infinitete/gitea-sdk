@@ -8,6 +8,7 @@ use crate::{Deserialize, Serialize};
 use crate::types::enums::HookType;
 
 #[derive(Debug, Clone, Default)]
+/// Options for List Hooks Option.
 pub struct ListHooksOptions {
     pub list_options: ListOptions,
 }
@@ -19,6 +20,7 @@ impl QueryEncode for ListHooksOptions {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Create Hook Option.
 pub struct CreateHookOption {
     #[serde(rename = "type")]
     pub hook_type: HookType,
@@ -42,6 +44,7 @@ fn is_false(b: &bool) -> bool {
 }
 
 impl CreateHookOption {
+    /// Validate this `CreateHookOption` payload.
     pub fn validate(&self) -> crate::Result<()> {
         if std::mem::discriminant(&self.hook_type) == std::mem::discriminant(&HookType::Unknown) {
             return Err(crate::Error::Validation("hook type needed".to_string()));
@@ -51,6 +54,7 @@ impl CreateHookOption {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+/// Options for Edit Hook Option.
 pub struct EditHookOption {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub config: Option<std::collections::HashMap<String, String>>,

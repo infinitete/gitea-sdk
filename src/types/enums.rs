@@ -9,6 +9,7 @@ use strum::{AsRefStr, Display};
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Display, AsRefStr)]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
+/// State Type payload type.
 pub enum StateType {
     Open,
     Closed,
@@ -18,6 +19,7 @@ pub enum StateType {
 
 /// Issue type — whether an item is an issue, pull request, or both
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Display, AsRefStr)]
+/// Issue Type payload type.
 pub enum IssueType {
     #[serde(rename = "")]
     #[strum(serialize = "")]
@@ -36,6 +38,7 @@ pub enum IssueType {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Display, AsRefStr)]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
+/// Issue Form Element Type payload type.
 pub enum IssueFormElementType {
     Markdown,
     Textarea,
@@ -50,6 +53,7 @@ pub enum IssueFormElementType {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Display, AsRefStr)]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
+/// Notify Status payload type.
 pub enum NotifyStatus {
     Unread,
     Read,
@@ -60,6 +64,7 @@ pub enum NotifyStatus {
 
 /// Notification subject type
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Display, AsRefStr)]
+/// Notify Subject Type payload type.
 pub enum NotifySubjectType {
     #[serde(rename = "Issue")]
     #[strum(serialize = "Issue")]
@@ -81,6 +86,7 @@ pub enum NotifySubjectType {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Display, AsRefStr)]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
+/// Notify Subject State payload type.
 pub enum NotifySubjectState {
     Open,
     Closed,
@@ -91,6 +97,7 @@ pub enum NotifySubjectState {
 
 /// Pull request review state type
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Display, AsRefStr)]
+/// Review State Type payload type.
 pub enum ReviewStateType {
     #[serde(rename = "")]
     #[strum(serialize = "")]
@@ -118,6 +125,7 @@ pub enum ReviewStateType {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Display, AsRefStr)]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
+/// Access Mode payload type.
 pub enum AccessMode {
     None,
     Read,
@@ -132,6 +140,7 @@ pub enum AccessMode {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Display, AsRefStr)]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
+/// Visible Type payload type.
 pub enum VisibleType {
     Public,
     Limited,
@@ -142,6 +151,7 @@ pub enum VisibleType {
 
 /// Repository unit type (e.g. code, issues, wiki)
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Display, AsRefStr)]
+/// Repo Unit Type payload type.
 pub enum RepoUnitType {
     #[serde(rename = "repo.code")]
     #[strum(serialize = "repo.code")]
@@ -179,6 +189,7 @@ pub enum RepoUnitType {
 
 /// Repository type
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Display, AsRefStr)]
+/// Repo Type payload type.
 pub enum RepoType {
     #[serde(rename = "")]
     #[strum(serialize = "")]
@@ -200,6 +211,7 @@ pub enum RepoType {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Display, AsRefStr)]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
+/// Trust Model payload type.
 pub enum TrustModel {
     Default,
     Collaborator,
@@ -213,6 +225,7 @@ pub enum TrustModel {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Display, AsRefStr)]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
+/// Projects Mode payload type.
 pub enum ProjectsMode {
     Repo,
     Owner,
@@ -225,6 +238,7 @@ pub enum ProjectsMode {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Display, AsRefStr)]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
+/// Hook Type payload type.
 pub enum HookType {
     Gitea,
     Slack,
@@ -242,6 +256,7 @@ pub enum HookType {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Display, AsRefStr)]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
+/// Status State payload type.
 pub enum StatusState {
     Pending,
     Success,
@@ -254,6 +269,7 @@ pub enum StatusState {
 
 /// Merge style for pull requests
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Display, AsRefStr)]
+/// Merge Style payload type.
 pub enum MergeStyle {
     #[serde(rename = "merge")]
     #[strum(serialize = "merge")]
@@ -273,6 +289,7 @@ pub enum MergeStyle {
 
 /// Access token scope
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Display, AsRefStr)]
+/// Access Token Scope payload type.
 pub enum AccessTokenScope {
     #[serde(rename = "all")]
     #[strum(serialize = "all")]
@@ -376,6 +393,7 @@ pub enum AccessTokenScope {
 
 /// Archive download format
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Display, AsRefStr)]
+/// Archive Type payload type.
 pub enum ArchiveType {
     #[serde(rename = ".zip")]
     #[strum(serialize = ".zip")]
@@ -391,6 +409,7 @@ pub enum ArchiveType {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Display, AsRefStr)]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
+/// Git Service Type payload type.
 pub enum GitServiceType {
     Git,
     Github,

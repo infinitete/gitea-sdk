@@ -10,6 +10,7 @@ use crate::types::enums::AccessTokenScope;
 
 /// AccessToken represents an API access token
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Access Token payload type.
 pub struct AccessToken {
     pub id: i64,
     pub name: String,
@@ -33,8 +34,17 @@ pub struct AccessToken {
     pub updated: Option<OffsetDateTime>,
 }
 
+/// UserHeatmapData represents the data needed to render a user's contribution heatmap.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+/// User Heatmap Data payload type.
+pub struct UserHeatmapData {
+    pub timestamp: i64,
+    pub contributions: i64,
+}
+
 /// Email represents an email address belonging to a user
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Email payload type.
 pub struct Email {
     pub email: String,
     pub verified: bool,
@@ -47,6 +57,7 @@ pub struct Email {
 
 /// PublicKey represents a user key to push code to repository
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Public Key payload type.
 pub struct PublicKey {
     pub id: i64,
     pub key: String,
@@ -79,6 +90,7 @@ pub struct PublicKey {
 
 /// GPGKeyEmail represents an email attached to a GPGKey
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// GPGKey Email payload type.
 pub struct GPGKeyEmail {
     pub email: String,
     pub verified: bool,
@@ -86,6 +98,7 @@ pub struct GPGKeyEmail {
 
 /// GPGKey represents a user GPG key to sign commit and tag in repository
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// GPGKey payload type.
 pub struct GPGKey {
     pub id: i64,
     #[serde(rename = "primary_key_id")]
@@ -123,6 +136,7 @@ pub struct GPGKey {
 
 /// User represents a user
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// User payload type.
 pub struct User {
     /// the user's id
     pub id: i64,
@@ -240,6 +254,18 @@ mod tests {
         let restored: Email = serde_json::from_str(&json).unwrap();
         assert_eq!(restored.email, original.email);
         assert_eq!(restored.verified, original.verified);
+    }
+
+    #[test]
+    fn test_user_heatmap_data_round_trip() {
+        let original = UserHeatmapData {
+            timestamp: 1_710_460_800,
+            contributions: 12,
+        };
+        let json = serde_json::to_string(&original).unwrap();
+        let restored: UserHeatmapData = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.timestamp, original.timestamp);
+        assert_eq!(restored.contributions, original.contributions);
     }
 
     #[test]

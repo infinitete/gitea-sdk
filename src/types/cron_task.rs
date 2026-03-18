@@ -8,6 +8,7 @@ use time::serde::rfc3339;
 
 /// CronTask represents a Cron task
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Cron Task payload type.
 pub struct CronTask {
     pub name: String,
     pub schedule: String,

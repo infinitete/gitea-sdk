@@ -8,6 +8,7 @@ use crate::options::status::*;
 use crate::pagination::QueryEncode;
 use crate::types::{CombinedStatus, Status};
 
+/// API methods for commit status resources.
 pub struct StatusApi<'a> {
     client: &'a Client,
 }
@@ -26,6 +27,7 @@ fn json_header() -> reqwest::header::HeaderMap {
 }
 
 impl<'a> StatusApi<'a> {
+    /// Create a new `StatusApi` view.
     pub fn new(client: &'a Client) -> Self {
         Self { client }
     }
@@ -212,5 +214,73 @@ mod tests {
         assert_eq!(combined.state, StatusState::Success);
         assert_eq!(combined.total_count, 2);
         assert_eq!(resp.status, 200);
+    }
+
+    #[tokio::test]
+    async fn test_create_status_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path("/api/v1/repos/testowner/testrepo/statuses/abc123"))
+            .respond_with(
+                ResponseTemplate::new(500)
+                    .set_body_json(serde_json::json!({"message": "internal error"})),
+            )
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let opt = CreateStatusOption {
+            state: StatusState::Success,
+            target_url: None,
+            description: None,
+            context: None,
+        };
+        let result = client
+            .status()
+            .create_status("testowner", "testrepo", "abc123", opt)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_list_statuses_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path(
+                "/api/v1/repos/testowner/testrepo/commits/main/statuses",
+            ))
+            .respond_with(
+                ResponseTemplate::new(500)
+                    .set_body_json(serde_json::json!({"message": "internal error"})),
+            )
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client
+            .status()
+            .list_statuses("testowner", "testrepo", "main", Default::default())
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_get_combined_status_error() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/repos/testowner/testrepo/commits/main/status"))
+            .respond_with(
+                ResponseTemplate::new(500)
+                    .set_body_json(serde_json::json!({"message": "internal error"})),
+            )
+            .mount(&server)
+            .await;
+
+        let client = create_test_client(&server);
+        let result = client
+            .status()
+            .get_combined_status("testowner", "testrepo", "main")
+            .await;
+        assert!(result.is_err());
     }
 }

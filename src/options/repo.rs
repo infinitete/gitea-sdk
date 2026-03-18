@@ -20,6 +20,7 @@ fn urlencoding(value: &str) -> String {
 
 /// ListReposOptions options for listing repositories
 #[derive(Debug, Clone, Default)]
+/// Options for List Repos Option.
 pub struct ListReposOptions {
     pub list_options: ListOptions,
 }
@@ -32,6 +33,7 @@ impl QueryEncode for ListReposOptions {
 
 /// ListOrgReposOptions options for a organization's repositories
 #[derive(Debug, Clone, Default)]
+/// Options for List Org Repos Option.
 pub struct ListOrgReposOptions {
     pub list_options: ListOptions,
 }
@@ -44,6 +46,7 @@ impl QueryEncode for ListOrgReposOptions {
 
 /// SearchRepoOptions options for searching repositories
 #[derive(Debug, Clone, Default)]
+/// Options for Search Repo Option.
 pub struct SearchRepoOptions {
     pub list_options: ListOptions,
     pub keyword: String,
@@ -114,6 +117,7 @@ impl QueryEncode for SearchRepoOptions {
 
 /// CreateRepoOption options when creating repository
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Create Repo Option.
 pub struct CreateRepoOption {
     pub name: String,
     pub description: String,
@@ -135,6 +139,7 @@ pub struct CreateRepoOption {
 }
 
 impl CreateRepoOption {
+    /// Validate this `CreateRepoOption` payload.
     pub fn validate(&self) -> crate::Result<()> {
         if self.name.trim().is_empty() {
             return Err(crate::Error::Validation("name is empty".to_string()));
@@ -168,6 +173,7 @@ impl CreateRepoOption {
 
 /// EditRepoOption options when editing a repository's properties
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Edit Repo Option.
 pub struct EditRepoOption {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
@@ -307,6 +313,7 @@ pub struct EditRepoOption {
 
 /// UpdateRepoAvatarOption options for updating repository avatar
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Update Repo Avatar Option.
 pub struct UpdateRepoAvatarOption {
     /// base64 encoded image
     pub image: String,
@@ -316,6 +323,7 @@ pub struct UpdateRepoAvatarOption {
 
 /// ListRepoBranchesOptions options for listing a repository's branches
 #[derive(Debug, Clone, Default)]
+/// Options for List Repo Branches Option.
 pub struct ListRepoBranchesOptions {
     pub list_options: ListOptions,
 }
@@ -328,6 +336,7 @@ impl QueryEncode for ListRepoBranchesOptions {
 
 /// CreateBranchOption options when creating a branch in a repository
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Create Branch Option.
 pub struct CreateBranchOption {
     #[serde(rename = "new_branch_name")]
     pub branch_name: String,
@@ -336,6 +345,7 @@ pub struct CreateBranchOption {
 }
 
 impl CreateBranchOption {
+    /// Validate this `CreateBranchOption` payload.
     pub fn validate(&self) -> crate::Result<()> {
         if self.branch_name.is_empty() {
             return Err(crate::Error::Validation("BranchName is empty".to_string()));
@@ -354,11 +364,13 @@ impl CreateBranchOption {
 
 /// UpdateRepoBranchOption options when renaming a branch
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Update Repo Branch Option.
 pub struct UpdateRepoBranchOption {
     pub name: String,
 }
 
 impl UpdateRepoBranchOption {
+    /// Validate this `UpdateRepoBranchOption` payload.
     pub fn validate(&self) -> crate::Result<()> {
         if self.name.is_empty() {
             return Err(crate::Error::Validation("empty Name field".to_string()));
@@ -371,6 +383,7 @@ impl UpdateRepoBranchOption {
 
 /// ListRepoTagsOptions options for listing a repository's tags
 #[derive(Debug, Clone, Default)]
+/// Options for List Repo Tags Option.
 pub struct ListRepoTagsOptions {
     pub list_options: ListOptions,
 }
@@ -383,6 +396,7 @@ impl QueryEncode for ListRepoTagsOptions {
 
 /// ListRepoTagProtectionsOptions options for listing tag protections
 #[derive(Debug, Clone, Default)]
+/// Options for List Repo Tag Protections Option.
 pub struct ListRepoTagProtectionsOptions {
     pub list_options: ListOptions,
 }
@@ -395,6 +409,7 @@ impl QueryEncode for ListRepoTagProtectionsOptions {
 
 /// CreateTagOption options when creating a tag
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Create Tag Option.
 pub struct CreateTagOption {
     #[serde(rename = "tag_name")]
     pub tag_name: String,
@@ -403,6 +418,7 @@ pub struct CreateTagOption {
 }
 
 impl CreateTagOption {
+    /// Validate this `CreateTagOption` payload.
     pub fn validate(&self) -> crate::Result<()> {
         if self.tag_name.is_empty() {
             return Err(crate::Error::Validation("TagName is required".to_string()));
@@ -415,6 +431,7 @@ impl CreateTagOption {
 
 /// ListCollaboratorsOptions options for listing a repository's collaborators
 #[derive(Debug, Clone, Default)]
+/// Options for List Collaborators Option.
 pub struct ListCollaboratorsOptions {
     pub list_options: ListOptions,
 }
@@ -427,12 +444,14 @@ impl QueryEncode for ListCollaboratorsOptions {
 
 /// AddCollaboratorOption options when adding a user as a collaborator
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Add Collaborator Option.
 pub struct AddCollaboratorOption {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub permission: Option<AccessMode>,
 }
 
 impl AddCollaboratorOption {
+    /// Validate this `AddCollaboratorOption` payload.
     pub fn validate(&mut self) -> crate::Result<()> {
         if let Some(ref perm) = self.permission {
             match perm {
@@ -460,6 +479,7 @@ impl AddCollaboratorOption {
 
 /// ListCommitOptions list commit options
 #[derive(Debug, Clone, Default)]
+/// Options for List Commit Option.
 pub struct ListCommitOptions {
     pub list_options: ListOptions,
     pub sha: String,
@@ -495,6 +515,7 @@ impl QueryEncode for ListCommitOptions {
 
 /// FileOptions options for all file APIs
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for File Option.
 pub struct FileOptions {
     pub message: String,
     #[serde(rename = "branch")]
@@ -509,6 +530,7 @@ pub struct FileOptions {
 
 /// CreateFileOptions options for creating files
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Create File Option.
 pub struct CreateFileOptions {
     #[serde(flatten)]
     pub file_options: FileOptions,
@@ -518,6 +540,7 @@ pub struct CreateFileOptions {
 
 /// DeleteFileOptions options for deleting files
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Delete File Option.
 pub struct DeleteFileOptions {
     #[serde(flatten)]
     pub file_options: FileOptions,
@@ -527,6 +550,7 @@ pub struct DeleteFileOptions {
 
 /// UpdateFileOptions options for updating files
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Update File Option.
 pub struct UpdateFileOptions {
     #[serde(flatten)]
     pub file_options: FileOptions,
@@ -542,6 +566,7 @@ pub struct UpdateFileOptions {
 
 /// GetContentsExtOptions options for getting extended contents
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+/// Options for Get Contents Ext Option.
 pub struct GetContentsExtOptions {
     pub r#ref: String,
     pub includes: String,
@@ -551,6 +576,7 @@ pub struct GetContentsExtOptions {
 
 /// MigrateRepoOption options for migrating a repository from an external service
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Migrate Repo Option.
 pub struct MigrateRepoOption {
     #[serde(rename = "repo_name")]
     pub repo_name: String,
@@ -585,6 +611,7 @@ pub struct MigrateRepoOption {
 }
 
 impl MigrateRepoOption {
+    /// Validate this `MigrateRepoOption` payload.
     pub fn validate(&self) -> crate::Result<()> {
         if self.clone_addr.is_empty() {
             return Err(crate::Error::Validation("clone addr required".to_string()));
@@ -630,6 +657,7 @@ impl MigrateRepoOption {
 
 /// ListLabelsOptions options for listing repository's labels
 #[derive(Debug, Clone, Default)]
+/// Options for List Labels Option.
 pub struct ListLabelsOptions {
     pub list_options: ListOptions,
 }
@@ -642,6 +670,7 @@ impl QueryEncode for ListLabelsOptions {
 
 /// CreateLabelOption options for creating a label
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Create Label Option.
 pub struct CreateLabelOption {
     pub name: String,
     pub color: String,
@@ -652,6 +681,7 @@ pub struct CreateLabelOption {
 }
 
 impl CreateLabelOption {
+    /// Validate this `CreateLabelOption` payload.
     pub fn validate(&self) -> crate::Result<()> {
         let color = self.color.trim_start_matches('#');
         if color.len() != 6 || !color.chars().all(|c| c.is_ascii_hexdigit()) {
@@ -668,6 +698,7 @@ impl CreateLabelOption {
 
 /// EditLabelOption options for editing a label
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Edit Label Option.
 pub struct EditLabelOption {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
@@ -686,6 +717,7 @@ pub struct EditLabelOption {
 }
 
 impl EditLabelOption {
+    /// Validate this `EditLabelOption` payload.
     pub fn validate(&self) -> crate::Result<()> {
         if let Some(ref color) = self.color {
             let color = color.trim_start_matches('#');
@@ -708,6 +740,7 @@ impl EditLabelOption {
 
 /// ListStargazersOptions options for listing a repository's stargazers
 #[derive(Debug, Clone, Default)]
+/// Options for List Stargazers Option.
 pub struct ListStargazersOptions {
     pub list_options: ListOptions,
 }
@@ -722,6 +755,7 @@ impl QueryEncode for ListStargazersOptions {
 
 /// ListDeployKeysOptions options for listing a repository's deploy keys
 #[derive(Debug, Clone, Default)]
+/// Options for List Deploy Keys Option.
 pub struct ListDeployKeysOptions {
     pub list_options: ListOptions,
     pub key_id: i64,
@@ -745,6 +779,7 @@ impl QueryEncode for ListDeployKeysOptions {
 
 /// CreateKeyOption options when creating a deploy key
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Create Key Option.
 pub struct CreateKeyOption {
     pub title: String,
     /// An armored SSH key to add
@@ -758,6 +793,7 @@ pub struct CreateKeyOption {
 
 /// CreatePushMirrorOption options for creating a push mirror
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Create Push Mirror Option.
 pub struct CreatePushMirrorOption {
     pub interval: String,
     #[serde(rename = "remote_address")]
@@ -772,6 +808,7 @@ pub struct CreatePushMirrorOption {
 
 /// ListPushMirrorOptions options for listing push mirrors
 #[derive(Debug, Clone, Default)]
+/// Options for List Push Mirror Option.
 pub struct ListPushMirrorOptions {
     pub list_options: ListOptions,
 }
@@ -786,6 +823,7 @@ impl QueryEncode for ListPushMirrorOptions {
 
 /// ListRepoTopicsOptions options for listing repo's topics
 #[derive(Debug, Clone, Default)]
+/// Options for List Repo Topics Option.
 pub struct ListRepoTopicsOptions {
     pub list_options: ListOptions,
 }
@@ -800,6 +838,7 @@ impl QueryEncode for ListRepoTopicsOptions {
 
 /// TransferRepoOption options when transfer a repository's ownership
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Transfer Repo Option.
 pub struct TransferRepoOption {
     #[serde(rename = "new_owner")]
     pub new_owner: String,
@@ -811,6 +850,7 @@ pub struct TransferRepoOption {
 
 /// CreateRepoFromTemplateOption options when creating repository using a template
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Create Repo From Template Option.
 pub struct CreateRepoFromTemplateOption {
     pub owner: String,
     pub name: String,
@@ -827,6 +867,7 @@ pub struct CreateRepoFromTemplateOption {
 }
 
 impl CreateRepoFromTemplateOption {
+    /// Validate this `CreateRepoFromTemplateOption` payload.
     pub fn validate(&self) -> crate::Result<()> {
         if self.owner.is_empty() {
             return Err(crate::Error::Validation(
@@ -846,6 +887,7 @@ impl CreateRepoFromTemplateOption {
 
 /// ListTreeOptions options for listing repository tree
 #[derive(Debug, Clone, Default)]
+/// Options for List Tree Option.
 pub struct ListTreeOptions {
     pub list_options: ListOptions,
     /// Ref can be branch/tag/commit. required
@@ -870,6 +912,7 @@ impl QueryEncode for ListTreeOptions {
 
 /// CreateWikiPageOptions options for creating or editing a wiki page
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+/// Options for Create Wiki Page Option.
 pub struct CreateWikiPageOptions {
     pub title: String,
     #[serde(rename = "content_base64")]
@@ -879,6 +922,7 @@ pub struct CreateWikiPageOptions {
 
 /// ListWikiPagesOptions options for listing wiki pages
 #[derive(Debug, Clone, Default)]
+/// Options for List Wiki Pages Option.
 pub struct ListWikiPagesOptions {
     pub list_options: ListOptions,
 }
@@ -891,6 +935,7 @@ impl QueryEncode for ListWikiPagesOptions {
 
 /// ListWikiPageRevisionsOptions options for listing wiki page revisions
 #[derive(Debug, Clone, Default)]
+/// Options for List Wiki Page Revisions Option.
 pub struct ListWikiPageRevisionsOptions {
     pub page: i32,
 }
@@ -899,6 +944,7 @@ pub struct ListWikiPageRevisionsOptions {
 
 /// ListBranchProtectionsOptions list branch protection options
 #[derive(Debug, Clone, Default)]
+/// Options for List Branch Protections Option.
 pub struct ListBranchProtectionsOptions {
     pub list_options: ListOptions,
 }
@@ -911,6 +957,7 @@ impl QueryEncode for ListBranchProtectionsOptions {
 
 /// CreateBranchProtectionOption options for creating a branch protection
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Create Branch Protection Option.
 pub struct CreateBranchProtectionOption {
     #[serde(rename = "branch_name")]
     pub branch_name: String,
@@ -962,6 +1009,7 @@ pub struct CreateBranchProtectionOption {
 
 /// EditBranchProtectionOption options for editing a branch protection
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Edit Branch Protection Option.
 pub struct EditBranchProtectionOption {
     #[serde(
         rename = "enable_push",
@@ -1067,6 +1115,7 @@ pub struct EditBranchProtectionOption {
 
 /// CreateTagProtectionOption options for creating a tag protection
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Create Tag Protection Option.
 pub struct CreateTagProtectionOption {
     #[serde(rename = "name_pattern")]
     pub name_pattern: String,
@@ -1078,6 +1127,7 @@ pub struct CreateTagProtectionOption {
 
 /// EditTagProtectionOption options for editing a tag protection
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Edit Tag Protection Option.
 pub struct EditTagProtectionOption {
     #[serde(
         rename = "name_pattern",
@@ -1095,6 +1145,7 @@ pub struct EditTagProtectionOption {
 
 /// ListForksOptions options for listing repository's forks
 #[derive(Debug, Clone, Default)]
+/// Options for List Forks Option.
 pub struct ListForksOptions {
     pub list_options: ListOptions,
 }
@@ -1107,6 +1158,7 @@ impl QueryEncode for ListForksOptions {
 
 /// CreateForkOption options for creating a fork
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Create Fork Option.
 pub struct CreateForkOption {
     /// organization name, if forking into an organization
     pub organization: Option<String>,
@@ -1118,6 +1170,7 @@ pub struct CreateForkOption {
 
 /// ListRepoGitHooksOptions options for listing repository's githooks
 #[derive(Debug, Clone, Default)]
+/// Options for List Repo Git Hooks Option.
 pub struct ListRepoGitHooksOptions {
     pub list_options: ListOptions,
 }
@@ -1130,6 +1183,7 @@ impl QueryEncode for ListRepoGitHooksOptions {
 
 /// EditGitHookOption options when modifying one Git hook
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Edit Git Hook Option.
 pub struct EditGitHookOption {
     pub content: String,
 }
@@ -1138,6 +1192,7 @@ pub struct EditGitHookOption {
 
 /// GetRepoNoteOptions options for getting a note
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+/// Options for Get Repo Note Option.
 pub struct GetRepoNoteOptions {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub verification: Option<bool>,

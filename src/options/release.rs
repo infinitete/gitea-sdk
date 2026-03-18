@@ -9,6 +9,7 @@ use crate::{Deserialize, Serialize};
 
 /// ListReleasesOptions options for listing repository's releases
 #[derive(Debug, Clone, Default)]
+/// Options for List Releases Option.
 pub struct ListReleasesOptions {
     pub list_options: ListOptions,
     pub is_draft: Option<bool>,
@@ -32,6 +33,7 @@ impl QueryEncode for ListReleasesOptions {
 
 /// CreateReleaseOption options when creating a release
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Create Release Option.
 pub struct CreateReleaseOption {
     /// tag_name
     #[serde(rename = "tag_name")]
@@ -72,6 +74,7 @@ impl CreateReleaseOption {
 
 /// EditReleaseOption options when editing a release
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+/// Options for Edit Release Option.
 pub struct EditReleaseOption {
     /// tag_name
     #[serde(rename = "tag_name", skip_serializing_if = "Option::is_none")]
@@ -97,6 +100,7 @@ pub struct EditReleaseOption {
 
 /// ListReleaseAttachmentsOptions options for listing release's attachments
 #[derive(Debug, Clone, Default)]
+/// Options for List Release Attachments Option.
 pub struct ListReleaseAttachmentsOptions {
     pub list_options: ListOptions,
 }
@@ -111,6 +115,7 @@ impl QueryEncode for ListReleaseAttachmentsOptions {
 
 /// EditAttachmentOptions options for editing attachments
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Options for Edit Attachment Option.
 pub struct EditAttachmentOption {
     /// name
     pub name: String,
