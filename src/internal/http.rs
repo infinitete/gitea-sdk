@@ -13,19 +13,16 @@ use crate::response::response_from_reqwest;
 // ── HTTP request pipeline (mirrors go-sdk/gitea/client.go) ─────────
 
 impl Client {
-    /// Layer 0 (internal): Build and send a request, returning the raw
-    /// `reqwest::Response` so that higher layers can decide how to consume
-    /// the body.
-    ///
-    /// Auth header injection order matches Go SDK `doRequest` exactly:
-    /// token → OTP → basic auth → sudo → user-agent → caller headers.
-    async fn do_request_raw<B: Into<reqwest::Body>>(
+    /// Prepare a [`reqwest::RequestBuilder`] with URL, auth headers, and
+    /// caller headers.  The caller is responsible for attaching the body
+    /// (via `.body()` or `.multipart()`), then calling
+    /// [`Self::finish_request`] to build, sign, and return.
+    fn prepare_request(
         &self,
-        method: reqwest::Method,
+        method: &reqwest::Method,
         path: &str,
         headers: Option<&HeaderMap>,
-        body: Option<B>,
-    ) -> crate::Result<reqwest::Response> {
+    ) -> crate::Result<(reqwest::Client, reqwest::RequestBuilder, String, bool)> {
         let http_client = self.http_client();
 
         let (base_url, access_token, otp, username, password, sudo, user_agent, debug) = {
@@ -76,10 +73,19 @@ impl Client {
             }
         }
 
-        if let Some(b) = body {
-            req = req.body(b);
-        }
+        Ok((http_client, req, url, debug))
+    }
 
+    /// Build a [`reqwest::Request`] from a builder, apply debug logging and
+    /// SSH signing.
+    fn finish_request(
+        &self,
+        http_client: reqwest::Client,
+        req: reqwest::RequestBuilder,
+        method: &reqwest::Method,
+        url: &str,
+        debug: bool,
+    ) -> crate::Result<(reqwest::Client, reqwest::Request)> {
         if debug {
             tracing::debug!("{}: {}", method, url);
         }
@@ -87,7 +93,6 @@ impl Client {
         let mut built_req = req.build()?;
 
         {
-            // sign_request() is synchronous; do NOT add .await inside this scope
             let signer = self.ssh_signer();
             if let Some(ref signer) = *signer {
                 let use_legacy = self.should_use_legacy_ssh();
@@ -95,6 +100,26 @@ impl Client {
             }
         }
 
+        Ok((http_client, built_req))
+    }
+
+    /// Layer 0 (internal): Build and send a request, returning the raw
+    /// `reqwest::Response` so that higher layers can decide how to consume
+    /// the body.
+    ///
+    /// Auth header injection order matches Go SDK `doRequest` exactly:
+    /// token → OTP → basic auth → sudo → user-agent → caller headers.
+    async fn do_request_raw<B: Into<reqwest::Body>>(
+        &self,
+        method: reqwest::Method,
+        path: &str,
+        headers: Option<&HeaderMap>,
+        body: Option<B>,
+    ) -> crate::Result<reqwest::Response> {
+        let (http_client, req, url, debug) = self.prepare_request(&method, path, headers)?;
+        let req = if let Some(b) = body { req.body(b) } else { req };
+        let (http_client, built_req) =
+            self.finish_request(http_client, req, &method, &url, debug)?;
         let resp = http_client.execute(built_req).await?;
         Ok(resp)
     }
@@ -198,68 +223,9 @@ impl Client {
         headers: Option<&HeaderMap>,
         form: reqwest::multipart::Form,
     ) -> crate::Result<(T, Response)> {
-        let http_client = self.http_client();
-
-        let (base_url, access_token, otp, username, password, sudo, user_agent, debug) = {
-            let config = self.read_config();
-            (
-                config.base_url.clone(),
-                config.access_token.clone(),
-                config.otp.clone(),
-                config.username.clone(),
-                config.password.clone(),
-                config.sudo.clone(),
-                config.user_agent.clone(),
-                config.debug,
-            )
-        };
-
-        let url = format!("{base_url}/api/v1{path}");
-
-        let mut req = http_client
-            .request(method.clone(), &url)
-            .header("Accept", "application/json");
-
-        // Auth header injection — exact order from Go SDK doRequest.
-        if !access_token.is_empty() {
-            req = req.header("Authorization", format!("token {access_token}"));
-        }
-        if !otp.is_empty() {
-            req = req.header("X-GITEA-OTP", &otp);
-        }
-        if !username.is_empty() {
-            req = req.basic_auth(&username, Some(&password));
-        }
-        if !sudo.is_empty() {
-            req = req.header("Sudo", &sudo);
-        }
-        if !user_agent.is_empty() {
-            req = req.header("User-Agent", &user_agent);
-        }
-
-        if let Some(hdrs) = headers {
-            for (k, v) in hdrs.iter() {
-                req = req.header(k, v);
-            }
-        }
-
-        req = req.multipart(form);
-
-        if debug {
-            tracing::debug!("{}: {}", method, url);
-        }
-
-        let mut built_req = req.build()?;
-
-        {
-            // sign_request() is synchronous; do NOT add .await inside this scope
-            let signer = self.ssh_signer();
-            if let Some(ref signer) = *signer {
-                let use_legacy = self.should_use_legacy_ssh();
-                crate::auth::ssh_sign::sign_request(&mut built_req, signer, use_legacy)?;
-            }
-        }
-
+        let (http_client, req, url, debug) = self.prepare_request(&method, path, headers)?;
+        let (http_client, built_req) =
+            self.finish_request(http_client, req.multipart(form), &method, &url, debug)?;
         let resp = http_client.execute(built_req).await?;
         let response = response_from_reqwest(&resp);
         let status = resp.status().as_u16();
