@@ -12,7 +12,7 @@ categories = ["api-bindings", "web-programming"]
 exclude = [".githooks", "tests", "examples", ".worktrees", ".env*", ".sisyphus"]
 
 [dependencies]
-reqwest = { version = "0.12", features = ["json", "stream", "multipart", "rustls-tls"], default-features = false }
+reqwest = { version = "0.12", default-features = false, features = ["json", "multipart"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 serde_urlencoded = "0.7"
@@ -41,6 +41,6 @@ serde_test = "1"
 
 [features]
 default = ["rustls-tls"]
-rustls-tls = []
+rustls-tls = ["reqwest/rustls-tls"]
 native-tls = ["reqwest/native-tls"]
-stream = []
+stream = ["reqwest/stream"]
