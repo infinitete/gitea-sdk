@@ -19,19 +19,19 @@ use crate::api::{
 #[derive(Clone)]
 pub(crate) struct ClientConfig {
     /// Base URL of the Gitea server (trailing slash stripped).
-    pub(crate) base_url: String,
+    pub(crate) base_url: Arc<str>,
     /// Bearer token for API authentication.
-    pub(crate) access_token: String,
+    pub(crate) access_token: Arc<str>,
     /// Username for basic authentication.
-    pub(crate) username: String,
+    pub(crate) username: Arc<str>,
     /// Password for basic authentication.
-    pub(crate) password: String,
+    pub(crate) password: Arc<str>,
     /// One-time password for 2FA.
-    pub(crate) otp: String,
+    pub(crate) otp: Arc<str>,
     /// Username to impersonate via the Sudo header.
-    pub(crate) sudo: String,
+    pub(crate) sudo: Arc<str>,
     /// User-Agent header sent with every request.
-    pub(crate) user_agent: String,
+    pub(crate) user_agent: Arc<str>,
     /// Whether debug logging is enabled.
     pub(crate) debug: bool,
     /// When `true`, skip all server-version compatibility checks.
@@ -128,33 +128,33 @@ impl Client {
     /// Replace the access token.
     pub fn set_token(&self, token: impl Into<String>) {
         let mut cfg = self.inner.config.write();
-        cfg.access_token = token.into();
+        cfg.access_token = Arc::from(token.into());
         // Clear basic auth when switching to token auth.
-        cfg.username.clear();
-        cfg.password.clear();
+        cfg.username = Arc::from("");
+        cfg.password = Arc::from("");
     }
 
     /// Set username and password for basic authentication.
     pub fn set_basic_auth(&self, username: impl Into<String>, password: impl Into<String>) {
         let mut cfg = self.inner.config.write();
-        cfg.username = username.into();
-        cfg.password = password.into();
-        cfg.access_token.clear();
+        cfg.username = Arc::from(username.into());
+        cfg.password = Arc::from(password.into());
+        cfg.access_token = Arc::from("");
     }
 
     /// Set the one-time password for 2FA.
     pub fn set_otp(&self, otp: impl Into<String>) {
-        self.inner.config.write().otp = otp.into();
+        self.inner.config.write().otp = Arc::from(otp.into());
     }
 
     /// Set the username to impersonate via the Sudo header.
     pub fn set_sudo(&self, sudo: impl Into<String>) {
-        self.inner.config.write().sudo = sudo.into();
+        self.inner.config.write().sudo = Arc::from(sudo.into());
     }
 
     /// Set the User-Agent header sent with every request.
     pub fn set_user_agent(&self, agent: impl Into<String>) {
-        self.inner.config.write().user_agent = agent.into();
+        self.inner.config.write().user_agent = Arc::from(agent.into());
     }
 
     /// Replace the underlying HTTP client used for requests.
@@ -164,7 +164,7 @@ impl Client {
 
     /// Return the configured base URL (trailing slash stripped).
     pub fn base_url(&self) -> String {
-        self.inner.config.read().base_url.clone()
+        self.inner.config.read().base_url.to_string()
     }
 }
 
@@ -578,13 +578,13 @@ impl<'a> ClientBuilder<'a> {
         });
 
         let config = ClientConfig {
-            base_url,
-            access_token: self.access_token.unwrap_or_default(),
-            username: self.username.unwrap_or_default(),
-            password: self.password.unwrap_or_default(),
-            otp: self.otp.unwrap_or_default(),
-            sudo: self.sudo.unwrap_or_default(),
-            user_agent: self.user_agent.unwrap_or_default(),
+            base_url: Arc::from(base_url),
+            access_token: Arc::from(self.access_token.unwrap_or_default()),
+            username: Arc::from(self.username.unwrap_or_default()),
+            password: Arc::from(self.password.unwrap_or_default()),
+            otp: Arc::from(self.otp.unwrap_or_default()),
+            sudo: Arc::from(self.sudo.unwrap_or_default()),
+            user_agent: Arc::from(self.user_agent.unwrap_or_default()),
             debug: self.debug,
             ignore_version: self.ignore_version,
         };
@@ -622,7 +622,7 @@ mod tests {
             .unwrap();
         assert_eq!(client.base_url(), "https://example.com");
         let cfg = client.read_config();
-        assert_eq!(cfg.access_token, "abc123");
+        assert_eq!(&*cfg.access_token, "abc123");
         assert!(cfg.username.is_empty());
         assert!(cfg.password.is_empty());
     }
@@ -634,8 +634,8 @@ mod tests {
             .build()
             .unwrap();
         let cfg = client.read_config();
-        assert_eq!(cfg.username, "user");
-        assert_eq!(cfg.password, "pass");
+        assert_eq!(&*cfg.username, "user");
+        assert_eq!(&*cfg.password, "pass");
         assert!(cfg.access_token.is_empty());
     }
 
@@ -659,24 +659,24 @@ mod tests {
             .unwrap();
 
         client.set_token("new-token");
-        assert_eq!(client.read_config().access_token, "new-token");
+        assert_eq!(&*client.read_config().access_token, "new-token");
 
         client.set_basic_auth("admin", "secret");
         {
             let cfg = client.read_config();
-            assert_eq!(cfg.username, "admin");
-            assert_eq!(cfg.password, "secret");
+            assert_eq!(&*cfg.username, "admin");
+            assert_eq!(&*cfg.password, "secret");
             assert!(cfg.access_token.is_empty());
         }
 
         client.set_otp("123456");
-        assert_eq!(client.read_config().otp, "123456");
+        assert_eq!(&*client.read_config().otp, "123456");
 
         client.set_sudo("target-user");
-        assert_eq!(client.read_config().sudo, "target-user");
+        assert_eq!(&*client.read_config().sudo, "target-user");
 
         client.set_user_agent("my-sdk/0.1");
-        assert_eq!(client.read_config().user_agent, "my-sdk/0.1");
+        assert_eq!(&*client.read_config().user_agent, "my-sdk/0.1");
     }
 
     #[test]
@@ -772,7 +772,7 @@ mod tests {
         let cloned = client.clone();
 
         client.set_token("updated-token");
-        assert_eq!(cloned.read_config().access_token, "updated-token");
+        assert_eq!(&*cloned.read_config().access_token, "updated-token");
     }
 
     #[test]

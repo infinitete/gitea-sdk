@@ -52,19 +52,19 @@ impl Client {
         }
         // 2. OTP → X-GITEA-OTP
         if !otp.is_empty() {
-            req = req.header("X-GITEA-OTP", &otp);
+            req = req.header("X-GITEA-OTP", &*otp);
         }
         // 3. Basic Auth
         if !username.is_empty() {
-            req = req.basic_auth(&username, Some(&password));
+            req = req.basic_auth(&*username, Some(&*password));
         }
         // 4. Sudo
         if !sudo.is_empty() {
-            req = req.header("Sudo", &sudo);
+            req = req.header("Sudo", &*sudo);
         }
         // 5. User-Agent
         if !user_agent.is_empty() {
-            req = req.header("User-Agent", &user_agent);
+            req = req.header("User-Agent", &*user_agent);
         }
 
         if let Some(hdrs) = headers {
