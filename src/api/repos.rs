@@ -31,7 +31,6 @@ fn json_header() -> reqwest::header::HeaderMap {
     headers
 }
 
-/// API methods for repository operations.
 /// API methods for repositories. Access via [`Client::repos()`](crate::Client::repos).
 pub struct ReposApi<'a> {
     client: &'a Client,

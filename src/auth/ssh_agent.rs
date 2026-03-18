@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! SSH agent authentication for the Gitea API.
+
 use ssh_key::{Certificate, Fingerprint, HashAlg, PublicKey};
 
 use crate::Error;

@@ -113,5 +113,5 @@ Licensed under the [MIT License](LICENSE).
 
 ## Links
 
-- [Repository](https://gitea.com/gitea/go-sdk)
+- [Repository](https://github.com/infinitete/gitea-sdk)
 - [Changelog](CHANGELOG.md)

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! HTTP signature authentication for the Gitea API.
+
 #[allow(dead_code)]
 pub(crate) struct SignedStringComponents {
     /// HTTP method, lowercased (e.g. "post", "get").
