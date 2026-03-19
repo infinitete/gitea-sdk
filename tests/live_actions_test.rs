@@ -56,7 +56,7 @@ async fn wait_for_job_logs(
             .get_repo_action_job_logs(owner, repo, job_id)
             .await
         {
-            Ok((logs, _)) => return Ok(Some(logs)),
+            Ok((logs, _)) => return Ok(Some(logs.to_vec())),
             Err(Error::Api { status: 404, .. }) => {
                 sleep(Duration::from_secs(2)).await;
             }

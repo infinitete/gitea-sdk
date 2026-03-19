@@ -4,6 +4,7 @@
 
 //! HTTP request helpers for the Gitea API client.
 
+use bytes::Bytes;
 use reqwest::header::HeaderMap;
 
 use crate::Client;
@@ -128,7 +129,6 @@ impl Client {
     ///
     /// Used for DELETE and other operations where only the status code matters.
     /// Matches Go SDK `doRequestWithStatusHandle`.
-    #[allow(dead_code)]
     pub(crate) async fn do_request_with_status_handle<B: Into<reqwest::Body>>(
         &self,
         method: reqwest::Method,
@@ -152,7 +152,6 @@ impl Client {
     /// Layer 2: Return status code without checking for errors.
     ///
     /// Matches Go SDK `getStatusCode`.
-    #[allow(dead_code)]
     pub(crate) async fn get_status_code<B: Into<reqwest::Body>>(
         &self,
         method: reqwest::Method,
@@ -168,7 +167,7 @@ impl Client {
 
     /// Layer 3: Read response body and check for errors.
     ///
-    /// Returns `(body_bytes, Response)` on success (2xx).
+    /// Returns `(body bytes, Response)` on success (2xx).
     /// Matches Go SDK `getResponse`.
     pub(crate) async fn get_response<B: Into<reqwest::Body>>(
         &self,
@@ -176,7 +175,7 @@ impl Client {
         path: &str,
         headers: Option<&HeaderMap>,
         body: Option<B>,
-    ) -> crate::Result<(Vec<u8>, Response)> {
+    ) -> crate::Result<(Bytes, Response)> {
         let resp = self.do_request_raw(method, path, headers, body).await?;
         let response = response_from_reqwest(&resp);
         let status = resp.status().as_u16();
@@ -188,7 +187,7 @@ impl Client {
             unreachable!()
         }
 
-        let data = resp.bytes().await?.to_vec();
+        let data = resp.bytes().await?;
         Ok((data, response))
     }
 
@@ -196,7 +195,6 @@ impl Client {
     ///
     /// Returns `(T, Response)` on success.
     /// Matches Go SDK `getParsedResponse`.
-    #[allow(dead_code)]
     pub(crate) async fn get_parsed_response<
         T: serde::de::DeserializeOwned,
         B: Into<reqwest::Body>,

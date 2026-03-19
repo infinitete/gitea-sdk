@@ -4,6 +4,8 @@
 
 //! Actions API endpoints for managing Gitea CI/CD workflows and runs.
 
+use bytes::Bytes;
+
 use crate::Client;
 use crate::Response;
 use crate::internal::request::json_header;
@@ -189,7 +191,7 @@ impl<'a> ActionsApi<'a> {
         owner: &str,
         repo: &str,
         job_id: i64,
-    ) -> crate::Result<(Vec<u8>, Response)> {
+    ) -> crate::Result<(Bytes, Response)> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[owner, repo])?;
         let path = format!(
             "/repos/{}/{}/actions/jobs/{job_id}/logs",

@@ -4,6 +4,8 @@
 
 //! Pull request API endpoints for managing Gitea pull requests and reviews.
 
+use bytes::Bytes;
+
 use crate::Client;
 use crate::Response;
 use crate::internal::request::{json_body, json_header};
@@ -168,7 +170,7 @@ impl<'a> PullsApi<'a> {
         owner: &str,
         repo: &str,
         index: i64,
-    ) -> crate::Result<(Vec<u8>, Response)> {
+    ) -> crate::Result<(Bytes, Response)> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[owner, repo])?;
         self.client()
             .check_server_version_ge(&VERSION_1_13_0)
@@ -187,7 +189,7 @@ impl<'a> PullsApi<'a> {
         repo: &str,
         index: i64,
         opt: PullRequestDiffOptions,
-    ) -> crate::Result<(Vec<u8>, Response)> {
+    ) -> crate::Result<(Bytes, Response)> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[owner, repo])?;
         self.client()
             .check_server_version_ge(&VERSION_1_13_0)
@@ -837,7 +839,7 @@ mod tests {
             .patch("testowner", "testrepo", 1)
             .await
             .unwrap();
-        assert_eq!(String::from_utf8(body).unwrap(), patch);
+        assert_eq!(String::from_utf8(body.to_vec()).unwrap(), patch);
         assert_eq!(resp.status, 200);
     }
 
@@ -1032,7 +1034,7 @@ mod tests {
             )
             .await
             .unwrap();
-        assert_eq!(String::from_utf8(body).unwrap(), diff_body);
+        assert_eq!(String::from_utf8(body.to_vec()).unwrap(), diff_body);
         assert_eq!(resp.status, 200);
     }
 

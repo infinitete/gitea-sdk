@@ -4,6 +4,8 @@
 
 //! Repository API endpoints for managing Gitea repositories.
 
+use bytes::Bytes;
+
 use std::collections::HashMap;
 
 use crate::Client;
@@ -214,7 +216,7 @@ impl<'a> ReposApi<'a> {
         repo: &str,
         ref_: &str,
         archive: &str,
-    ) -> crate::Result<(Vec<u8>, Response)> {
+    ) -> crate::Result<(Bytes, Response)> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[owner, repo])?;
         let path = format!(
             "/repos/{}/{}/archive/{}.{}",
@@ -232,7 +234,7 @@ impl<'a> ReposApi<'a> {
         repo: &str,
         ref_: &str,
         archive: &str,
-    ) -> crate::Result<(Vec<u8>, Response)> {
+    ) -> crate::Result<(Bytes, Response)> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[owner, repo])?;
         let path = format!(
             "/repos/{}/{}/archive/{}.{}",
@@ -486,7 +488,7 @@ impl<'a> ReposApi<'a> {
         repo: &str,
         filepath: &str,
         ref_: &str,
-    ) -> crate::Result<(Vec<u8>, Response)> {
+    ) -> crate::Result<(Bytes, Response)> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[owner, repo])?;
         let escaped_path =
             crate::internal::escape::path_escape_segments(filepath.trim_start_matches('/'));
@@ -514,7 +516,7 @@ impl<'a> ReposApi<'a> {
         repo: &str,
         filepath: &str,
         ref_: &str,
-    ) -> crate::Result<(Vec<u8>, Response)> {
+    ) -> crate::Result<(Bytes, Response)> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[owner, repo])?;
         let escaped_path =
             crate::internal::escape::path_escape_segments(filepath.trim_start_matches('/'));
@@ -696,7 +698,7 @@ impl<'a> ReposApi<'a> {
         repo: &str,
         filepath: &str,
         ref_: &str,
-    ) -> crate::Result<(Vec<u8>, Response)> {
+    ) -> crate::Result<(Bytes, Response)> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[owner, repo])?;
         let escaped_path =
             crate::internal::escape::path_escape_segments(filepath.trim_start_matches('/'));
@@ -719,7 +721,7 @@ impl<'a> ReposApi<'a> {
         repo: &str,
         filepath: &str,
         ref_: &str,
-    ) -> crate::Result<(Vec<u8>, Response)> {
+    ) -> crate::Result<(Bytes, Response)> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[owner, repo])?;
         let escaped_path =
             crate::internal::escape::path_escape_segments(filepath.trim_start_matches('/'));
@@ -742,7 +744,7 @@ impl<'a> ReposApi<'a> {
         repo: &str,
         filepath: &str,
         ref_: &str,
-    ) -> crate::Result<(Vec<u8>, Response)> {
+    ) -> crate::Result<(Bytes, Response)> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[owner, repo])?;
         let escaped_path =
             crate::internal::escape::path_escape_segments(filepath.trim_start_matches('/'));
@@ -958,7 +960,7 @@ impl<'a> ReposApi<'a> {
         owner: &str,
         repo: &str,
         ref_: &str,
-    ) -> crate::Result<(Vec<u8>, Response)> {
+    ) -> crate::Result<(Bytes, Response)> {
         self.client()
             .check_server_version_ge(&VERSION_1_16_0)
             .await?;
@@ -978,7 +980,7 @@ impl<'a> ReposApi<'a> {
         owner: &str,
         repo: &str,
         ref_: &str,
-    ) -> crate::Result<(Vec<u8>, Response)> {
+    ) -> crate::Result<(Bytes, Response)> {
         self.client()
             .check_server_version_ge(&VERSION_1_16_0)
             .await?;
@@ -2482,7 +2484,7 @@ impl<'a> ReposApi<'a> {
         repo: &str,
         filepath: &str,
         ref_: &str,
-    ) -> crate::Result<(Vec<u8>, Response)> {
+    ) -> crate::Result<(Bytes, Response)> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[owner, repo])?;
         let escaped_path =
             crate::internal::escape::path_escape_segments(filepath.trim_start_matches('/'));
@@ -4037,7 +4039,7 @@ mod tests {
             .get_file_reader("owner", "repo", "README.md", "main")
             .await
             .unwrap();
-        assert_eq!(data, b"Hello World");
+        assert_eq!(&*data, b"Hello World");
         assert_eq!(resp.status, 200);
     }
 
@@ -4555,7 +4557,7 @@ mod tests {
             .get_raw_file_or_lfs("owner", "repo", "file.txt", "main")
             .await
             .unwrap();
-        assert_eq!(data, b"raw content");
+        assert_eq!(&*data, b"raw content");
         assert_eq!(resp.status, 200);
     }
 
@@ -4591,7 +4593,7 @@ mod tests {
             .get_raw_file("owner", "repo", "file.txt", "main")
             .await
             .unwrap();
-        assert_eq!(data, b"raw data");
+        assert_eq!(&*data, b"raw data");
         assert_eq!(resp.status, 200);
     }
 

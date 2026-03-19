@@ -4,6 +4,8 @@
 
 //! ActivityPub API endpoints for Gitea federation and ActivityStreams protocol.
 
+use bytes::Bytes;
+
 use crate::Client;
 use crate::Response;
 use crate::internal::request::json_header;
@@ -65,7 +67,7 @@ impl<'a> ActivityPubApi<'a> {
     }
 
     /// GetActivityPubPersonResponse returns the raw ActivityPub Person response.
-    pub async fn get_person_response(&self, user_id: i64) -> crate::Result<(Vec<u8>, Response)> {
+    pub async fn get_person_response(&self, user_id: i64) -> crate::Result<(Bytes, Response)> {
         let path = format!("/activitypub/user-id/{user_id}");
         self.client()
             .get_response(
