@@ -23,10 +23,14 @@ impl<'a> OrgsApi<'a> {
 }
 
 pub mod action;
+pub mod action_secret;
 pub mod block;
 pub mod core;
 pub mod label;
 pub mod member;
+pub mod social;
 pub mod team;
+pub mod team_member;
+pub mod team_repo;
 #[cfg(test)]
 pub(crate) mod test_helpers;

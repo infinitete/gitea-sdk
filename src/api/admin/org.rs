@@ -69,10 +69,9 @@ impl<'a> AdminApi<'a> {
 
 #[cfg(test)]
 mod tests {
+    use crate::TrustModel;
     use crate::options::org::CreateOrgOption;
     use crate::options::repo::CreateRepoOption;
-    #[allow(unused_imports)]
-    use crate::{Repository, TrustModel};
     use wiremock::matchers::{method, path};
     use wiremock::{Mock, MockServer, ResponseTemplate};
 

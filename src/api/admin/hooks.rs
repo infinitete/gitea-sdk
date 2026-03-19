@@ -94,9 +94,8 @@ impl<'a> AdminApi<'a> {
 
 #[cfg(test)]
 mod tests {
+    use crate::HookType;
     use crate::options::admin::{CreateHookOption, EditHookOption};
-    #[allow(unused_imports)]
-    use crate::{HookType, TrustModel};
     use wiremock::matchers::{method, path};
     use wiremock::{Mock, MockServer, ResponseTemplate};
 

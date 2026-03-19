@@ -159,6 +159,8 @@ impl<'a> super::PullsApi<'a> {
     }
 }
 
+// ── Minimal commit type for ListPullRequestCommits ──────────────
+
 #[derive(Debug, Clone, serde::Deserialize)]
 pub struct PullRequestCommit {
     #[serde(rename = "sha")]

@@ -22,12 +22,16 @@ impl<'a> IssuesApi<'a> {
     }
 }
 
+pub mod attachment;
+pub mod blocking;
 pub mod comment;
 pub mod core;
 pub mod label;
 pub mod milestone;
+pub mod misc;
 pub mod pin;
 pub mod reaction;
+pub mod stopwatch;
 pub mod subscription;
 pub mod template;
 #[cfg(test)]
