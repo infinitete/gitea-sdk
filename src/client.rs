@@ -607,15 +607,15 @@ impl<'a> ClientBuilder<'a> {
             .tcp_keepalive
             .unwrap_or(std::time::Duration::from_secs(60));
         let pool_max_idle_per_host = self.pool_max_idle_per_host.unwrap_or(10);
-        let http = self.http_client.unwrap_or_else(|| {
-            reqwest::Client::builder()
+        let http = match self.http_client {
+            Some(client) => client,
+            None => reqwest::Client::builder()
                 .timeout(timeout)
                 .connect_timeout(connect_timeout)
                 .tcp_keepalive(tcp_keepalive)
                 .pool_max_idle_per_host(pool_max_idle_per_host)
-                .build()
-                .expect("failed to build default HTTP client")
-        });
+                .build()?,
+        };
 
         let config = ClientConfig {
             base_url: Arc::from(base_url),

@@ -11,7 +11,7 @@ use super::serde_helpers::{null_to_default, nullable_rfc3339};
 use crate::types::enums::AccessTokenScope;
 
 /// AccessToken represents an API access token
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 /// Access Token payload type.
 pub struct AccessToken {
     pub id: i64,
@@ -34,6 +34,20 @@ pub struct AccessToken {
         skip_serializing_if = "Option::is_none"
     )]
     pub updated: Option<OffsetDateTime>,
+}
+
+impl std::fmt::Debug for AccessToken {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("AccessToken")
+            .field("id", &self.id)
+            .field("name", &self.name)
+            .field("token", &if self.token.is_empty() { "" } else { "***" })
+            .field("token_last_eight", &self.token_last_eight)
+            .field("scopes", &self.scopes)
+            .field("created", &self.created)
+            .field("updated", &self.updated)
+            .finish()
+    }
 }
 
 /// UserHeatmapData represents the data needed to render a user's contribution heatmap.
@@ -268,6 +282,32 @@ mod tests {
         let restored: UserHeatmapData = serde_json::from_str(&json).unwrap();
         assert_eq!(restored.timestamp, original.timestamp);
         assert_eq!(restored.contributions, original.contributions);
+    }
+
+    #[test]
+    fn test_access_token_debug_redacts_token() {
+        let token = AccessToken {
+            id: 1,
+            name: "ci-token".to_string(),
+            token: "ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx".to_string(),
+            token_last_eight: "xxxxxxxx".to_string(),
+            scopes: vec![],
+            created: None,
+            updated: None,
+        };
+        let debug = format!("{:?}", token);
+        assert!(
+            !debug.contains("ghp_"),
+            "Full token must be redacted in Debug output"
+        );
+        assert!(
+            debug.contains("***"),
+            "Debug output should contain redaction marker"
+        );
+        assert!(
+            debug.contains("xxxxxxxx"),
+            "token_last_eight should still be visible"
+        );
     }
 
     #[test]

@@ -4,7 +4,7 @@
 
 //! Shared enum types used across the Gitea API.
 
-use serde::{Deserialize, Serialize};
+use crate::{Deserialize, Serialize};
 use strum::{AsRefStr, Display};
 
 /// Issue/pull request state type

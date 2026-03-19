@@ -1,3 +1,7 @@
+// Copyright 2026 infinitete. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 //! Gitea API client for Rust.
 //!
 //! This crate provides an asynchronous client for the Gitea API.
@@ -49,7 +53,7 @@ pub use types::{
     FileCommitResponse, FileLinksResponse, FileResponse, GPGKey, GPGKeyEmail, GitBlobResponse,
     GitEntry, GitHook, GitObject, GitTreeResponse, GitignoreTemplateInfo, GlobalAPISettings,
     GlobalAttachmentSettings, GlobalRepoSettings, GlobalUISettings, Hook, Identity,
-    InternalTracker, Issue, IssueFormElement, IssueFormElementAttributes,
+    InternalTracker, Issue, IssueBlockedBy, IssueFormElement, IssueFormElementAttributes,
     IssueFormElementValidations, IssueMeta, IssueTemplate, Label, LabelTemplate,
     LicenseTemplateInfo, LicensesTemplateListEntry, Milestone, NodeInfo, NodeInfoServices,
     NodeInfoSoftware, NodeInfoUsage, NodeInfoUsageUsers, Note, NotificationThread, NotifySubject,

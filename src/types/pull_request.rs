@@ -229,9 +229,9 @@ pub struct PullReviewComment {
     #[serde(default)]
     pub diff_hunk: String,
     #[serde(rename = "position")]
-    pub line_num: u64,
+    pub line_num: i64,
     #[serde(rename = "original_position")]
-    pub old_line_num: u64,
+    pub old_line_num: i64,
 
     #[serde(rename = "html_url")]
     pub html_url: String,

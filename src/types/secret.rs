@@ -4,9 +4,9 @@
 
 //! Types for repository and organization secrets.
 
+use super::serde_helpers::nullable_rfc3339;
 use crate::{Deserialize, Serialize};
 use time::OffsetDateTime;
-use time::serde::rfc3339;
 
 /// Secret represents a repository or organization secret
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -21,7 +21,11 @@ pub struct Secret {
     #[serde(default)]
     pub description: String,
     /// Date and Time of secret creation
-    #[serde(default, with = "rfc3339::option")]
+    #[serde(
+        default,
+        with = "nullable_rfc3339",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub created: Option<OffsetDateTime>,
 }
 
