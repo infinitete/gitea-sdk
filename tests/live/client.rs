@@ -4,7 +4,7 @@
 
 #![allow(dead_code)]
 
-use gitea_rs::Client;
+use gitea_sdk_rs::Client;
 
 use super::env::{LiveEnv, load_live_env};
 

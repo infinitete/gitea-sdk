@@ -4,8 +4,8 @@
 
 mod live;
 
-use gitea_rs::Error;
-use gitea_rs::options::repo::{EditGitHookOption, ListRepoGitHooksOptions};
+use gitea_sdk_rs::Error;
+use gitea_sdk_rs::options::repo::{EditGitHookOption, ListRepoGitHooksOptions};
 
 use live::{CleanupRegistry, create_repo_fixture, live_client};
 

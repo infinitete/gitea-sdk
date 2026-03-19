@@ -5,17 +5,17 @@
 mod live;
 
 use base64::Engine;
-use gitea_rs::Error;
-use gitea_rs::options::pull::{
+use gitea_sdk_rs::Error;
+use gitea_sdk_rs::options::pull::{
     CreatePullRequestOption, CreatePullReviewComment, CreatePullReviewOptions,
     DismissPullReviewOptions, ListPullReviewsOptions, PullReviewRequestOptions,
     SubmitPullReviewOptions,
 };
-use gitea_rs::options::repo::{
+use gitea_sdk_rs::options::repo::{
     AddCollaboratorOption, CreateBranchOption, CreateFileOptions, FileOptions,
 };
-use gitea_rs::types::enums::{AccessMode, ReviewStateType};
-use gitea_rs::types::repository::{CommitDateOptions, Identity};
+use gitea_sdk_rs::types::enums::{AccessMode, ReviewStateType};
+use gitea_sdk_rs::types::repository::{CommitDateOptions, Identity};
 use time::OffsetDateTime;
 
 use live::{
@@ -298,7 +298,7 @@ async fn live_pull_review_flow() {
                 .expect("delete pending review");
             assert_success_status(delete_review_resp.status);
         }
-        Err(gitea_rs::Error::UnknownApi { status, .. }) => {
+        Err(gitea_sdk_rs::Error::UnknownApi { status, .. }) => {
             panic!("create review failed with status {status}");
         }
         Err(other) => panic!("create review unexpected error: {other}"),

@@ -4,7 +4,7 @@
 
 mod live;
 
-use gitea_rs::options::repo::{CreateTagOption, ListRepoTagsOptions};
+use gitea_sdk_rs::options::repo::{CreateTagOption, ListRepoTagsOptions};
 
 use live::{CleanupRegistry, create_repo_fixture, live_client, unique_name};
 

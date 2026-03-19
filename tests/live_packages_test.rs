@@ -4,7 +4,7 @@
 
 mod live;
 
-use gitea_rs::options::package::ListPackagesOptions;
+use gitea_sdk_rs::options::package::ListPackagesOptions;
 
 use live::{CleanupRegistry, create_generic_package_fixture, create_repo_fixture, live_client};
 

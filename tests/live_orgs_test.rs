@@ -4,14 +4,14 @@
 
 mod live;
 
-use gitea_rs::Error;
-use gitea_rs::options::hook::{CreateHookOption, EditHookOption, ListHooksOptions};
-use gitea_rs::options::org::{
+use gitea_sdk_rs::Error;
+use gitea_sdk_rs::options::hook::{CreateHookOption, EditHookOption, ListHooksOptions};
+use gitea_sdk_rs::options::org::{
     CreateOrgLabelOption, CreateTeamOption, EditOrgLabelOption, EditTeamOption,
     ListOrgLabelsOptions, ListOrgsOptions, ListTeamRepositoriesOptions, ListTeamsOptions,
     SearchTeamsOptions,
 };
-use gitea_rs::types::enums::{AccessMode, HookType, RepoUnitType};
+use gitea_sdk_rs::types::enums::{AccessMode, HookType, RepoUnitType};
 
 use live::{
     CleanupRegistry, create_org_fixture, create_org_repo_fixture, live_client, load_live_env,

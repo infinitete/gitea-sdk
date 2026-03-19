@@ -3,12 +3,12 @@
 //! Run with:
 //!   cargo run --example basic_usage
 
-use gitea_rs::options::repo::ListReposOptions;
+use gitea_sdk_rs::options::repo::ListReposOptions;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create a client pointing at your Gitea instance.
-    let client = gitea_rs::Client::builder("https://gitea.example.com")
+    let client = gitea_sdk_rs::Client::builder("https://gitea.example.com")
         .token("your-token-here")
         .build()?;
 

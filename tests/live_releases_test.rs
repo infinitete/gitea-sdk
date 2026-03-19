@@ -4,7 +4,7 @@
 
 mod live;
 
-use gitea_rs::options::release::{
+use gitea_sdk_rs::options::release::{
     CreateReleaseOption, EditAttachmentOption, EditReleaseOption, ListReleaseAttachmentsOptions,
     ListReleasesOptions,
 };

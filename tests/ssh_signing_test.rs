@@ -12,7 +12,7 @@
 use wiremock::matchers::{header_exists, method, path};
 use wiremock::{Mock, MockServer, ResponseTemplate};
 
-use gitea_rs::Client;
+use gitea_sdk_rs::Client;
 
 mod ssh_fixtures;
 
@@ -22,7 +22,7 @@ use ssh_fixtures::{
 };
 
 fn ed25519_tmp_key(test_name: &str) -> std::path::PathBuf {
-    let tmp = std::env::temp_dir().join(format!("gitea_rs_{test_name}"));
+    let tmp = std::env::temp_dir().join(format!("gitea_sdk_rs_{test_name}"));
     std::fs::write(&tmp, ed25519_private_key_bytes()).expect("write temp ed25519 key");
     tmp
 }
@@ -220,7 +220,7 @@ fn test_ssh_invalid_key_path() {
         "ssh_pubkey with nonexistent path should return Err"
     );
     match result.unwrap_err() {
-        gitea_rs::Error::SshSign(msg) => {
+        gitea_sdk_rs::Error::SshSign(msg) => {
             assert!(
                 msg.contains("failed to read"),
                 "error should mention read failure: {msg}"
@@ -232,7 +232,7 @@ fn test_ssh_invalid_key_path() {
 
 #[test]
 fn test_ssh_wrong_passphrase() {
-    let tmp = std::env::temp_dir().join("gitea_rs_ssh_signing_passphrase");
+    let tmp = std::env::temp_dir().join("gitea_sdk_rs_ssh_signing_passphrase");
     std::fs::write(&tmp, rsa_passphrase_private_key_bytes())
         .expect("write passphrase-protected key");
 
@@ -247,7 +247,7 @@ fn test_ssh_wrong_passphrase() {
         "ssh_pubkey with wrong passphrase should return Err"
     );
     match result.unwrap_err() {
-        gitea_rs::Error::SshSign(msg) => {
+        gitea_sdk_rs::Error::SshSign(msg) => {
             assert!(
                 msg.contains("failed to decrypt"),
                 "error should mention decryption failure: {msg}"
@@ -261,7 +261,7 @@ fn test_ssh_wrong_passphrase() {
 
 #[test]
 fn test_ssh_cert_wrong_passphrase() {
-    let tmp = std::env::temp_dir().join("gitea_rs_ssh_signing_cert_pass");
+    let tmp = std::env::temp_dir().join("gitea_sdk_rs_ssh_signing_cert_pass");
     std::fs::write(&tmp, rsa_passphrase_private_key_bytes())
         .expect("write passphrase-protected key");
 
@@ -273,7 +273,7 @@ fn test_ssh_cert_wrong_passphrase() {
         "ssh_cert with wrong passphrase should return Err"
     );
     match result.unwrap_err() {
-        gitea_rs::Error::SshSign(msg) => {
+        gitea_sdk_rs::Error::SshSign(msg) => {
             assert!(
                 msg.contains("failed to decrypt"),
                 "error should mention decryption failure: {msg}"
@@ -287,7 +287,7 @@ fn test_ssh_cert_wrong_passphrase() {
 
 #[test]
 fn test_ssh_correct_passphrase() {
-    let tmp = std::env::temp_dir().join("gitea_rs_ssh_signing_correct_pass");
+    let tmp = std::env::temp_dir().join("gitea_sdk_rs_ssh_signing_correct_pass");
     std::fs::write(&tmp, rsa_passphrase_private_key_bytes())
         .expect("write passphrase-protected key");
 

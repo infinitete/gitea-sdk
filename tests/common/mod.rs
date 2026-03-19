@@ -18,7 +18,7 @@ use serde_json::Value;
 use wiremock::matchers::{method, path};
 use wiremock::{Mock, MockServer, ResponseTemplate};
 
-use gitea_rs::Client;
+use gitea_sdk_rs::Client;
 
 /// Build a [`Client`] pointing at the given mock server URL with a test token.
 pub fn create_test_client(server: &MockServer) -> Client {

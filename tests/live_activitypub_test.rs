@@ -4,7 +4,7 @@
 
 mod live;
 
-use gitea_rs::Error;
+use gitea_sdk_rs::Error;
 
 use live::{CleanupRegistry, create_repo_fixture, live_client};
 

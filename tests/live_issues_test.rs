@@ -4,11 +4,11 @@
 
 mod live;
 
-use gitea_rs::options::issue::{
+use gitea_sdk_rs::options::issue::{
     CreateIssueCommentOption, CreateMilestoneOption, EditIssueCommentOption, EditMilestoneOption,
     IssueLabelsOption, ListIssueCommentOptions, ListMilestoneOption,
 };
-use gitea_rs::types::enums::StateType;
+use gitea_sdk_rs::types::enums::StateType;
 
 use live::{
     CleanupRegistry, create_issue_fixture, create_label_fixture, create_repo_fixture, live_client,

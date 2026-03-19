@@ -4,7 +4,7 @@
 
 mod live;
 
-use gitea_rs::options::repo::ListStargazersOptions;
+use gitea_sdk_rs::options::repo::ListStargazersOptions;
 
 use live::{CleanupRegistry, create_repo_fixture, live_client, load_live_env};
 

@@ -6,10 +6,10 @@
 
 mod live;
 
-use gitea_rs::options::repo::{
+use gitea_sdk_rs::options::repo::{
     CreateForkOption, CreateRepoFromTemplateOption, CreateRepoOption, ListForksOptions,
 };
-use gitea_rs::types::enums::TrustModel;
+use gitea_sdk_rs::types::enums::TrustModel;
 
 use live::{CleanupRegistry, build_live_client, create_repo_fixture, load_live_env, unique_name};
 

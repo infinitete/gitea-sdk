@@ -85,9 +85,9 @@ struct ClientInner {
 /// # Examples
 ///
 /// ```no_run
-/// use gitea_rs::Client;
+/// use gitea_sdk_rs::Client;
 ///
-/// # fn main() -> Result<(), gitea_rs::Error> {
+/// # fn main() -> Result<(), gitea_sdk_rs::Error> {
 /// let client = Client::builder("https://gitea.example.com")
 ///     .token("my-secret-token")
 ///     .build()?;

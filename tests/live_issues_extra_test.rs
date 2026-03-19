@@ -4,7 +4,7 @@
 
 mod live;
 
-use gitea_rs::options::issue::{
+use gitea_sdk_rs::options::issue::{
     AddTimeOption, CreateIssueCommentOption, ListTrackedTimesOptions, LockIssueOption,
 };
 

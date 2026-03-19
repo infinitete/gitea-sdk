@@ -5,15 +5,15 @@
 mod live;
 
 use base64::{Engine as _, engine::general_purpose};
-use gitea_rs::Error;
-use gitea_rs::options::org::{
+use gitea_sdk_rs::Error;
+use gitea_sdk_rs::options::org::{
     CreateOrgActionVariableOption, CreateSecretOption, CreateTeamOption, EditOrgOption,
     ListOrgActionSecretOption, ListOrgActionVariableOption, ListOrgActivityFeedsOptions,
     ListOrgBlocksOptions, ListOrgMembershipOption, ListTeamActivityFeedsOptions, ListTeamsOptions,
     UpdateOrgActionVariableOption,
 };
-use gitea_rs::options::user::UpdateUserAvatarOption;
-use gitea_rs::types::enums::{AccessMode, RepoUnitType};
+use gitea_sdk_rs::options::user::UpdateUserAvatarOption;
+use gitea_sdk_rs::types::enums::{AccessMode, RepoUnitType};
 
 use live::{
     CleanupRegistry, build_basic_auth_client, create_org_fixture, create_org_repo_fixture,
@@ -449,7 +449,7 @@ async fn live_org_my_teams_delete_membership_and_rename_flow() {
     let original_name = short_name("rnorg");
     let (renamed_fixture, create_resp) = client
         .orgs()
-        .create_org(gitea_rs::options::org::CreateOrgOption {
+        .create_org(gitea_sdk_rs::options::org::CreateOrgOption {
             name: original_name.clone(),
             full_name: None,
             email: None,
@@ -468,7 +468,7 @@ async fn live_org_my_teams_delete_membership_and_rename_flow() {
         .orgs()
         .rename_org(
             &original_name,
-            gitea_rs::options::org::RenameOrgOption {
+            gitea_sdk_rs::options::org::RenameOrgOption {
                 new_name: new_name.clone(),
             },
         )

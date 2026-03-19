@@ -6,9 +6,11 @@
 
 mod live;
 
-use gitea_rs::Client;
-use gitea_rs::options::admin::CreateUserOption;
-use gitea_rs::options::user::{ListFollowersOptions, ListFollowingOptions, ListUserBlocksOptions};
+use gitea_sdk_rs::Client;
+use gitea_sdk_rs::options::admin::CreateUserOption;
+use gitea_sdk_rs::options::user::{
+    ListFollowersOptions, ListFollowingOptions, ListUserBlocksOptions,
+};
 
 use reqwest::Client as HttpClient;
 

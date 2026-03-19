@@ -4,8 +4,8 @@
 
 mod live;
 
-use gitea_rs::Error;
-use gitea_rs::options::repo::{
+use gitea_sdk_rs::Error;
+use gitea_sdk_rs::options::repo::{
     CreateBranchProtectionOption, CreateTagProtectionOption, EditBranchProtectionOption,
     EditTagProtectionOption, ListBranchProtectionsOptions, ListRepoTagProtectionsOptions,
 };

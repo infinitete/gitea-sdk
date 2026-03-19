@@ -6,7 +6,7 @@ mod live;
 
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD;
-use gitea_rs::options::repo::{
+use gitea_sdk_rs::options::repo::{
     CreateWikiPageOptions, ListWikiPageRevisionsOptions, ListWikiPagesOptions,
 };
 

@@ -4,13 +4,13 @@
 
 mod live;
 
-use gitea_rs::Error;
-use gitea_rs::options::issue::CreateIssueCommentOption;
-use gitea_rs::options::issue::{
+use gitea_sdk_rs::Error;
+use gitea_sdk_rs::options::issue::CreateIssueCommentOption;
+use gitea_sdk_rs::options::issue::{
     AddTimeOption, EditDeadlineOption, ListIssueBlocksOptions, ListIssueCommentOptions,
     ListIssueDependenciesOptions, ListIssueSubscribersOptions, ListTrackedTimesOptions,
 };
-use gitea_rs::types::issue::IssueMeta;
+use gitea_sdk_rs::types::issue::IssueMeta;
 use time::{Duration, OffsetDateTime};
 
 use live::{

@@ -4,7 +4,7 @@
 
 mod live;
 
-use gitea_rs::options::repo::{CreateKeyOption, ListDeployKeysOptions};
+use gitea_sdk_rs::options::repo::{CreateKeyOption, ListDeployKeysOptions};
 
 use live::{
     CleanupRegistry, create_repo_fixture, generate_fresh_public_key, live_client, unique_name,

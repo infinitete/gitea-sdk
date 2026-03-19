@@ -7,13 +7,13 @@ mod live;
 use std::time::Duration;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use gitea_rs::Error;
-use gitea_rs::options::org::CreateSecretOption;
-use gitea_rs::options::repo::{
+use gitea_sdk_rs::Error;
+use gitea_sdk_rs::options::org::CreateSecretOption;
+use gitea_sdk_rs::options::repo::{
     CreateBranchOption, CreateLabelOption, CreateRepoOption, EditLabelOption, EditRepoOption,
     ListOrgReposOptions, SearchRepoOptions, UpdateRepoBranchOption,
 };
-use gitea_rs::types::enums::TrustModel;
+use gitea_sdk_rs::types::enums::TrustModel;
 use tokio::time::sleep;
 
 use live::{CleanupRegistry, create_org_fixture, create_repo_fixture, live_client, unique_name};
@@ -43,7 +43,7 @@ fn short_live_name(prefix: &str) -> String {
 }
 
 async fn search_repo_until_visible(
-    client: &gitea_rs::Client,
+    client: &gitea_sdk_rs::Client,
     keyword: &str,
     expected_repo_name: &str,
 ) {
