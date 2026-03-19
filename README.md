@@ -1,6 +1,14 @@
 # gitea-sdk
 
-An async Rust SDK for the [Gitea](https://about.gitea.com/) API.
+[![Crates.io](https://img.shields.io/crates/v/gitea-sdk.svg)](https://crates.io/crates/gitea-sdk)
+[![docs.rs](https://docs.rs/gitea-sdk/badge.svg)](https://docs.rs/gitea-sdk)
+[![CI](https://github.com/infinitete/gitea-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/infinitete/gitea-sdk/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![MSRV](https://img.shields.io/badge/MSRV-1.88-orange.svg)](https://blog.rust-lang.org/)
+
+[中文文档](README_zh.md)
+
+An async Rust SDK for the [Gitea](https://about.gitea.com/) REST API, with full coverage of repositories, issues, pull requests, organizations, users, admin operations, and more.
 
 ## Installation
 
@@ -11,7 +19,7 @@ Add this to your `Cargo.toml`:
 gitea-sdk = "0.1.0"
 ```
 
-Feature flags:
+### Feature Flags
 
 | Feature       | Description                        |
 |---------------|------------------------------------|
@@ -37,22 +45,99 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-More complete examples are in the `examples/` directory:
+More examples are in the [`examples/`](examples/) directory:
 
 ```bash
 cargo run --example basic_usage
 cargo run --example authentication
 ```
 
-## Features
+## API Overview
 
-- **Async API client** built on reqwest with async/await
-- **15 API modules** covering repos, issues, pulls, orgs, users, admin, hooks, notifications, actions, releases, settings, OAuth2, packages, miscellaneous, ActivityPub, and status
-- **6 authentication methods**: token, basic auth, OTP, sudo, SSH certificate signing, and SSH public key signing
-- **Pagination** via `ListOptions` for all list endpoints
-- **Version checking** with automatic server version detection
-- **Thread-safe** client that can be cloned and shared across tasks
-- **Full serde support** for serialization and deserialization
+### Repository Management
+
+**[`ReposApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.ReposApi.html)** — Full repository lifecycle and contents management.
+
+- **CRUD** — `create_repo`, `get_repo`, `edit_repo`, `delete_repo`, `search_repos`
+- **Branches** — `list_branches`, `create_branch`, `delete_branch`, `list_branch_protections`
+- **Tags** — `list_tags`, `create_tag`, `delete_tag`, `list_tag_protections`
+- **Files** — `get_contents`, `create_file`, `update_file`, `delete_file`, `get_raw_file`
+- **Collaborators** — `list_collaborators`, `add_collaborator`, `get_collaborator_permission`
+- **Commits** — `list_commits`, `get_single_commit`, `compare_commits`
+- **Actions** — `list_action_secrets`, `list_action_variables`, `create_action_secret`
+- **Wiki** — `create_wiki_page`, `get_wiki_page`, `edit_wiki_page`, `list_wiki_pages`
+- **Misc** — `list_forks`, `create_fork`, `mirror_sync`, `transfer_repo`, `get_archive`
+
+**[`ReleasesApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.ReleasesApi.html)** — Releases and attachments.
+
+- `list`, `create`, `edit`, `delete`, `get_by_tag`, `list_attachments`, `create_attachment`
+
+### Issues & Pull Requests
+
+**[`IssuesApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.IssuesApi.html)** — Full issue tracking with rich metadata.
+
+- **CRUD** — `list_repo_issues`, `create_issue`, `edit_issue`, `delete_issue`
+- **Comments** — `list_issue_comments`, `create_issue_comment`, `edit_issue_comment`
+- **Labels** — `get_issue_labels`, `add_issue_labels`, `replace_issue_labels`
+- **Milestones** — `list_repo_milestones`, `create_milestone`, `edit_milestone`
+- **Reactions** — `post_issue_reaction`, `post_issue_comment_reaction`
+- **Dependencies** — `list_issue_dependencies`, `create_issue_dependency`
+- **Time Tracking** — `add_time`, `list_issue_tracked_times`, `list_my_tracked_times`
+- **Subscriptions** — `list_issue_subscribers`, `add_issue_subscription`
+- **Pins** — `list_repo_pinned_issues`, `pin_issue`, `unpin_issue`
+
+**[`PullsApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.PullsApi.html)** — Pull request workflow.
+
+- **CRUD** — `list`, `get`, `create`, `edit`
+- **Merge** — `merge`, `is_merged`, `patch`, `diff`
+- **Reviews** — `list_reviews`, `create_review`, `submit_review`, `dismiss_review`
+- **Files** — `list_commits`, `list_files`
+
+### Users & Organizations
+
+**[`UsersApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.UsersApi.html)** — User profiles, keys, and social features.
+
+- **Profile** — `get`, `get_my_info`, `search`, `get_settings`, `update_settings`
+- **Keys** — `list_public_keys`, `create_public_key`, `list_gpg_keys`, `create_gpg_key`
+- **Social** — `follow`, `unfollow`, `list_followers`, `block_user`, `unblock_user`
+- **Email** — `list_emails`, `add_email`, `delete_email`
+- **Tokens** — `list_access_tokens`, `create_access_token`, `delete_access_token`
+
+**[`OrgsApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.OrgsApi.html)** — Organization and team management.
+
+- **CRUD** — `list_orgs`, `create_org`, `edit_org`, `delete_org`
+- **Teams** — `list_org_teams`, `create_team`, `add_team_member`, `add_team_repo`
+- **Members** — `list_org_membership`, `set_public_org_membership`
+- **Labels** — `list_org_labels`, `create_org_label`
+- **Actions** — `list_org_action_secrets`, `list_org_action_variables`
+- **Blocks** — `list_org_blocks`, `block_org_user`, `unblock_org_user`
+
+### System & Administration
+
+**[`AdminApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.AdminApi.html)** — Server administration (requires admin privileges).
+
+- **Users** — `list_users`, `create_user`, `edit_user`, `delete_user`
+- **Orgs** — `list_orgs`, `create_org_for_user`
+- **Cron** — `list_cron_tasks`, `run_cron_task`
+- **Hooks** — `list_hooks`, `create_hook`, `edit_hook`
+- **Repos** — `list_unadopted_repos`, `adopt_unadopted_repo`
+- **Badges** — `list_user_badges`, `add_user_badges`
+
+**[`SettingsApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.SettingsApi.html)** — `get_api_settings`, `get_repo_settings`, `get_ui_settings`
+
+**[`MiscApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.MiscApi.html)** — `get_version`, `render_markdown`, `list_gitignore_templates`, `list_license_templates`, `get_signing_key_gpg`
+
+### Other Modules
+
+| Module | Description |
+|--------|-------------|
+| [`HooksApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.HooksApi.html) | Webhook management for repos, orgs, and users |
+| [`NotificationsApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.NotificationsApi.html) | Notification inbox and read status |
+| [`ActionsApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.ActionsApi.html) | Gitea Actions workflow runs and jobs |
+| [`PackagesApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.PackagesApi.html) | Package registry management |
+| [`Oauth2Api`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.Oauth2Api.html) | OAuth2 application management |
+| [`StatusApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.StatusApi.html) | Commit status (CI/CD integration) |
+| [`ActivityPubApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.ActivityPubApi.html) | ActivityPub federation endpoints |
 
 ## Authentication
 
@@ -82,7 +167,7 @@ let client = Client::builder("https://gitea.example.com")
     .build()?;
 ```
 
-The client stores credentials in a thread-safe interior and supports swapping them at runtime via `set_token()`, `set_basic_auth()`, `set_otp()`, and `set_sudo()`.
+The client is thread-safe and supports swapping credentials at runtime via `set_token()`, `set_basic_auth()`, `set_otp()`, and `set_sudo()`.
 
 ## Pagination
 
@@ -103,9 +188,32 @@ let (repos, _) = client.repos().list_my_repos(opts).await?;
 
 Set `page` to `Some(0)` to disable pagination and fetch all results at once.
 
+## Error Handling
+
+All API methods return `Result<(T, Response)>` where `T` is the deserialized response body and `Response` contains HTTP status, headers, and pagination links.
+
+```rust
+use gitea_sdk::{Client, Error};
+
+async fn example(client: &Client) {
+    match client.repos().get_repo("owner", "repo").await {
+        Ok((repo, response)) => {
+            println!("Repo: {}", repo.name);
+            println!("Status: {}", response.status);
+        }
+        Err(Error::Http(status, msg)) => {
+            eprintln!("HTTP {status}: {msg}");
+        }
+        Err(e) => {
+            eprintln!("Error: {e}");
+        }
+    }
+}
+```
+
 ## Minimum Rust Version
 
-Requires Rust **1.88** or later.
+Requires Rust **1.88** or later (edition 2024).
 
 ## License
 
@@ -113,5 +221,7 @@ Licensed under the [MIT License](LICENSE).
 
 ## Links
 
-- [Repository](https://github.com/infinitete/gitea-sdk)
+- [API Documentation (docs.rs)](https://docs.rs/gitea-sdk)
+- [Repository (GitHub)](https://github.com/infinitete/gitea-sdk)
 - [Changelog](CHANGELOG.md)
+- [Gitea API Reference](https://gitea.com/api/swagger)

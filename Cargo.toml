@@ -9,7 +9,7 @@ repository = "https://github.com/infinitete/gitea-sdk"
 readme = "README.md"
 keywords = ["gitea", "api", "sdk", "git", "forgejo"]
 categories = ["api-bindings", "web-programming"]
-exclude = [".githooks", "tests", "examples", ".worktrees", ".env*", ".sisyphus"]
+exclude = [".githooks", "tests", ".worktrees", ".env*", ".sisyphus"]
 
 [dependencies]
 reqwest = { version = "0.12", default-features = false, features = ["json", "multipart"] }
