@@ -2,24 +2,26 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-//! Types for repositories, branches, tags, commits, files, and wiki pages.
+//! Request option types for repository API endpoints.
 
 pub mod branch;
-pub mod commit;
+pub mod collaborator;
 pub mod core;
 pub mod file;
-pub mod git;
 pub mod key;
+pub mod label;
+pub mod migration;
 pub mod misc;
 pub mod tag;
 pub mod wiki;
 
 pub use branch::*;
-pub use commit::*;
+pub use collaborator::*;
 pub use core::*;
 pub use file::*;
-pub use git::*;
 pub use key::*;
+pub use label::*;
+pub use migration::*;
 pub use misc::*;
 pub use tag::*;
 pub use wiki::*;
