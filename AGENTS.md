@@ -31,13 +31,13 @@ cargo test --doc                     # doc tests only (CI)
 cargo test                           # all tests (lib + doc + integration)
 
 # Single test
-cargo test test_client_build_token                        # unit test by name
+cargo test test_client_build_token                        # unit test by partial name
 cargo test --lib -- test_client_build_token --exact        # exact match
 cargo test --test integration_test                        # specific integration file
 cargo test --test integration_test -- test_version_wiremock  # specific test in file
-cargo test --lib -p gitea-sdk pagination::tests::test_     # module-scoped
+cargo test --lib pagination::tests::test_                  # module-scoped tests
 
-# Live tests (require real Gitea instance + .env file)
+# Live tests (require real Gitea instance + .env file with GITEA_URL, GITEA_TOKEN)
 cargo test --test live_integration_test -- --ignored --nocapture
 ```
 
@@ -68,6 +68,9 @@ tests/
   live/               # Live test helpers (live_client, CleanupRegistry, fixtures)
   *_test.rs           # Integration tests (mocked with wiremock)
   live_*_test.rs      # Live tests against real Gitea (#[ignore])
+examples/
+  basic_usage.rs      # Basic API usage examples
+  authentication.rs   # Authentication method examples
 ```
 
 ## Code Style Guidelines
@@ -109,6 +112,7 @@ Every source file starts with a copyright comment (except test-only files):
 - Module-level: `//!` doc comments describing the module's purpose.
 - Public items: `///` doc comments with descriptions. Include `# Examples` and `# Errors` sections where applicable.
 - Inline code in docs uses backtick notation.
+- Doc comment style for entities: `/// Entity description from Gitea docs.` followed by struct.
 
 ### Naming Conventions
 
@@ -141,7 +145,7 @@ pub struct EntityName {
 - Use `#[serde(rename = "...")]` to match Gitea's JSON field names when they differ from Rust naming.
 - Use `skip_serializing_if = "Option::is_none"` on optional fields.
 - Use `with = "nullable_rfc3339"` for `Option<OffsetDateTime>` fields (handles Go's zero-time quirk).
-- Use `with = "nullable_rfc3339"` from `crate::types::serde_helpers`.
+- Import serde helpers via `use super::serde_helpers::{null_to_default, nullable_rfc3339};`.
 
 ### Enums (types/enums.rs)
 
