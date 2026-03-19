@@ -4,7 +4,7 @@
 
 mod live;
 
-use gitea_sdk::options::issue::CreateIssueOption;
+use gitea_rs::options::issue::CreateIssueOption;
 
 use live::{CleanupRegistry, create_issue_fixture, create_repo_fixture, live_client, unique_name};
 
@@ -45,7 +45,7 @@ async fn live_issue_workflow() {
             &owner,
             &repo,
             issue_fixture.issue.index,
-            gitea_sdk::options::issue::EditIssueOption {
+            gitea_rs::options::issue::EditIssueOption {
                 title: Some(updated_title.clone()),
                 body: None,
                 r#ref: None,

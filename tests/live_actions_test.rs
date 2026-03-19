@@ -5,11 +5,11 @@
 mod live;
 
 use base64::Engine;
-use gitea_sdk::Error;
-use gitea_sdk::ListOptions;
-use gitea_sdk::options::action::{ListRepoActionJobsOptions, ListRepoActionRunsOptions};
-use gitea_sdk::options::repo::{CreateFileOptions, EditRepoOption, FileOptions};
-use gitea_sdk::types::repository::{CommitDateOptions, Identity};
+use gitea_rs::Error;
+use gitea_rs::ListOptions;
+use gitea_rs::options::action::{ListRepoActionJobsOptions, ListRepoActionRunsOptions};
+use gitea_rs::options::repo::{CreateFileOptions, EditRepoOption, FileOptions};
+use gitea_rs::types::repository::{CommitDateOptions, Identity};
 use time::OffsetDateTime;
 use tokio::time::{Duration, sleep};
 
@@ -45,7 +45,7 @@ fn file_options(message: &str, branch: &str) -> FileOptions {
 }
 
 async fn wait_for_job_logs(
-    client: &gitea_sdk::Client,
+    client: &gitea_rs::Client,
     owner: &str,
     repo: &str,
     job_id: i64,
@@ -71,11 +71,11 @@ async fn wait_for_job_logs(
 }
 
 async fn wait_for_deletable_run(
-    client: &gitea_sdk::Client,
+    client: &gitea_rs::Client,
     owner: &str,
     repo: &str,
     run_id: i64,
-) -> Result<Option<gitea_sdk::Response>, Error> {
+) -> Result<Option<gitea_rs::Response>, Error> {
     for _ in 0..30 {
         match client
             .actions()

@@ -8,13 +8,13 @@ use std::fs;
 use std::path::PathBuf;
 use std::process::Command;
 
-use gitea_sdk::options::user::{
+use gitea_rs::options::user::{
     CreateAccessTokenOption, CreateEmailOption, CreateGPGKeyOption, DeleteEmailOption,
     ListAccessTokensOptions, ListEmailsOptions, ListGPGKeysOptions, ListPublicKeysOptions,
     ListUserActivityFeedsOptions, SearchUsersOption, UpdateUserAvatarOption, UserSettingsOptions,
     VerifyGPGKeyOption,
 };
-use gitea_sdk::types::enums::AccessTokenScope;
+use gitea_rs::types::enums::AccessTokenScope;
 
 use live::{
     CleanupRegistry, build_basic_auth_client, create_repo_fixture, live_client, load_live_env,

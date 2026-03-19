@@ -40,7 +40,7 @@ fn is_zero(dt: OffsetDateTime) -> bool {
 /// # Usage
 ///
 /// ```no_run
-/// use gitea_sdk::types::serde_helpers::nullable_rfc3339;
+/// use gitea_rs::types::serde_helpers::nullable_rfc3339;
 /// use serde::{Deserialize, Serialize};
 /// use time::OffsetDateTime;
 ///

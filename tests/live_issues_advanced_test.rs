@@ -4,13 +4,13 @@
 
 mod live;
 
-use gitea_sdk::Error;
-use gitea_sdk::options::issue::{
+use gitea_rs::Error;
+use gitea_rs::options::issue::{
     AddTimeOption, EditDeadlineOption, ListIssueBlocksOptions, ListIssueCommentOptions,
     ListIssueDependenciesOptions, ListIssueReactionsOptions, ListIssueSubscribersOptions,
     ListStopwatchesOptions, ListTrackedTimesOptions,
 };
-use gitea_sdk::types::issue::IssueMeta;
+use gitea_rs::types::issue::IssueMeta;
 
 use live::{
     CleanupRegistry, create_issue_fixture, create_repo_fixture, enable_issue_dependencies,
@@ -61,7 +61,7 @@ async fn live_issue_reactions_subscriptions_time_blocks() {
             &owner,
             &repo,
             issue_index,
-            gitea_sdk::options::issue::CreateIssueCommentOption {
+            gitea_rs::options::issue::CreateIssueCommentOption {
                 body: "live advanced comment".to_string(),
             },
         )

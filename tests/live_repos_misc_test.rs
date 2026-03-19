@@ -4,11 +4,11 @@
 
 mod live;
 
-use gitea_sdk::options::repo::{
+use gitea_rs::options::repo::{
     CreateForkOption, CreateRepoFromTemplateOption, EditRepoOption, ListForksOptions,
     ListReposOptions, MigrateRepoOption,
 };
-use gitea_sdk::types::enums::GitServiceType;
+use gitea_rs::types::enums::GitServiceType;
 
 use live::{CleanupRegistry, create_repo_fixture, live_client, load_live_env, unique_name};
 
@@ -232,7 +232,7 @@ async fn live_repos_misc_flow() {
     let migrate_source_name = unique_name("live-migrate-source");
     let (migrate_source, migrate_source_resp) = client
         .repos()
-        .create_repo(gitea_sdk::options::repo::CreateRepoOption {
+        .create_repo(gitea_rs::options::repo::CreateRepoOption {
             name: migrate_source_name.clone(),
             description: "live migrate source".to_string(),
             private: false,
@@ -243,7 +243,7 @@ async fn live_repos_misc_flow() {
             license: String::new(),
             readme: String::new(),
             default_branch: String::new(),
-            trust_model: gitea_sdk::types::enums::TrustModel::Default,
+            trust_model: gitea_rs::types::enums::TrustModel::Default,
             object_format_name: String::new(),
         })
         .await

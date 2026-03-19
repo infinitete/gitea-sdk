@@ -1,7 +1,7 @@
-# gitea-sdk
+# gitea-rs
 
-[![Crates.io](https://img.shields.io/crates/v/gitea-sdk.svg)](https://crates.io/crates/gitea-sdk)
-[![docs.rs](https://docs.rs/gitea-sdk/badge.svg)](https://docs.rs/gitea-sdk)
+[![Crates.io](https://img.shields.io/crates/v/gitea-rs.svg)](https://crates.io/crates/gitea-rs)
+[![docs.rs](https://docs.rs/gitea-rs/badge.svg)](https://docs.rs/gitea-rs)
 [![CI](https://github.com/infinitete/gitea-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/infinitete/gitea-sdk/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![MSRV](https://img.shields.io/badge/MSRV-1.88-orange.svg)](https://blog.rust-lang.org/)
@@ -16,7 +16,7 @@
 
 ```toml
 [dependencies]
-gitea-sdk = "0.1.0"
+gitea-rs = "0.1.0"
 ```
 
 ### Feature Flags
@@ -30,7 +30,7 @@ gitea-sdk = "0.1.0"
 ## 快速开始
 
 ```rust
-use gitea_sdk::Client;
+use gitea_rs::Client;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -56,7 +56,7 @@ cargo run --example authentication
 
 ### 仓库管理
 
-**[`ReposApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.ReposApi.html)** — 仓库全生命周期及内容管理。
+**[`ReposApi`](https://docs.rs/gitea-rs/latest/gitea_rs/api/struct.ReposApi.html)** — 仓库全生命周期及内容管理。
 
 - **增删改查** — `create_repo`, `get_repo`, `edit_repo`, `delete_repo`, `search_repos`
 - **分支** — `list_branches`, `create_branch`, `delete_branch`, `list_branch_protections`
@@ -68,13 +68,13 @@ cargo run --example authentication
 - **Wiki** — `create_wiki_page`, `get_wiki_page`, `edit_wiki_page`, `list_wiki_pages`
 - **其他** — `list_forks`, `create_fork`, `mirror_sync`, `transfer_repo`, `get_archive`
 
-**[`ReleasesApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.ReleasesApi.html)** — Release 及附件管理。
+**[`ReleasesApi`](https://docs.rs/gitea-rs/latest/gitea_rs/api/struct.ReleasesApi.html)** — Release 及附件管理。
 
 - `list`, `create`, `edit`, `delete`, `get_by_tag`, `list_attachments`, `create_attachment`
 
 ### Issue 与 Pull Request
 
-**[`IssuesApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.IssuesApi.html)** — 完整的 Issue 跟踪与丰富的元数据支持。
+**[`IssuesApi`](https://docs.rs/gitea-rs/latest/gitea_rs/api/struct.IssuesApi.html)** — 完整的 Issue 跟踪与丰富的元数据支持。
 
 - **增删改查** — `list_repo_issues`, `create_issue`, `edit_issue`, `delete_issue`
 - **评论** — `list_issue_comments`, `create_issue_comment`, `edit_issue_comment`
@@ -86,7 +86,7 @@ cargo run --example authentication
 - **订阅** — `list_issue_subscribers`, `add_issue_subscription`
 - **置顶** — `list_repo_pinned_issues`, `pin_issue`, `unpin_issue`
 
-**[`PullsApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.PullsApi.html)** — Pull Request 工作流。
+**[`PullsApi`](https://docs.rs/gitea-rs/latest/gitea_rs/api/struct.PullsApi.html)** — Pull Request 工作流。
 
 - **增删改查** — `list`, `get`, `create`, `edit`
 - **合并** — `merge`, `is_merged`, `patch`, `diff`
@@ -95,7 +95,7 @@ cargo run --example authentication
 
 ### 用户与组织
 
-**[`UsersApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.UsersApi.html)** — 用户资料、密钥及社交功能。
+**[`UsersApi`](https://docs.rs/gitea-rs/latest/gitea_rs/api/struct.UsersApi.html)** — 用户资料、密钥及社交功能。
 
 - **资料** — `get`, `get_my_info`, `search`, `get_settings`, `update_settings`
 - **密钥** — `list_public_keys`, `create_public_key`, `list_gpg_keys`, `create_gpg_key`
@@ -103,7 +103,7 @@ cargo run --example authentication
 - **邮箱** — `list_emails`, `add_email`, `delete_email`
 - **令牌** — `list_access_tokens`, `create_access_token`, `delete_access_token`
 
-**[`OrgsApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.OrgsApi.html)** — 组织与团队管理。
+**[`OrgsApi`](https://docs.rs/gitea-rs/latest/gitea_rs/api/struct.OrgsApi.html)** — 组织与团队管理。
 
 - **增删改查** — `list_orgs`, `create_org`, `edit_org`, `delete_org`
 - **团队** — `list_org_teams`, `create_team`, `add_team_member`, `add_team_repo`
@@ -114,7 +114,7 @@ cargo run --example authentication
 
 ### 系统与管理
 
-**[`AdminApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.AdminApi.html)** — 服务器管理（需要管理员权限）。
+**[`AdminApi`](https://docs.rs/gitea-rs/latest/gitea_rs/api/struct.AdminApi.html)** — 服务器管理（需要管理员权限）。
 
 - **用户** — `list_users`, `create_user`, `edit_user`, `delete_user`
 - **组织** — `list_orgs`, `create_org_for_user`
@@ -123,26 +123,26 @@ cargo run --example authentication
 - **仓库** — `list_unadopted_repos`, `adopt_unadopted_repo`
 - **徽章** — `list_user_badges`, `add_user_badges`
 
-**[`SettingsApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.SettingsApi.html)** — `get_api_settings`, `get_repo_settings`, `get_ui_settings`
+**[`SettingsApi`](https://docs.rs/gitea-rs/latest/gitea_rs/api/struct.SettingsApi.html)** — `get_api_settings`, `get_repo_settings`, `get_ui_settings`
 
-**[`MiscApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.MiscApi.html)** — `get_version`, `render_markdown`, `list_gitignore_templates`, `list_license_templates`, `get_signing_key_gpg`
+**[`MiscApi`](https://docs.rs/gitea-rs/latest/gitea_rs/api/struct.MiscApi.html)** — `get_version`, `render_markdown`, `list_gitignore_templates`, `list_license_templates`, `get_signing_key_gpg`
 
 ### 其他模块
 
 | 模块 | 说明 |
 |------|------|
-| [`HooksApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.HooksApi.html) | 仓库、组织和用户的 Webhook 管理 |
-| [`NotificationsApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.NotificationsApi.html) | 通知收件箱和已读状态 |
-| [`ActionsApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.ActionsApi.html) | Gitea Actions 工作流运行和任务 |
-| [`PackagesApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.PackagesApi.html) | 包注册表管理 |
-| [`Oauth2Api`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.Oauth2Api.html) | OAuth2 应用管理 |
-| [`StatusApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.StatusApi.html) | 提交状态（CI/CD 集成） |
-| [`ActivityPubApi`](https://docs.rs/gitea-sdk/latest/gitea_sdk/api/struct.ActivityPubApi.html) | ActivityPub 联邦协议端点 |
+| [`HooksApi`](https://docs.rs/gitea-rs/latest/gitea_rs/api/struct.HooksApi.html) | 仓库、组织和用户的 Webhook 管理 |
+| [`NotificationsApi`](https://docs.rs/gitea-rs/latest/gitea_rs/api/struct.NotificationsApi.html) | 通知收件箱和已读状态 |
+| [`ActionsApi`](https://docs.rs/gitea-rs/latest/gitea_rs/api/struct.ActionsApi.html) | Gitea Actions 工作流运行和任务 |
+| [`PackagesApi`](https://docs.rs/gitea-rs/latest/gitea_rs/api/struct.PackagesApi.html) | 包注册表管理 |
+| [`Oauth2Api`](https://docs.rs/gitea-rs/latest/gitea_rs/api/struct.Oauth2Api.html) | OAuth2 应用管理 |
+| [`StatusApi`](https://docs.rs/gitea-rs/latest/gitea_rs/api/struct.StatusApi.html) | 提交状态（CI/CD 集成） |
+| [`ActivityPubApi`](https://docs.rs/gitea-rs/latest/gitea_rs/api/struct.ActivityPubApi.html) | ActivityPub 联邦协议端点 |
 
 ## 认证方式
 
 ```rust
-use gitea_sdk::Client;
+use gitea_rs::Client;
 
 // 个人访问令牌
 let client = Client::builder("https://gitea.example.com")
@@ -174,8 +174,8 @@ let client = Client::builder("https://gitea.example.com")
 列表接口通过内嵌分页参数的选项结构体进行分页：
 
 ```rust
-use gitea_sdk::ListOptions;
-use gitea_sdk::options::repo::ListReposOptions;
+use gitea_rs::ListOptions;
+use gitea_rs::options::repo::ListReposOptions;
 
 let opts = ListReposOptions {
     list_options: ListOptions {
@@ -193,7 +193,7 @@ let (repos, _) = client.repos().list_my_repos(opts).await?;
 所有 API 方法返回 `Result<(T, Response)>`，其中 `T` 是反序列化后的响应体，`Response` 包含 HTTP 状态码、响应头和分页链接。
 
 ```rust
-use gitea_sdk::{Client, Error};
+use gitea_rs::{Client, Error};
 
 async fn example(client: &Client) {
     match client.repos().get_repo("owner", "repo").await {
@@ -221,7 +221,7 @@ async fn example(client: &Client) {
 
 ## 链接
 
-- [API 文档 (docs.rs)](https://docs.rs/gitea-sdk)
+- [API 文档 (docs.rs)](https://docs.rs/gitea-rs)
 - [代码仓库 (GitHub)](https://github.com/infinitete/gitea-sdk)
 - [变更日志](CHANGELOG.md)
 - [Gitea API 参考](https://gitea.com/api/swagger)

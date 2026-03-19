@@ -5,11 +5,11 @@
 mod live;
 
 use base64::Engine;
-use gitea_sdk::options::issue::CreateIssueCommentOption;
-use gitea_sdk::options::release::EditAttachmentOption;
-use gitea_sdk::options::repo::{CreateFileOptions, FileOptions};
-use gitea_sdk::types::release::Attachment;
-use gitea_sdk::types::repository::{CommitDateOptions, Identity};
+use gitea_rs::options::issue::CreateIssueCommentOption;
+use gitea_rs::options::release::EditAttachmentOption;
+use gitea_rs::options::repo::{CreateFileOptions, FileOptions};
+use gitea_rs::types::release::Attachment;
+use gitea_rs::types::repository::{CommitDateOptions, Identity};
 use reqwest::multipart::{Form, Part};
 use time::OffsetDateTime;
 

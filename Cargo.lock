@@ -640,7 +640,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "gitea-sdk"
+name = "gitea-rs"
 version = "0.1.0"
 dependencies = [
  "base64",

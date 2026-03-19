@@ -4,8 +4,8 @@
 
 mod live;
 
-use gitea_sdk::options::org::{CreateTeamOption, ListTeamMembersOptions};
-use gitea_sdk::types::enums::{AccessMode, RepoUnitType};
+use gitea_rs::options::org::{CreateTeamOption, ListTeamMembersOptions};
+use gitea_rs::types::enums::{AccessMode, RepoUnitType};
 
 use live::{CleanupRegistry, create_org_fixture, live_client, load_live_env, unique_name};
 

@@ -4,8 +4,8 @@
 
 mod live;
 
-use gitea_sdk::options::repo::{AddCollaboratorOption, ListCollaboratorsOptions};
-use gitea_sdk::types::enums::AccessMode;
+use gitea_rs::options::repo::{AddCollaboratorOption, ListCollaboratorsOptions};
+use gitea_rs::types::enums::AccessMode;
 
 use live::{CleanupRegistry, create_repo_fixture, live_client, load_live_env};
 

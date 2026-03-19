@@ -6,17 +6,17 @@ mod live;
 
 use std::collections::HashMap;
 
-use gitea_sdk::Error;
-use gitea_sdk::options::admin::{
+use gitea_rs::Error;
+use gitea_rs::options::admin::{
     AdminListOrgsOptions, AdminListUsersOptions, CreateHookOption, CreateUserOption,
     EditHookOption, EditUserOption, ListAdminEmailsOptions, ListAdminHooksOptions,
     ListCronTasksOptions, ListUnadoptedReposOptions, RenameUserOption, SearchAdminEmailsOptions,
     UserBadgeOption,
 };
-use gitea_sdk::options::org::CreateOrgOption;
-use gitea_sdk::options::repo::CreateRepoOption;
-use gitea_sdk::options::user::CreateKeyOption;
-use gitea_sdk::types::enums::{HookType, TrustModel, VisibleType};
+use gitea_rs::options::org::CreateOrgOption;
+use gitea_rs::options::repo::CreateRepoOption;
+use gitea_rs::options::user::CreateKeyOption;
+use gitea_rs::types::enums::{HookType, TrustModel, VisibleType};
 
 use live::{generate_fresh_public_key, live_client, load_live_env, unique_name};
 

@@ -9,9 +9,9 @@
 //! # Quick Start
 //!
 //! ```no_run
-//! use gitea_sdk::Client;
+//! use gitea_rs::Client;
 //!
-//! # fn main() -> Result<(), gitea_sdk::Error> {
+//! # fn main() -> Result<(), gitea_rs::Error> {
 //! let client = Client::builder("https://gitea.example.com")
 //!     .token("your-token")
 //!     .build()?;

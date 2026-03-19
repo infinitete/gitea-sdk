@@ -4,13 +4,13 @@
 
 mod live;
 
-use gitea_sdk::Client;
-use gitea_sdk::Error;
-use gitea_sdk::options::repo::{
+use gitea_rs::Client;
+use gitea_rs::Error;
+use gitea_rs::options::repo::{
     CreatePushMirrorOption, CreateRepoOption, ListPushMirrorOptions, MigrateRepoOption,
     TransferRepoOption,
 };
-use gitea_sdk::types::enums::{GitServiceType, TrustModel};
+use gitea_rs::types::enums::{GitServiceType, TrustModel};
 
 use live::{
     CleanupRegistry, create_repo_fixture, live_client, load_live_env, next_user_client, unique_name,
@@ -28,7 +28,7 @@ async fn create_repo_for_client(
     cleanup: &mut CleanupRegistry,
     owner: &str,
     prefix: &str,
-) -> gitea_sdk::Result<String> {
+) -> gitea_rs::Result<String> {
     let (repo, _) = client
         .repos()
         .create_repo(CreateRepoOption {

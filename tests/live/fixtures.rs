@@ -4,19 +4,19 @@
 
 #![allow(dead_code)]
 
-use gitea_sdk::Client;
-use gitea_sdk::Error;
-use gitea_sdk::options::issue::CreateIssueOption;
-use gitea_sdk::options::org::CreateOrgOption;
-use gitea_sdk::options::release::CreateReleaseOption;
-use gitea_sdk::options::repo::{CreateLabelOption, CreateRepoOption, EditRepoOption};
-use gitea_sdk::types::enums::TrustModel;
-use gitea_sdk::types::issue::Issue;
-use gitea_sdk::types::label::Label;
-use gitea_sdk::types::organization::Organization;
-use gitea_sdk::types::package::Package;
-use gitea_sdk::types::release::Release;
-use gitea_sdk::types::repository::{InternalTracker, Repository};
+use gitea_rs::Client;
+use gitea_rs::Error;
+use gitea_rs::options::issue::CreateIssueOption;
+use gitea_rs::options::org::CreateOrgOption;
+use gitea_rs::options::release::CreateReleaseOption;
+use gitea_rs::options::repo::{CreateLabelOption, CreateRepoOption, EditRepoOption};
+use gitea_rs::types::enums::TrustModel;
+use gitea_rs::types::issue::Issue;
+use gitea_rs::types::label::Label;
+use gitea_rs::types::organization::Organization;
+use gitea_rs::types::package::Package;
+use gitea_rs::types::release::Release;
+use gitea_rs::types::repository::{InternalTracker, Repository};
 
 use super::cleanup::CleanupRegistry;
 use super::env::load_live_env;

@@ -8,8 +8,8 @@ use std::fs;
 use std::path::PathBuf;
 use std::process::Command;
 
-use gitea_sdk::options::miscellaneous::{MarkdownOption, MarkupOption};
-use gitea_sdk::options::user::{
+use gitea_rs::options::miscellaneous::{MarkdownOption, MarkupOption};
+use gitea_rs::options::user::{
     CreateGPGKeyOption, CreateKeyOption, ListEmailsOptions, ListPublicKeysOptions,
 };
 
@@ -138,7 +138,7 @@ async fn live_misc_gitignore_node_info() {
             assert!(!node_info.software.name.is_empty());
         }
         Err(err) => match err {
-            gitea_sdk::Error::UnknownApi { status: 404, .. } => return,
+            gitea_rs::Error::UnknownApi { status: 404, .. } => return,
             other => panic!("get node info: {other}"),
         },
     }
@@ -221,7 +221,7 @@ async fn live_misc_signing_keys() {
                 "GPG signing key should not be empty"
             );
         }
-        Err(gitea_sdk::Error::Api {
+        Err(gitea_rs::Error::Api {
             status, message, ..
         }) if status == 404 && message.contains("no signing key") => {
             println!("[signing key gpg] live instance returned 404 no signing key");
@@ -237,7 +237,7 @@ async fn live_misc_signing_keys() {
                 "SSH signing key should start with ssh-"
             );
         }
-        Err(gitea_sdk::Error::Api {
+        Err(gitea_rs::Error::Api {
             status, message, ..
         }) if status == 404 && message.contains("no signing key") => {
             println!("[signing key ssh] live instance returned 404 no signing key");
@@ -266,7 +266,7 @@ async fn live_activitypub_repository() {
             assert!(repo_actor.get("type").and_then(|v| v.as_str()).is_some());
         }
         Err(err) => match err {
-            gitea_sdk::Error::UnknownApi { status: 404, .. } => {
+            gitea_rs::Error::UnknownApi { status: 404, .. } => {
                 cleanup.run_all().await;
                 return;
             }
@@ -390,7 +390,7 @@ async fn live_signing_key_reads() {
                 "gpg signing key response should not be empty"
             );
         }
-        Err(gitea_sdk::Error::Api {
+        Err(gitea_rs::Error::Api {
             status: 404,
             message,
             ..
@@ -410,7 +410,7 @@ async fn live_signing_key_reads() {
                 "ssh signing key response should not be empty"
             );
         }
-        Err(gitea_sdk::Error::Api {
+        Err(gitea_rs::Error::Api {
             status: 404,
             message,
             ..

@@ -4,10 +4,10 @@
 
 mod live;
 
-use gitea_sdk::options::issue::CreateIssueOption;
-use gitea_sdk::options::notification::{ListNotificationOptions, MarkNotificationOptions};
-use gitea_sdk::options::repo::AddCollaboratorOption;
-use gitea_sdk::types::enums::AccessMode;
+use gitea_rs::options::issue::CreateIssueOption;
+use gitea_rs::options::notification::{ListNotificationOptions, MarkNotificationOptions};
+use gitea_rs::options::repo::AddCollaboratorOption;
+use gitea_rs::types::enums::AccessMode;
 use tokio::time::{Duration, sleep};
 
 use live::{

@@ -4,8 +4,8 @@
 
 mod live;
 
-use gitea_sdk::options::status::CreateStatusOption;
-use gitea_sdk::types::enums::StatusState;
+use gitea_rs::options::status::CreateStatusOption;
+use gitea_rs::types::enums::StatusState;
 
 use live::{CleanupRegistry, create_repo_fixture, live_client, unique_name};
 

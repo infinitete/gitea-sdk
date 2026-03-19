@@ -5,12 +5,12 @@
 mod live;
 
 use base64::Engine;
-use gitea_sdk::options::repo::{
+use gitea_rs::options::repo::{
     CreateBranchOption, CreateFileOptions, DeleteFileOptions, FileOptions, GetContentsExtOptions,
     GetRepoNoteOptions, ListCommitOptions, ListRepoBranchesOptions, ListTreeOptions,
     UpdateFileOptions,
 };
-use gitea_sdk::types::repository::{CommitDateOptions, Identity};
+use gitea_rs::types::repository::{CommitDateOptions, Identity};
 use std::env;
 use std::fs;
 use std::path::Path;
@@ -210,7 +210,7 @@ async fn live_repo_content_and_refs_flow() {
                 "editor config should apply to the seeded file"
             );
         }
-        Err(gitea_sdk::Error::UnknownApi { status: 404, body }) => {
+        Err(gitea_rs::Error::UnknownApi { status: 404, body }) => {
             println!(
                 "[repo content capability] live editorconfig endpoint returned 404 ({body:?}); keeping get_editor_config blocked on this instance"
             );

@@ -5,14 +5,14 @@
 mod live;
 
 use base64::Engine;
-use gitea_sdk::options::pull::{
+use gitea_rs::options::pull::{
     CreatePullRequestOption, EditPullRequestOption, ListPullRequestCommitsOptions,
     ListPullRequestFilesOptions, ListPullRequestsOptions, MergePullRequestOption,
     PullRequestDiffOptions,
 };
-use gitea_sdk::options::repo::{CreateBranchOption, CreateFileOptions, FileOptions};
-use gitea_sdk::types::enums::{MergeStyle, StateType};
-use gitea_sdk::types::repository::{CommitDateOptions, Identity};
+use gitea_rs::options::repo::{CreateBranchOption, CreateFileOptions, FileOptions};
+use gitea_rs::types::enums::{MergeStyle, StateType};
+use gitea_rs::types::repository::{CommitDateOptions, Identity};
 use time::OffsetDateTime;
 use tokio::time::{Duration, sleep};
 
@@ -260,7 +260,7 @@ async fn live_pull_minimal_happy_path() {
             assert!(merged_after_resp.status == 204 || merged_after_resp.status == 404);
             assert!(merged_after);
         }
-        Err(gitea_sdk::Error::UnknownApi { status: 422, .. }) => {
+        Err(gitea_rs::Error::UnknownApi { status: 422, .. }) => {
             println!(
                 "[pulls capability] live merge endpoint returned HTTP 422 for a disposable same-repo PR; keeping merge-specific coverage blocked on this instance"
             );

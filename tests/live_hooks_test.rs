@@ -6,8 +6,8 @@ mod live;
 
 use std::collections::HashMap;
 
-use gitea_sdk::options::hook::{CreateHookOption, EditHookOption, ListHooksOptions};
-use gitea_sdk::types::enums::HookType;
+use gitea_rs::options::hook::{CreateHookOption, EditHookOption, ListHooksOptions};
+use gitea_rs::types::enums::HookType;
 
 use live::{CleanupRegistry, create_repo_fixture, live_client, unique_name};
 

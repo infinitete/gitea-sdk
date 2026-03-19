@@ -13,7 +13,7 @@ use serde_json::json;
 use wiremock::matchers::{header, method, path};
 use wiremock::{Mock, MockServer, ResponseTemplate};
 
-use gitea_sdk::{Client, Error};
+use gitea_rs::{Client, Error};
 
 fn create_client(server: &MockServer) -> Client {
     let http = reqwest::Client::new();

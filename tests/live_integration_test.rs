@@ -16,7 +16,7 @@
 
 mod live;
 
-use gitea_sdk::options::user::CreateKeyOption;
+use gitea_rs::options::user::CreateKeyOption;
 
 use live::{
     CleanupRegistry, build_live_client, create_org_fixture, create_repo_fixture, live_client,
@@ -82,7 +82,7 @@ async fn live_org_fixture_lifecycle() {
             assert!(!fixture.organization.user_name.is_empty());
             cleanup.run_all().await;
         }
-        Err(gitea_sdk::Error::Api {
+        Err(gitea_rs::Error::Api {
             status: 401 | 403 | 404,
             ..
         }) => {

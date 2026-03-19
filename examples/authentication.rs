@@ -3,7 +3,7 @@
 //! Run with:
 //!   cargo run --example authentication
 
-use gitea_sdk::Client;
+use gitea_rs::Client;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {

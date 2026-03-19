@@ -4,7 +4,7 @@
 
 mod live;
 
-use gitea_sdk::options::repo::{CreateLabelOption, ListLabelsOptions, ListReposOptions};
+use gitea_rs::options::repo::{CreateLabelOption, ListLabelsOptions, ListReposOptions};
 
 use live::{CleanupRegistry, create_repo_fixture, live_client, unique_name};
 

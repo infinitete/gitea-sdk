@@ -5,16 +5,16 @@
 mod live;
 
 use base64::Engine;
-use gitea_sdk::Error;
-use gitea_sdk::options::pull::{
+use gitea_rs::Error;
+use gitea_rs::options::pull::{
     CreatePullRequestOption, CreatePullReviewComment, CreatePullReviewOptions,
     DismissPullReviewOptions, ListPullReviewsOptions, SubmitPullReviewOptions,
 };
-use gitea_sdk::options::repo::{
+use gitea_rs::options::repo::{
     AddCollaboratorOption, CreateBranchOption, CreateFileOptions, FileOptions,
 };
-use gitea_sdk::types::enums::{AccessMode, ReviewStateType};
-use gitea_sdk::types::repository::{CommitDateOptions, Identity};
+use gitea_rs::types::enums::{AccessMode, ReviewStateType};
+use gitea_rs::types::repository::{CommitDateOptions, Identity};
 use live::{
     CleanupRegistry, create_repo_fixture, live_client, load_live_env, next_user_client, unique_name,
 };

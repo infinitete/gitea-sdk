@@ -4,8 +4,8 @@
 
 mod live;
 
-use gitea_sdk::options::issue::ListIssueOption;
-use gitea_sdk::types::enums::StateType;
+use gitea_rs::options::issue::ListIssueOption;
+use gitea_rs::types::enums::StateType;
 
 use live::{CleanupRegistry, create_issue_fixture, create_repo_fixture, live_client};
 

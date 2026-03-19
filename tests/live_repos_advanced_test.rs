@@ -5,9 +5,7 @@
 mod live;
 
 use base64::{Engine as _, engine::general_purpose};
-use gitea_sdk::options::repo::{
-    CreateWikiPageOptions, ListRepoTopicsOptions, ListWikiPagesOptions,
-};
+use gitea_rs::options::repo::{CreateWikiPageOptions, ListRepoTopicsOptions, ListWikiPagesOptions};
 
 use live::{CleanupRegistry, create_repo_fixture, live_client};
 

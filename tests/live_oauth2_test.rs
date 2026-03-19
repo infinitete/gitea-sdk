@@ -4,7 +4,7 @@
 
 mod live;
 
-use gitea_sdk::options::oauth2::CreateOauth2Option;
+use gitea_rs::options::oauth2::CreateOauth2Option;
 
 use live::{CleanupRegistry, live_client, load_live_env, unique_name};
 
