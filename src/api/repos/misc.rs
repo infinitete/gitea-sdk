@@ -11,7 +11,7 @@ use crate::types::repository::*;
 impl<'a> super::ReposApi<'a> {
     // ── repo_mirror.go (4 methods) ────────────────────────────────
 
-    /// CreatePushMirror create a push mirror for a repository
+    /// `CreatePushMirror` create a push mirror for a repository
     pub async fn create_push_mirror(
         &self,
         owner: &str,
@@ -31,7 +31,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// ListPushMirrors list push mirrors of a repository
+    /// `ListPushMirrors` list push mirrors of a repository
     pub async fn list_push_mirrors(
         &self,
         owner: &str,
@@ -50,7 +50,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// GetPushMirror get a push mirror of a repository
+    /// `GetPushMirror` get a push mirror of a repository
     pub async fn get_push_mirror(
         &self,
         owner: &str,
@@ -68,7 +68,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// DeletePushMirror delete a push mirror of a repository
+    /// `DeletePushMirror` delete a push mirror of a repository
     pub async fn delete_push_mirror(
         &self,
         owner: &str,
@@ -88,7 +88,7 @@ impl<'a> super::ReposApi<'a> {
 
     // ── repo_template.go (1 method) ───────────────────────────────
 
-    /// CreateRepoFromTemplate create a repository using a template
+    /// `CreateRepoFromTemplate` create a repository using a template
     pub async fn create_repo_from_template(
         &self,
         owner: &str,

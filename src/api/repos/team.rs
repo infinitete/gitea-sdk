@@ -9,7 +9,7 @@ use crate::version::VERSION_1_15_0;
 impl<'a> super::ReposApi<'a> {
     // ── repo_team.go (4 methods) ──────────────────────────────────
 
-    /// GetRepoTeams get teams from a repository
+    /// `GetRepoTeams` get teams from a repository
     pub async fn get_repo_teams(
         &self,
         owner: &str,
@@ -25,7 +25,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// AddRepoTeam add a team to a repository
+    /// `AddRepoTeam` add a team to a repository
     pub async fn add_repo_team(
         &self,
         owner: &str,
@@ -42,7 +42,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// RemoveRepoTeam remove a team from a repository
+    /// `RemoveRepoTeam` remove a team from a repository
     pub async fn remove_repo_team(
         &self,
         owner: &str,
@@ -59,7 +59,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// CheckRepoTeam check if a team is assigned to a repository
+    /// `CheckRepoTeam` check if a team is assigned to a repository
     pub async fn check_repo_team(
         &self,
         owner: &str,

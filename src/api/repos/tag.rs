@@ -12,7 +12,7 @@ use crate::version::{VERSION_1_14_0, VERSION_1_15_0};
 impl<'a> super::ReposApi<'a> {
     // ── repo_tag.go (5 methods) ───────────────────────────────────
 
-    /// ListTags list a repository's tags
+    /// `ListTags` list a repository's tags
     pub async fn list_tags(
         &self,
         owner: &str,
@@ -31,7 +31,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// GetTag get a single tag of a repository
+    /// `GetTag` get a single tag of a repository
     pub async fn get_tag(
         &self,
         owner: &str,
@@ -45,7 +45,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// GetAnnotatedTag get an annotated tag of a repository
+    /// `GetAnnotatedTag` get an annotated tag of a repository
     pub async fn get_annotated_tag(
         &self,
         owner: &str,
@@ -62,7 +62,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// CreateTag create a tag in a repository
+    /// `CreateTag` create a tag in a repository
     pub async fn create_tag(
         &self,
         owner: &str,
@@ -86,7 +86,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// DeleteTag delete a tag from a repository
+    /// `DeleteTag` delete a tag from a repository
     pub async fn delete_tag(&self, owner: &str, repo: &str, tag: &str) -> crate::Result<Response> {
         self.client()
             .check_server_version_ge(&VERSION_1_14_0)

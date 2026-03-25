@@ -12,7 +12,7 @@ use crate::version::VERSION_1_12_0;
 // ── pull.go ────────────────────────────────────────────────────
 
 impl<'a> super::PullsApi<'a> {
-    /// ListRepoPullRequests list PRs of one repository
+    /// `ListRepoPullRequests` list PRs of one repository
     pub async fn list(
         &self,
         owner: &str,
@@ -31,7 +31,7 @@ impl<'a> super::PullsApi<'a> {
             .await
     }
 
-    /// GetPullRequest get information of one PR
+    /// `GetPullRequest` get information of one PR
     pub async fn get(
         &self,
         owner: &str,
@@ -45,7 +45,7 @@ impl<'a> super::PullsApi<'a> {
             .await
     }
 
-    /// CreatePullRequest create pull request with options
+    /// `CreatePullRequest` create pull request with options
     pub async fn create(
         &self,
         owner: &str,
@@ -65,7 +65,7 @@ impl<'a> super::PullsApi<'a> {
             .await
     }
 
-    /// EditPullRequest modify pull request with PR id and options
+    /// `EditPullRequest` modify pull request with PR id and options
     pub async fn edit(
         &self,
         owner: &str,

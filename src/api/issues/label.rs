@@ -13,7 +13,7 @@ impl<'a> IssuesApi<'a> {
     // ── issue_label.go ────────────────────────────────────────────
     // 5 methods
 
-    /// GetIssueLabels get labels of one issue via issue id
+    /// `GetIssueLabels` get labels of one issue via issue id
     pub async fn get_issue_labels(
         &self,
         owner: &str,
@@ -33,7 +33,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// AddIssueLabels add one or more labels to one issue
+    /// `AddIssueLabels` add one or more labels to one issue
     pub async fn add_issue_labels(
         &self,
         owner: &str,
@@ -54,7 +54,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// ReplaceIssueLabels replace old labels of issue with new labels
+    /// `ReplaceIssueLabels` replace old labels of issue with new labels
     pub async fn replace_issue_labels(
         &self,
         owner: &str,
@@ -75,7 +75,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// DeleteIssueLabel delete one label of one issue by issue id and label id
+    /// `DeleteIssueLabel` delete one label of one issue by issue id and label id
     pub async fn delete_issue_label(
         &self,
         owner: &str,
@@ -93,7 +93,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// ClearIssueLabels delete all the labels of one issue
+    /// `ClearIssueLabels` delete all the labels of one issue
     pub async fn clear_issue_labels(
         &self,
         owner: &str,

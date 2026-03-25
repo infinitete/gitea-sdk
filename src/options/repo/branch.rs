@@ -7,7 +7,7 @@ use crate::{Deserialize, Serialize};
 
 // ── repo_branch.go ──────────────────────────────────────────────
 
-/// ListRepoBranchesOptions options for listing a repository's branches
+/// `ListRepoBranchesOptions` options for listing a repository's branches
 #[derive(Debug, Clone, Default)]
 /// Options for List Repo Branches Option.
 pub struct ListRepoBranchesOptions {
@@ -20,7 +20,7 @@ impl QueryEncode for ListRepoBranchesOptions {
     }
 }
 
-/// CreateBranchOption options when creating a branch in a repository
+/// `CreateBranchOption` options when creating a branch in a repository
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Create Branch Option.
 pub struct CreateBranchOption {
@@ -48,7 +48,7 @@ impl CreateBranchOption {
     }
 }
 
-/// UpdateRepoBranchOption options when renaming a branch
+/// `UpdateRepoBranchOption` options when renaming a branch
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Update Repo Branch Option.
 pub struct UpdateRepoBranchOption {
@@ -67,7 +67,7 @@ impl UpdateRepoBranchOption {
 
 // ── repo_branch_protection.go ───────────────────────────────────
 
-/// ListBranchProtectionsOptions list branch protection options
+/// `ListBranchProtectionsOptions` list branch protection options
 #[derive(Debug, Clone, Default)]
 /// Options for List Branch Protections Option.
 pub struct ListBranchProtectionsOptions {
@@ -80,7 +80,7 @@ impl QueryEncode for ListBranchProtectionsOptions {
     }
 }
 
-/// CreateBranchProtectionOption options for creating a branch protection
+/// `CreateBranchProtectionOption` options for creating a branch protection
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Create Branch Protection Option.
 pub struct CreateBranchProtectionOption {
@@ -132,7 +132,7 @@ pub struct CreateBranchProtectionOption {
     pub unprotected_file_patterns: String,
 }
 
-/// EditBranchProtectionOption options for editing a branch protection
+/// `EditBranchProtectionOption` options for editing a branch protection
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Edit Branch Protection Option.
 pub struct EditBranchProtectionOption {

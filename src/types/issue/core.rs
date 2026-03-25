@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-//! Core issue types: Issue, PullRequestMeta, RepositoryMeta, IssueBlockedBy, IssueMeta.
+//! Core issue types: Issue, `PullRequestMeta`, `RepositoryMeta`, `IssueBlockedBy`, `IssueMeta`.
 
 use crate::{Deserialize, Serialize};
 use time::OffsetDateTime;
@@ -16,7 +16,7 @@ use crate::types::user::User;
 
 // ── issue.go ─────────────────────────────────────────────────────
 
-/// PullRequestMeta PR info if an issue is a PR
+/// `PullRequestMeta` PR info if an issue is a PR
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Pull Request Meta payload type.
 pub struct PullRequestMeta {
@@ -31,7 +31,7 @@ pub struct PullRequestMeta {
     pub merged: Option<OffsetDateTime>,
 }
 
-/// RepositoryMeta basic repository information
+/// `RepositoryMeta` basic repository information
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Repository Meta payload type.
 pub struct RepositoryMeta {
@@ -100,7 +100,7 @@ pub struct Issue {
 
 // ── issue_ext.go ─────────────────────────────────────────────────
 
-/// IssueBlockedBy represents an issue that blocks another issue
+/// `IssueBlockedBy` represents an issue that blocks another issue
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Issue Blocked By payload type.
 pub struct IssueBlockedBy {
@@ -111,7 +111,7 @@ pub struct IssueBlockedBy {
     pub created_at: OffsetDateTime,
 }
 
-/// IssueMeta represents issue reference for blocking/dependency operations
+/// `IssueMeta` represents issue reference for blocking/dependency operations
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Issue Meta payload type.
 pub struct IssueMeta {

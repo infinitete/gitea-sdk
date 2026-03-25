@@ -13,7 +13,7 @@ use super::OrgsApi;
 impl<'a> OrgsApi<'a> {
     // ── org_member.go ─────────────────────────────────────────────────────
 
-    /// DeleteOrgMembership remove a member from an organization
+    /// `DeleteOrgMembership` remove a member from an organization
     pub async fn delete_org_membership(&self, org: &str, user: &str) -> crate::Result<Response> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[org, user])?;
         let path = format!("/orgs/{}/members/{}", escaped[0], escaped[1]);
@@ -22,7 +22,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// ListOrgMembership list an organization's members
+    /// `ListOrgMembership` list an organization's members
     pub async fn list_org_membership(
         &self,
         org: &str,
@@ -40,7 +40,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// ListPublicOrgMembership list an organization's public members
+    /// `ListPublicOrgMembership` list an organization's public members
     pub async fn list_public_org_membership(
         &self,
         org: &str,
@@ -58,7 +58,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// CheckOrgMembership check if a user is a member of an organization
+    /// `CheckOrgMembership` check if a user is a member of an organization
     pub async fn check_org_membership(
         &self,
         org: &str,
@@ -80,7 +80,7 @@ impl<'a> OrgsApi<'a> {
         }
     }
 
-    /// CheckPublicOrgMembership check if a user is a public member of an organization
+    /// `CheckPublicOrgMembership` check if a user is a public member of an organization
     pub async fn check_public_org_membership(
         &self,
         org: &str,
@@ -102,7 +102,7 @@ impl<'a> OrgsApi<'a> {
         }
     }
 
-    /// SetPublicOrgMembership publicize or conceal a user's membership
+    /// `SetPublicOrgMembership` publicize or conceal a user's membership
     pub async fn set_public_org_membership(
         &self,
         org: &str,

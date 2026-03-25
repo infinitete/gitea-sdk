@@ -10,7 +10,7 @@ use time::serde::rfc3339;
 
 use crate::types::enums::{NotifySubjectState, NotifySubjectType};
 
-/// NotificationSubject contains the notification subject (Issue/Pull/Commit)
+/// `NotificationSubject` contains the notification subject (Issue/Pull/Commit)
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Notify Subject payload type.
 pub struct NotifySubject {
@@ -27,7 +27,7 @@ pub struct NotifySubject {
     pub state: NotifySubjectState,
 }
 
-/// NotificationThread represents a notification on the API
+/// `NotificationThread` represents a notification on the API
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Notification Thread payload type.
 pub struct NotificationThread {

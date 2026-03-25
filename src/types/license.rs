@@ -6,7 +6,7 @@
 
 use crate::{Deserialize, Serialize};
 
-/// LicensesTemplateListEntry represents a license template in the list
+/// `LicensesTemplateListEntry` represents a license template in the list
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Licenses Template List Entry payload type.
 pub struct LicensesTemplateListEntry {
@@ -15,7 +15,7 @@ pub struct LicensesTemplateListEntry {
     pub url: String,
 }
 
-/// LicenseTemplateInfo represents the full content for a license template
+/// `LicenseTemplateInfo` represents the full content for a license template
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// License Template Info payload type.
 pub struct LicenseTemplateInfo {

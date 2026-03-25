@@ -11,7 +11,7 @@ use crate::types::repository::*;
 impl<'a> super::ReposApi<'a> {
     // ── repo.go: search ───────────────────────────────────────────
 
-    /// SearchRepos search for repositories
+    /// `SearchRepos` search for repositories
     pub async fn search_repos(
         &self,
         opt: SearchRepoOptions,
@@ -36,7 +36,7 @@ impl<'a> super::ReposApi<'a> {
         Ok((wrapped.data, resp))
     }
 
-    /// ListOrgRepos list repositories of an organization
+    /// `ListOrgRepos` list repositories of an organization
     pub async fn list_org_repos(
         &self,
         org: &str,
@@ -49,7 +49,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// CreateOrgRepo create a repository in an organization
+    /// `CreateOrgRepo` create a repository in an organization
     pub async fn create_org_repo(
         &self,
         org: &str,

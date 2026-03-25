@@ -13,7 +13,7 @@ use crate::version::{VERSION_1_11_5, VERSION_1_13_0};
 // ── pull.go ────────────────────────────────────────────────────
 
 impl<'a> super::PullsApi<'a> {
-    /// MergePullRequest merge a PR to repository by PR id.
+    /// `MergePullRequest` merge a PR to repository by PR id.
     /// Returns `(merged: bool, Response)`. `merged` is true when status is 200.
     pub async fn merge(
         &self,
@@ -48,7 +48,7 @@ impl<'a> super::PullsApi<'a> {
         Ok((status == 200, response))
     }
 
-    /// IsPullRequestMerged test if one PR is merged to one repository.
+    /// `IsPullRequestMerged` test if one PR is merged to one repository.
     /// Returns `true` when status is 204.
     pub async fn is_merged(
         &self,
@@ -65,7 +65,7 @@ impl<'a> super::PullsApi<'a> {
         Ok((status == 204, response))
     }
 
-    /// GetPullRequestPatch gets the git patchset of a PR as raw bytes.
+    /// `GetPullRequestPatch` gets the git patchset of a PR as raw bytes.
     pub async fn patch(
         &self,
         owner: &str,
@@ -82,7 +82,7 @@ impl<'a> super::PullsApi<'a> {
             .await
     }
 
-    /// GetPullRequestDiff gets the diff of a PR as raw bytes.
+    /// `GetPullRequestDiff` gets the diff of a PR as raw bytes.
     /// For Gitea >= 1.16, you must set includeBinary to get an applicable diff.
     pub async fn diff(
         &self,

@@ -18,6 +18,7 @@ pub struct ReleasesApi<'a> {
 
 impl<'a> ReleasesApi<'a> {
     /// Create a new `ReleasesApi` for the given client.
+    #[must_use]
     pub fn new(client: &'a Client) -> Self {
         Self { client }
     }
@@ -29,7 +30,7 @@ impl<'a> ReleasesApi<'a> {
 
     // ── release.go ────────────────────────────────────────────────────
 
-    /// ListReleases list releases of a repository
+    /// `ListReleases` list releases of a repository
     pub async fn list(
         &self,
         owner: &str,
@@ -48,7 +49,7 @@ impl<'a> ReleasesApi<'a> {
             .await
     }
 
-    /// GetRelease get a release of a repository by id
+    /// `GetRelease` get a release of a repository by id
     pub async fn get(
         &self,
         owner: &str,
@@ -67,7 +68,7 @@ impl<'a> ReleasesApi<'a> {
             .await
     }
 
-    /// GetLatestRelease get the latest release of a repository
+    /// `GetLatestRelease` get the latest release of a repository
     pub async fn get_latest(&self, owner: &str, repo: &str) -> crate::Result<(Release, Response)> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[owner, repo])?;
         let path = format!("/repos/{}/{}/releases/latest", escaped[0], escaped[1]);
@@ -81,7 +82,7 @@ impl<'a> ReleasesApi<'a> {
             .await
     }
 
-    /// GetReleaseByTag get a release of a repository by tag
+    /// `GetReleaseByTag` get a release of a repository by tag
     pub async fn get_by_tag(
         &self,
         owner: &str,
@@ -98,7 +99,7 @@ impl<'a> ReleasesApi<'a> {
             .await
     }
 
-    /// CreateRelease create a release
+    /// `CreateRelease` create a release
     pub async fn create(
         &self,
         owner: &str,
@@ -119,7 +120,7 @@ impl<'a> ReleasesApi<'a> {
             .await
     }
 
-    /// EditRelease edit a release
+    /// `EditRelease` edit a release
     pub async fn edit(
         &self,
         owner: &str,
@@ -140,7 +141,7 @@ impl<'a> ReleasesApi<'a> {
             .await
     }
 
-    /// DeleteRelease delete a release from a repository, keeping its tag
+    /// `DeleteRelease` delete a release from a repository, keeping its tag
     pub async fn delete(&self, owner: &str, repo: &str, id: i64) -> crate::Result<Response> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[owner, repo])?;
         let path = format!("/repos/{}/{}/releases/{id}", escaped[0], escaped[1]);
@@ -149,7 +150,7 @@ impl<'a> ReleasesApi<'a> {
             .await
     }
 
-    /// DeleteReleaseByTag delete a release from a repository by tag
+    /// `DeleteReleaseByTag` delete a release from a repository by tag
     pub async fn delete_by_tag(
         &self,
         owner: &str,
@@ -168,7 +169,7 @@ impl<'a> ReleasesApi<'a> {
 
     // ── attachment.go ─────────────────────────────────────────────────
 
-    /// ListReleaseAttachments list release's attachments
+    /// `ListReleaseAttachments` list release's attachments
     pub async fn list_attachments(
         &self,
         owner: &str,
@@ -188,7 +189,7 @@ impl<'a> ReleasesApi<'a> {
             .await
     }
 
-    /// GetReleaseAttachment returns the requested attachment
+    /// `GetReleaseAttachment` returns the requested attachment
     pub async fn get_attachment(
         &self,
         owner: &str,
@@ -206,7 +207,7 @@ impl<'a> ReleasesApi<'a> {
             .await
     }
 
-    /// CreateReleaseAttachment creates an attachment for the given release.
+    /// `CreateReleaseAttachment` creates an attachment for the given release.
     /// `data` is the raw file content to upload; `filename` is the name the
     /// attachment will have on the server.
     pub async fn create_attachment(
@@ -231,7 +232,7 @@ impl<'a> ReleasesApi<'a> {
             .await
     }
 
-    /// EditReleaseAttachment updates the given attachment with the given options
+    /// `EditReleaseAttachment` updates the given attachment with the given options
     pub async fn edit_attachment(
         &self,
         owner: &str,
@@ -257,7 +258,7 @@ impl<'a> ReleasesApi<'a> {
             .await
     }
 
-    /// DeleteReleaseAttachment deletes the given attachment including the uploaded file
+    /// `DeleteReleaseAttachment` deletes the given attachment including the uploaded file
     pub async fn delete_attachment(
         &self,
         owner: &str,

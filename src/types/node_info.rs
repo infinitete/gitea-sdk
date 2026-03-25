@@ -9,7 +9,7 @@ use std::collections::HashMap;
 
 use super::serde_helpers::null_to_default;
 
-/// GitignoreTemplateInfo represents a gitignore template
+/// `GitignoreTemplateInfo` represents a gitignore template
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Gitignore Template Info payload type.
 pub struct GitignoreTemplateInfo {
@@ -17,7 +17,7 @@ pub struct GitignoreTemplateInfo {
     pub source: String,
 }
 
-/// LabelTemplate represents a label template
+/// `LabelTemplate` represents a label template
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Label Template payload type.
 pub struct LabelTemplate {
@@ -27,7 +27,7 @@ pub struct LabelTemplate {
     pub exclusive: bool,
 }
 
-/// NodeInfoSoftware represents software information
+/// `NodeInfoSoftware` represents software information
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Node Info Software payload type.
 pub struct NodeInfoSoftware {
@@ -37,7 +37,7 @@ pub struct NodeInfoSoftware {
     pub homepage: String,
 }
 
-/// NodeInfoServices represents third party services
+/// `NodeInfoServices` represents third party services
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Node Info Services payload type.
 pub struct NodeInfoServices {
@@ -47,7 +47,7 @@ pub struct NodeInfoServices {
     pub outbound: Vec<String>,
 }
 
-/// NodeInfoUsageUsers represents user statistics
+/// `NodeInfoUsageUsers` represents user statistics
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Node Info Usage Users payload type.
 pub struct NodeInfoUsageUsers {
@@ -58,7 +58,7 @@ pub struct NodeInfoUsageUsers {
     pub active_month: i64,
 }
 
-/// NodeInfoUsage represents usage statistics
+/// `NodeInfoUsage` represents usage statistics
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Node Info Usage payload type.
 pub struct NodeInfoUsage {
@@ -69,7 +69,7 @@ pub struct NodeInfoUsage {
     pub local_comments: i64,
 }
 
-/// NodeInfo represents nodeinfo about the server
+/// `NodeInfo` represents nodeinfo about the server
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Node Info payload type.
 pub struct NodeInfo {

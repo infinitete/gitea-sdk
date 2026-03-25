@@ -2,8 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-//! Miscellaneous repository types (repo_collaborator.go, repo_mirror.go,
-//! git_hook.go, repo_action_variable.go).
+//! Miscellaneous repository types (`repo_collaborator.go`, `repo_mirror.go`,
+//! `git_hook.go`, `repo_action_variable.go`).
 
 use crate::{Deserialize, Serialize};
 
@@ -11,7 +11,7 @@ use crate::types::user::User;
 
 // ── repo_collaborator.go ────────────────────────────────────────
 
-/// CollaboratorPermissionResult result type for CollaboratorPermission
+/// `CollaboratorPermissionResult` result type for `CollaboratorPermission`
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Collaborator Permission Result payload type.
 pub struct CollaboratorPermissionResult {
@@ -24,7 +24,7 @@ pub struct CollaboratorPermissionResult {
 
 // ── repo_mirror.go ──────────────────────────────────────────────
 
-/// PushMirrorResponse returns a git push mirror
+/// `PushMirrorResponse` returns a git push mirror
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Push Mirror Response payload type.
 pub struct PushMirrorResponse {
@@ -46,7 +46,7 @@ pub struct PushMirrorResponse {
 
 // ── git_hook.go ─────────────────────────────────────────────────
 
-/// GitHook represents a Git repository hook
+/// `GitHook` represents a Git repository hook
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Git Hook payload type.
 pub struct GitHook {
@@ -59,7 +59,7 @@ pub struct GitHook {
 
 // ── repo_action_variable.go ─────────────────────────────────────
 
-/// RepoActionVariable represents a action variable
+/// `RepoActionVariable` represents a action variable
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Repo Action Variable payload type.
 pub struct RepoActionVariable {

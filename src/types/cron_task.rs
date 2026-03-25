@@ -8,7 +8,7 @@ use crate::{Deserialize, Serialize};
 use time::OffsetDateTime;
 use time::serde::rfc3339;
 
-/// CronTask represents a Cron task
+/// `CronTask` represents a Cron task
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Cron Task payload type.
 pub struct CronTask {

@@ -119,8 +119,8 @@ mod tests {
         let components = crate::auth::httpsig::SignedStringComponents {
             method: "POST".to_string(),
             path: "/api/v1/repos/owner/repo".to_string(),
-            created: 1704067200,
-            expires: 1704067210,
+            created: 1_704_067_200,
+            expires: 1_704_067_210,
             digest: Some("SHA256=abc123=".to_string()),
             extra_headers: vec![],
         };
@@ -142,8 +142,8 @@ mod tests {
         let components = crate::auth::httpsig::SignedStringComponents {
             method: "GET".to_string(),
             path: "/api/v1/user".to_string(),
-            created: 1704153600,
-            expires: 1704153610,
+            created: 1_704_153_600,
+            expires: 1_704_153_610,
             digest: None,
             extra_headers: vec![],
         };
@@ -194,8 +194,8 @@ mod tests {
         let components = crate::auth::httpsig::SignedStringComponents {
             method: "POST".to_string(),
             path: "/api/v1/repos/owner/repo".to_string(),
-            created: 1704067200,
-            expires: 1704067210,
+            created: 1_704_067_200,
+            expires: 1_704_067_210,
             digest: Some("SHA256=abc123=".to_string()),
             extra_headers: vec![],
         };
@@ -209,8 +209,8 @@ mod tests {
         let components = crate::auth::httpsig::SignedStringComponents {
             method: "GET".to_string(),
             path: "/api/v1/user".to_string(),
-            created: 1704067200,
-            expires: 1704067210,
+            created: 1_704_067_200,
+            expires: 1_704_067_210,
             digest: None,
             extra_headers: vec![],
         };
@@ -224,8 +224,8 @@ mod tests {
         let components = crate::auth::httpsig::SignedStringComponents {
             method: "POST".to_string(),
             path: "/api/v1/repos/owner/repo".to_string(),
-            created: 1704067200,
-            expires: 1704067210,
+            created: 1_704_067_200,
+            expires: 1_704_067_210,
             digest: None,
             extra_headers: vec![("x-ssh-certificate".to_string(), "certdata".to_string())],
         };

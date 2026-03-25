@@ -7,7 +7,7 @@ use crate::{Deserialize, Serialize};
 
 // ── repo_tag.go ─────────────────────────────────────────────────
 
-/// ListRepoTagsOptions options for listing a repository's tags
+/// `ListRepoTagsOptions` options for listing a repository's tags
 #[derive(Debug, Clone, Default)]
 /// Options for List Repo Tags Option.
 pub struct ListRepoTagsOptions {
@@ -20,7 +20,7 @@ impl QueryEncode for ListRepoTagsOptions {
     }
 }
 
-/// ListRepoTagProtectionsOptions options for listing tag protections
+/// `ListRepoTagProtectionsOptions` options for listing tag protections
 #[derive(Debug, Clone, Default)]
 /// Options for List Repo Tag Protections Option.
 pub struct ListRepoTagProtectionsOptions {
@@ -33,7 +33,7 @@ impl QueryEncode for ListRepoTagProtectionsOptions {
     }
 }
 
-/// CreateTagOption options when creating a tag
+/// `CreateTagOption` options when creating a tag
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Create Tag Option.
 pub struct CreateTagOption {
@@ -55,7 +55,7 @@ impl CreateTagOption {
 
 // ── repo_tag_protection.go ──────────────────────────────────────
 
-/// CreateTagProtectionOption options for creating a tag protection
+/// `CreateTagProtectionOption` options for creating a tag protection
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Create Tag Protection Option.
 pub struct CreateTagProtectionOption {
@@ -67,7 +67,7 @@ pub struct CreateTagProtectionOption {
     pub whitelist_teams: Vec<String>,
 }
 
-/// EditTagProtectionOption options for editing a tag protection
+/// `EditTagProtectionOption` options for editing a tag protection
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Edit Tag Protection Option.
 pub struct EditTagProtectionOption {

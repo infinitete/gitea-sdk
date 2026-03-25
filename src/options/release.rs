@@ -9,7 +9,7 @@ use crate::{Deserialize, Serialize};
 
 // ── ListReleasesOptions (release.go) ─────────────────────────────────
 
-/// ListReleasesOptions options for listing repository's releases
+/// `ListReleasesOptions` options for listing repository's releases
 #[derive(Debug, Clone, Default)]
 /// Options for List Releases Option.
 pub struct ListReleasesOptions {
@@ -33,14 +33,14 @@ impl QueryEncode for ListReleasesOptions {
 
 // ── CreateReleaseOption (release.go) ────────────────────────────────
 
-/// CreateReleaseOption options when creating a release
+/// `CreateReleaseOption` options when creating a release
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Create Release Option.
 pub struct CreateReleaseOption {
-    /// tag_name
+    /// `tag_name`
     #[serde(rename = "tag_name")]
     pub tag_name: String,
-    /// target_commitish
+    /// `target_commitish`
     #[serde(rename = "target_commitish", skip_serializing_if = "Option::is_none")]
     pub target: Option<String>,
     /// name
@@ -58,7 +58,7 @@ pub struct CreateReleaseOption {
 }
 
 impl CreateReleaseOption {
-    /// Validate the CreateReleaseOption struct
+    /// Validate the `CreateReleaseOption` struct
     pub fn validate(&self) -> crate::Result<()> {
         if self.tag_name.trim().is_empty() {
             return Err(crate::Error::Validation("tag_name is required".to_string()));
@@ -74,14 +74,14 @@ impl CreateReleaseOption {
 
 // ── EditReleaseOption (release.go) ──────────────────────────────────
 
-/// EditReleaseOption options when editing a release
+/// `EditReleaseOption` options when editing a release
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 /// Options for Edit Release Option.
 pub struct EditReleaseOption {
-    /// tag_name
+    /// `tag_name`
     #[serde(rename = "tag_name", skip_serializing_if = "Option::is_none")]
     pub tag_name: Option<String>,
-    /// target_commitish
+    /// `target_commitish`
     #[serde(rename = "target_commitish", skip_serializing_if = "Option::is_none")]
     pub target: Option<String>,
     /// name
@@ -100,7 +100,7 @@ pub struct EditReleaseOption {
 
 // ── ListReleaseAttachmentsOptions (attachment.go) ───────────────────
 
-/// ListReleaseAttachmentsOptions options for listing release's attachments
+/// `ListReleaseAttachmentsOptions` options for listing release's attachments
 #[derive(Debug, Clone, Default)]
 /// Options for List Release Attachments Option.
 pub struct ListReleaseAttachmentsOptions {
@@ -115,7 +115,7 @@ impl QueryEncode for ListReleaseAttachmentsOptions {
 
 // ── EditAttachmentOption (attachment.go) ─────────────────────────────
 
-/// EditAttachmentOptions options for editing attachments
+/// `EditAttachmentOptions` options for editing attachments
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Edit Attachment Option.
 pub struct EditAttachmentOption {
@@ -124,7 +124,7 @@ pub struct EditAttachmentOption {
 }
 
 impl EditAttachmentOption {
-    /// Validate the EditAttachmentOption struct
+    /// Validate the `EditAttachmentOption` struct
     pub fn validate(&self) -> crate::Result<()> {
         if self.name.trim().is_empty() {
             return Err(crate::Error::Validation("name is required".to_string()));

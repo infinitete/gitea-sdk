@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-//! Issue time tracking types: StopWatch, TrackedTime.
+//! Issue time tracking types: `StopWatch`, `TrackedTime`.
 
 use crate::{Deserialize, Serialize};
 use time::OffsetDateTime;
@@ -12,7 +12,7 @@ use crate::types::issue::Issue;
 
 // ── issue_stopwatch.go ───────────────────────────────────────────
 
-/// StopWatch represents a running stopwatch of an issue / pr
+/// `StopWatch` represents a running stopwatch of an issue / pr
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Stop Watch payload type.
 pub struct StopWatch {
@@ -32,7 +32,7 @@ pub struct StopWatch {
 
 // ── issue_tracked_time.go ────────────────────────────────────────
 
-/// TrackedTime worked time for an issue / pr
+/// `TrackedTime` worked time for an issue / pr
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Tracked Time payload type.
 pub struct TrackedTime {

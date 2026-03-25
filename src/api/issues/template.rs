@@ -11,7 +11,7 @@ impl<'a> IssuesApi<'a> {
     // ── issue_template.go ─────────────────────────────────────────
     // 1 method
 
-    /// GetIssueTemplates lists all issue templates of the repository
+    /// `GetIssueTemplates` lists all issue templates of the repository
     pub async fn get_issue_templates(
         &self,
         owner: &str,

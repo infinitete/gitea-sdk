@@ -5,7 +5,7 @@
 //! Request option types for issue API endpoints.
 
 use crate::internal::request::urlencoding;
-use crate::pagination::{ListOptions, QueryEncode};
+use crate::pagination::{ListOptions, QueryEncode, push_query_segment};
 use crate::types::enums::StateType;
 use crate::types::serde_helpers::nullable_rfc3339;
 use crate::{Deserialize, Serialize};
@@ -13,7 +13,7 @@ use time::OffsetDateTime;
 
 // ── issue.go ─────────────────────────────────────────────────────
 
-/// ListIssueOption list issue options
+/// `ListIssueOption` list issue options
 #[derive(Debug, Clone, Default)]
 /// Options for List Issue Option.
 pub struct ListIssueOption {
@@ -31,7 +31,7 @@ pub struct ListIssueOption {
     pub assigned_by: String,
     /// filter by username mentioned
     pub mentioned_by: String,
-    /// filter by owner (only works on ListIssues on User)
+    /// filter by owner (only works on `ListIssues` on User)
     pub owner: String,
     /// filter by team (requires organization owner parameter)
     pub team: String,
@@ -97,7 +97,7 @@ impl QueryEncode for ListIssueOption {
     }
 }
 
-/// CreateIssueOption options to create one issue
+/// `CreateIssueOption` options to create one issue
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Create Issue Option.
 pub struct CreateIssueOption {
@@ -125,7 +125,7 @@ pub struct CreateIssueOption {
 }
 
 impl CreateIssueOption {
-    /// Validate the CreateIssueOption struct
+    /// Validate the `CreateIssueOption` struct
     pub fn validate(&self) -> crate::Result<()> {
         if self.title.trim().is_empty() {
             return Err(crate::Error::Validation("title is empty".to_string()));
@@ -134,7 +134,7 @@ impl CreateIssueOption {
     }
 }
 
-/// EditIssueOption options for editing an issue
+/// `EditIssueOption` options for editing an issue
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Edit Issue Option.
 pub struct EditIssueOption {
@@ -166,7 +166,7 @@ pub struct EditIssueOption {
 }
 
 impl EditIssueOption {
-    /// Validate the EditIssueOption struct
+    /// Validate the `EditIssueOption` struct
     pub fn validate(&self) -> crate::Result<()> {
         if let Some(ref title) = self.title
             && title.trim().is_empty()
@@ -179,7 +179,7 @@ impl EditIssueOption {
 
 // ── issue_comment.go ─────────────────────────────────────────────
 
-/// ListIssueCommentOptions list comment options
+/// `ListIssueCommentOptions` list comment options
 #[derive(Debug, Clone, Default)]
 /// Options for List Issue Comment Option.
 pub struct ListIssueCommentOptions {
@@ -207,7 +207,7 @@ impl QueryEncode for ListIssueCommentOptions {
     }
 }
 
-/// CreateIssueCommentOption options for creating a comment on an issue
+/// `CreateIssueCommentOption` options for creating a comment on an issue
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Create Issue Comment Option.
 pub struct CreateIssueCommentOption {
@@ -215,7 +215,7 @@ pub struct CreateIssueCommentOption {
 }
 
 impl CreateIssueCommentOption {
-    /// Validate the CreateIssueCommentOption struct
+    /// Validate the `CreateIssueCommentOption` struct
     pub fn validate(&self) -> crate::Result<()> {
         if self.body.is_empty() {
             return Err(crate::Error::Validation("body is empty".to_string()));
@@ -224,7 +224,7 @@ impl CreateIssueCommentOption {
     }
 }
 
-/// EditIssueCommentOption options for editing a comment
+/// `EditIssueCommentOption` options for editing a comment
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Edit Issue Comment Option.
 pub struct EditIssueCommentOption {
@@ -232,7 +232,7 @@ pub struct EditIssueCommentOption {
 }
 
 impl EditIssueCommentOption {
-    /// Validate the EditIssueCommentOption struct
+    /// Validate the `EditIssueCommentOption` struct
     pub fn validate(&self) -> crate::Result<()> {
         if self.body.is_empty() {
             return Err(crate::Error::Validation("body is empty".to_string()));
@@ -243,7 +243,7 @@ impl EditIssueCommentOption {
 
 // ── issue_label.go ───────────────────────────────────────────────
 
-/// IssueLabelsOption a collection of labels
+/// `IssueLabelsOption` a collection of labels
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Issue Labels Option.
 pub struct IssueLabelsOption {
@@ -254,7 +254,7 @@ pub struct IssueLabelsOption {
 
 // ── issue_milestone.go ───────────────────────────────────────────
 
-/// ListMilestoneOption list milestone options
+/// `ListMilestoneOption` list milestone options
 #[derive(Debug, Clone, Default)]
 /// Options for List Milestone Option.
 pub struct ListMilestoneOption {
@@ -277,7 +277,7 @@ impl QueryEncode for ListMilestoneOption {
     }
 }
 
-/// CreateMilestoneOption options for creating a milestone
+/// `CreateMilestoneOption` options for creating a milestone
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Create Milestone Option.
 pub struct CreateMilestoneOption {
@@ -295,7 +295,7 @@ pub struct CreateMilestoneOption {
 }
 
 impl CreateMilestoneOption {
-    /// Validate the CreateMilestoneOption struct
+    /// Validate the `CreateMilestoneOption` struct
     pub fn validate(&self) -> crate::Result<()> {
         if self.title.trim().is_empty() {
             return Err(crate::Error::Validation("title is empty".to_string()));
@@ -304,7 +304,7 @@ impl CreateMilestoneOption {
     }
 }
 
-/// EditMilestoneOption options for editing a milestone
+/// `EditMilestoneOption` options for editing a milestone
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 /// Options for Edit Milestone Option.
 pub struct EditMilestoneOption {
@@ -324,7 +324,7 @@ pub struct EditMilestoneOption {
 }
 
 impl EditMilestoneOption {
-    /// Validate the EditMilestoneOption struct
+    /// Validate the `EditMilestoneOption` struct
     pub fn validate(&self) -> crate::Result<()> {
         if let Some(ref title) = self.title
             && title.trim().is_empty()
@@ -337,7 +337,7 @@ impl EditMilestoneOption {
 
 // ── issue_reaction.go ────────────────────────────────────────────
 
-/// ListIssueReactionsOptions options for listing issue reactions
+/// `ListIssueReactionsOptions` options for listing issue reactions
 #[derive(Debug, Clone, Default)]
 /// Options for List Issue Reactions Option.
 pub struct ListIssueReactionsOptions {
@@ -352,7 +352,7 @@ impl QueryEncode for ListIssueReactionsOptions {
 
 // ── issue_subscription.go ────────────────────────────────────────
 
-/// ListIssueSubscribersOptions options for listing issue subscribers
+/// `ListIssueSubscribersOptions` options for listing issue subscribers
 #[derive(Debug, Clone, Default)]
 /// Options for List Issue Subscribers Option.
 pub struct ListIssueSubscribersOptions {
@@ -367,7 +367,7 @@ impl QueryEncode for ListIssueSubscribersOptions {
 
 // ── issue_stopwatch.go ───────────────────────────────────────────
 
-/// ListStopwatchesOptions options for listing stopwatches
+/// `ListStopwatchesOptions` options for listing stopwatches
 #[derive(Debug, Clone, Default)]
 /// Options for List Stopwatches Option.
 pub struct ListStopwatchesOptions {
@@ -382,14 +382,14 @@ impl QueryEncode for ListStopwatchesOptions {
 
 // ── issue_tracked_time.go ────────────────────────────────────────
 
-/// ListTrackedTimesOptions options for listing repository's tracked times
+/// `ListTrackedTimesOptions` options for listing repository's tracked times
 #[derive(Debug, Clone, Default)]
 /// Options for List Tracked Times Option.
 pub struct ListTrackedTimesOptions {
     pub list_options: ListOptions,
     pub since: Option<OffsetDateTime>,
     pub before: Option<OffsetDateTime>,
-    /// User filter is only used by ListRepoTrackedTimes
+    /// User filter is only used by `ListRepoTrackedTimes`
     pub user: String,
 }
 
@@ -400,22 +400,22 @@ impl QueryEncode for ListTrackedTimesOptions {
             let formatted = since
                 .format(&time::format_description::well_known::Rfc3339)
                 .unwrap_or_default();
-            out.push_str(&format!("&since={}", urlencoding(&formatted)));
+            push_query_segment(&mut out, &format!("since={}", urlencoding(&formatted)));
         }
         if let Some(before) = self.before {
             let formatted = before
                 .format(&time::format_description::well_known::Rfc3339)
                 .unwrap_or_default();
-            out.push_str(&format!("&before={}", urlencoding(&formatted)));
+            push_query_segment(&mut out, &format!("before={}", urlencoding(&formatted)));
         }
         if !self.user.is_empty() {
-            out.push_str(&format!("&user={}", urlencoding(&self.user)));
+            push_query_segment(&mut out, &format!("user={}", urlencoding(&self.user)));
         }
         out
     }
 }
 
-/// AddTimeOption options for adding time to an issue
+/// `AddTimeOption` options for adding time to an issue
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Add Time Option.
 pub struct AddTimeOption {
@@ -434,7 +434,7 @@ pub struct AddTimeOption {
 }
 
 impl AddTimeOption {
-    /// Validate the AddTimeOption struct
+    /// Validate the `AddTimeOption` struct
     pub fn validate(&self) -> crate::Result<()> {
         if self.time == 0 {
             return Err(crate::Error::Validation("no time to add".to_string()));
@@ -445,7 +445,7 @@ impl AddTimeOption {
 
 // ── issue_ext.go ─────────────────────────────────────────────────
 
-/// ListIssueBlocksOptions options for listing issue blocks
+/// `ListIssueBlocksOptions` options for listing issue blocks
 #[derive(Debug, Clone, Default)]
 /// Options for List Issue Blocks Option.
 pub struct ListIssueBlocksOptions {
@@ -458,7 +458,7 @@ impl QueryEncode for ListIssueBlocksOptions {
     }
 }
 
-/// ListIssueDependenciesOptions options for listing issue dependencies
+/// `ListIssueDependenciesOptions` options for listing issue dependencies
 #[derive(Debug, Clone, Default)]
 /// Options for List Issue Dependencies Option.
 pub struct ListIssueDependenciesOptions {
@@ -471,7 +471,7 @@ impl QueryEncode for ListIssueDependenciesOptions {
     }
 }
 
-/// LockIssueOption represents options for locking an issue
+/// `LockIssueOption` represents options for locking an issue
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Lock Issue Option.
 pub struct LockIssueOption {
@@ -479,7 +479,7 @@ pub struct LockIssueOption {
     pub lock_reason: String,
 }
 
-/// EditDeadlineOption represents options for updating issue deadline
+/// `EditDeadlineOption` represents options for updating issue deadline
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Edit Deadline Option.
 pub struct EditDeadlineOption {

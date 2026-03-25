@@ -35,7 +35,7 @@ pub struct Package {
     pub created_at: OffsetDateTime,
 }
 
-/// PackageFile represents a file from a package
+/// `PackageFile` represents a file from a package
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Package File payload type.
 pub struct PackageFile {

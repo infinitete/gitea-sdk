@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-//! Tag-related types (repo_tag.go, repo_tag_protection.go).
+//! Tag-related types (`repo_tag.go`, `repo_tag_protection.go`).
 
 use crate::{Deserialize, Serialize};
 use time::OffsetDateTime;
@@ -29,7 +29,7 @@ pub struct Tag {
     pub tarball_url: String,
 }
 
-/// AnnotatedTag represents an annotated tag
+/// `AnnotatedTag` represents an annotated tag
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Annotated Tag payload type.
 pub struct AnnotatedTag {
@@ -45,7 +45,7 @@ pub struct AnnotatedTag {
     pub verification: Option<PayloadCommitVerification>,
 }
 
-/// AnnotatedTagObject contains meta information of the tag object
+/// `AnnotatedTagObject` contains meta information of the tag object
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Annotated Tag Object payload type.
 pub struct AnnotatedTagObject {
@@ -57,7 +57,7 @@ pub struct AnnotatedTagObject {
 
 // ── repo_tag_protection.go ──────────────────────────────────────
 
-/// TagProtection represents a tag protection for a repository
+/// `TagProtection` represents a tag protection for a repository
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Tag Protection payload type.
 pub struct TagProtection {

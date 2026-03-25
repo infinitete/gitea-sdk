@@ -13,6 +13,7 @@ pub struct UsersApi<'a> {
 
 impl<'a> UsersApi<'a> {
     /// Create a new `UsersApi` view.
+    #[must_use]
     pub fn new(client: &'a Client) -> Self {
         Self { client }
     }

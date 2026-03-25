@@ -13,7 +13,7 @@ impl<'a> IssuesApi<'a> {
     // ── issue_ext.go ──────────────────────────────────────────────
     // lock / unlock / deadline
 
-    /// LockIssue locks an issue
+    /// `LockIssue` locks an issue
     pub async fn lock_issue(
         &self,
         owner: &str,
@@ -42,7 +42,7 @@ impl<'a> IssuesApi<'a> {
         Ok(resp)
     }
 
-    /// UnlockIssue unlocks an issue
+    /// `UnlockIssue` unlocks an issue
     pub async fn unlock_issue(
         &self,
         owner: &str,
@@ -69,7 +69,7 @@ impl<'a> IssuesApi<'a> {
         Ok(resp)
     }
 
-    /// UpdateIssueDeadline updates an issue's deadline
+    /// `UpdateIssueDeadline` updates an issue's deadline
     pub async fn update_issue_deadline(
         &self,
         owner: &str,

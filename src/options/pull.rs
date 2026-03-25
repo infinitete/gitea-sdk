@@ -4,13 +4,13 @@
 
 //! Request option types for pull request API endpoints.
 
-use crate::pagination::{ListOptions, QueryEncode};
+use crate::pagination::{ListOptions, QueryEncode, push_query_segment};
 use crate::types::enums::{MergeStyle, ReviewStateType, StateType};
 use crate::{Deserialize, Serialize};
 
 // ── pull.go ─────────────────────────────────────────────────────
 
-/// ListPullRequestsOptions options for listing pull requests
+/// `ListPullRequestsOptions` options for listing pull requests
 #[derive(Debug, Clone)]
 /// Options for List Pull Requests Option.
 pub struct ListPullRequestsOptions {
@@ -36,19 +36,19 @@ impl QueryEncode for ListPullRequestsOptions {
     fn query_encode(&self) -> String {
         let mut out = self.list_options.query_encode();
         if !matches!(self.state, StateType::All) {
-            out.push_str(&format!("&state={}", self.state));
+            push_query_segment(&mut out, &format!("state={}", self.state));
         }
         if !self.sort.is_empty() {
-            out.push_str(&format!("&sort={}", self.sort));
+            push_query_segment(&mut out, &format!("sort={}", self.sort));
         }
         if self.milestone > 0 {
-            out.push_str(&format!("&milestone={}", self.milestone));
+            push_query_segment(&mut out, &format!("milestone={}", self.milestone));
         }
         out
     }
 }
 
-/// CreatePullRequestOption options when creating a pull request
+/// `CreatePullRequestOption` options when creating a pull request
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Create Pull Request Option.
 pub struct CreatePullRequestOption {
@@ -83,6 +83,10 @@ mod nullable_rfc3339_option {
     use time::OffsetDateTime;
 
     /// Serialize an optional RFC 3339 timestamp for serde.
+    #[expect(
+        clippy::ref_option,
+        reason = "serde's `with` module serialize signature requires `&Option<T>`"
+    )]
     pub fn serialize<S>(opt: &Option<OffsetDateTime>, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
@@ -116,7 +120,7 @@ mod nullable_rfc3339_option {
     }
 }
 
-/// EditPullRequestOption options when modify pull request
+/// `EditPullRequestOption` options when modify pull request
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 /// Options for Edit Pull Request Option.
 pub struct EditPullRequestOption {
@@ -153,7 +157,7 @@ pub struct EditPullRequestOption {
 }
 
 impl EditPullRequestOption {
-    /// Validate the EditPullRequestOption struct
+    /// Validate the `EditPullRequestOption` struct
     pub fn validate(&self) -> crate::Result<()> {
         if let Some(ref title) = self.title
             && title.trim().is_empty()
@@ -164,7 +168,7 @@ impl EditPullRequestOption {
     }
 }
 
-/// MergePullRequestOption options when merging a pull request
+/// `MergePullRequestOption` options when merging a pull request
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 /// Options for Merge Pull Request Option.
 pub struct MergePullRequestOption {
@@ -186,7 +190,7 @@ pub struct MergePullRequestOption {
     pub merge_when_checks_succeed: bool,
 }
 
-/// PullRequestDiffOptions options for GET `/repos/<owner>/<repo>/pulls/<idx>.[diff|patch]`
+/// `PullRequestDiffOptions` options for GET `/repos/<owner>/<repo>/pulls/<idx>.[diff|patch]`
 #[derive(Debug, Clone, Default)]
 /// Options for Pull Request Diff Option.
 pub struct PullRequestDiffOptions {
@@ -200,7 +204,7 @@ impl QueryEncode for PullRequestDiffOptions {
     }
 }
 
-/// ListPullRequestCommitsOptions options for listing pull request commits
+/// `ListPullRequestCommitsOptions` options for listing pull request commits
 #[derive(Debug, Clone, Default)]
 /// Options for List Pull Request Commits Option.
 pub struct ListPullRequestCommitsOptions {
@@ -213,7 +217,7 @@ impl QueryEncode for ListPullRequestCommitsOptions {
     }
 }
 
-/// ListPullRequestFilesOptions options for listing pull request files
+/// `ListPullRequestFilesOptions` options for listing pull request files
 #[derive(Debug, Clone, Default)]
 /// Options for List Pull Request Files Option.
 pub struct ListPullRequestFilesOptions {
@@ -228,7 +232,7 @@ impl QueryEncode for ListPullRequestFilesOptions {
 
 // ── pull_review.go ───────────────────────────────────────────────
 
-/// ListPullReviewsOptions options for listing PullReviews
+/// `ListPullReviewsOptions` options for listing `PullReviews`
 #[derive(Debug, Clone, Default)]
 /// Options for List Pull Reviews Option.
 pub struct ListPullReviewsOptions {
@@ -241,7 +245,7 @@ impl QueryEncode for ListPullReviewsOptions {
     }
 }
 
-/// CreatePullReviewOptions are options to create a pull review
+/// `CreatePullReviewOptions` are options to create a pull review
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Create Pull Review Option.
 pub struct CreatePullReviewOptions {
@@ -256,7 +260,7 @@ pub struct CreatePullReviewOptions {
 }
 
 impl CreatePullReviewOptions {
-    /// Validate the CreatePullReviewOptions struct
+    /// Validate the `CreatePullReviewOptions` struct
     pub fn validate(&self) -> crate::Result<()> {
         if self.state != Some(ReviewStateType::Approved)
             && self.comments.is_empty()
@@ -271,7 +275,7 @@ impl CreatePullReviewOptions {
     }
 }
 
-/// CreatePullReviewComment represent a review comment for creation api
+/// `CreatePullReviewComment` represent a review comment for creation api
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Create Pull Review Comment.
 pub struct CreatePullReviewComment {
@@ -287,7 +291,7 @@ pub struct CreatePullReviewComment {
 }
 
 impl CreatePullReviewComment {
-    /// Validate the CreatePullReviewComment struct
+    /// Validate the `CreatePullReviewComment` struct
     pub fn validate(&self) -> crate::Result<()> {
         if self.body.trim().is_empty() {
             return Err(crate::Error::Validation("body is empty".to_string()));
@@ -301,7 +305,7 @@ impl CreatePullReviewComment {
     }
 }
 
-/// SubmitPullReviewOptions are options to submit a pending pull review
+/// `SubmitPullReviewOptions` are options to submit a pending pull review
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Submit Pull Review Option.
 pub struct SubmitPullReviewOptions {
@@ -312,7 +316,7 @@ pub struct SubmitPullReviewOptions {
 }
 
 impl SubmitPullReviewOptions {
-    /// Validate the SubmitPullReviewOptions struct
+    /// Validate the `SubmitPullReviewOptions` struct
     pub fn validate(&self) -> crate::Result<()> {
         if self.state != Some(ReviewStateType::Approved)
             && self.body.as_ref().is_some_and(|b| b.trim().is_empty())
@@ -323,7 +327,7 @@ impl SubmitPullReviewOptions {
     }
 }
 
-/// DismissPullReviewOptions are options to dismiss a pull review
+/// `DismissPullReviewOptions` are options to dismiss a pull review
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Dismiss Pull Review Option.
 pub struct DismissPullReviewOptions {
@@ -331,7 +335,7 @@ pub struct DismissPullReviewOptions {
     pub message: Option<String>,
 }
 
-/// PullReviewRequestOptions are options to add or remove pull review requests
+/// `PullReviewRequestOptions` are options to add or remove pull review requests
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 /// Options for Pull Review Request Option.
 pub struct PullReviewRequestOptions {

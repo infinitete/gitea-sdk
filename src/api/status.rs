@@ -18,6 +18,7 @@ pub struct StatusApi<'a> {
 
 impl<'a> StatusApi<'a> {
     /// Create a new `StatusApi` view.
+    #[must_use]
     pub fn new(client: &'a Client) -> Self {
         Self { client }
     }
@@ -26,7 +27,7 @@ impl<'a> StatusApi<'a> {
         self.client
     }
 
-    /// CreateStatus creates a new Status for a given Commit
+    /// `CreateStatus` creates a new Status for a given Commit
     pub async fn create_status(
         &self,
         owner: &str,
@@ -54,7 +55,7 @@ impl<'a> StatusApi<'a> {
             .await
     }
 
-    /// ListStatuses returns all statuses for a given Commit by ref
+    /// `ListStatuses` returns all statuses for a given Commit by ref
     pub async fn list_statuses(
         &self,
         owner: &str,
@@ -80,7 +81,7 @@ impl<'a> StatusApi<'a> {
             .await
     }
 
-    /// GetCombinedStatus returns the CombinedStatus for a given Commit
+    /// `GetCombinedStatus` returns the `CombinedStatus` for a given Commit
     pub async fn get_combined_status(
         &self,
         owner: &str,

@@ -12,7 +12,7 @@ impl<'a> IssuesApi<'a> {
     // ── issue_comment.go ──────────────────────────────────────────
     // attachment methods
 
-    /// ListIssueCommentAttachments lists all attachments for a comment
+    /// `ListIssueCommentAttachments` lists all attachments for a comment
     pub async fn list_issue_comment_attachments(
         &self,
         owner: &str,
@@ -29,7 +29,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// GetIssueCommentAttachment gets a comment attachment
+    /// `GetIssueCommentAttachment` gets a comment attachment
     pub async fn get_issue_comment_attachment(
         &self,
         owner: &str,
@@ -47,7 +47,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// EditIssueCommentAttachment updates a comment attachment
+    /// `EditIssueCommentAttachment` updates a comment attachment
     pub async fn edit_issue_comment_attachment(
         &self,
         owner: &str,
@@ -73,7 +73,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// DeleteIssueCommentAttachment deletes a comment attachment
+    /// `DeleteIssueCommentAttachment` deletes a comment attachment
     pub async fn delete_issue_comment_attachment(
         &self,
         owner: &str,

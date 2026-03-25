@@ -13,7 +13,7 @@ use super::OrgsApi;
 impl<'a> OrgsApi<'a> {
     // ── org.go ────────────────────────────────────────────────────────────
 
-    /// ListOrgs lists all public organizations
+    /// `ListOrgs` lists all public organizations
     pub async fn list_orgs(
         &self,
         opt: ListOrgsOptions,
@@ -24,7 +24,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// ListMyOrgs list all of current user's organizations
+    /// `ListMyOrgs` list all of current user's organizations
     pub async fn list_my_orgs(
         &self,
         opt: ListOrgsOptions,
@@ -35,7 +35,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// ListUserOrgs list all of some user's organizations
+    /// `ListUserOrgs` list all of some user's organizations
     pub async fn list_user_orgs(
         &self,
         user: &str,
@@ -48,7 +48,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// GetOrg get one organization by name
+    /// `GetOrg` get one organization by name
     pub async fn get_org(&self, org: &str) -> crate::Result<(Organization, Response)> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[org])?;
         let path = format!("/orgs/{}", escaped[0]);
@@ -57,7 +57,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// CreateOrg creates an organization
+    /// `CreateOrg` creates an organization
     pub async fn create_org(
         &self,
         opt: CreateOrgOption,
@@ -74,7 +74,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// EditOrg modify one organization via options
+    /// `EditOrg` modify one organization via options
     pub async fn edit_org(&self, org: &str, opt: EditOrgOption) -> crate::Result<Response> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[org])?;
         opt.validate()?;
@@ -90,7 +90,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// DeleteOrg deletes an organization
+    /// `DeleteOrg` deletes an organization
     pub async fn delete_org(&self, org: &str) -> crate::Result<Response> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[org])?;
         let path = format!("/orgs/{}", escaped[0]);
@@ -104,7 +104,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// GetOrgPermissions returns user permissions for specific organization
+    /// `GetOrgPermissions` returns user permissions for specific organization
     pub async fn get_org_permissions(
         &self,
         org: &str,

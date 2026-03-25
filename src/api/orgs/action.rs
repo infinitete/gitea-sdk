@@ -13,7 +13,7 @@ use super::OrgsApi;
 impl<'a> OrgsApi<'a> {
     // ── org_action.go ─────────────────────────────────────────────────────
 
-    /// ListOrgActionSecret list an organization's secrets
+    /// `ListOrgActionSecret` list an organization's secrets
     pub async fn list_org_action_secrets(
         &self,
         org: &str,
@@ -35,7 +35,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// ListOrgActionVariable lists an organization's action variables
+    /// `ListOrgActionVariable` lists an organization's action variables
     pub async fn list_org_action_variables(
         &self,
         org: &str,
@@ -57,7 +57,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// GetOrgActionVariable gets a single organization's action variable by name
+    /// `GetOrgActionVariable` gets a single organization's action variable by name
     pub async fn get_org_action_variable(
         &self,
         org: &str,
@@ -75,7 +75,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// CreateOrgActionVariable creates a variable for the specified organization
+    /// `CreateOrgActionVariable` creates a variable for the specified organization
     pub async fn create_org_action_variable(
         &self,
         org: &str,
@@ -105,7 +105,7 @@ impl<'a> OrgsApi<'a> {
         }
     }
 
-    /// UpdateOrgActionVariable updates a variable for the specified organization
+    /// `UpdateOrgActionVariable` updates a variable for the specified organization
     pub async fn update_org_action_variable(
         &self,
         org: &str,

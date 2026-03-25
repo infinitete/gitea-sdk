@@ -10,7 +10,7 @@ use crate::types::repository::*;
 impl<'a> super::ReposApi<'a> {
     // ── repo_file.go: write operations ────────────────────────────
 
-    /// CreateFile create a file in a repository
+    /// `CreateFile` create a file in a repository
     pub async fn create_file(
         &self,
         owner: &str,
@@ -36,7 +36,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// UpdateFile update a file in a repository
+    /// `UpdateFile` update a file in a repository
     pub async fn update_file(
         &self,
         owner: &str,
@@ -62,7 +62,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// DeleteFile delete a file from a repository
+    /// `DeleteFile` delete a file from a repository
     pub async fn delete_file(
         &self,
         owner: &str,

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-//! OAuth2 API endpoints for managing Gitea OAuth2 applications and grants.
+//! `OAuth2` API endpoints for managing Gitea `OAuth2` applications and grants.
 
 use crate::Client;
 use crate::Response;
@@ -11,13 +11,14 @@ use crate::options::oauth2::*;
 use crate::pagination::QueryEncode;
 use crate::types::Oauth2;
 
-/// API methods for OAuth2 applications. Access via [`Client::oauth2()`](crate::Client::oauth2).
+/// API methods for `OAuth2` applications. Access via [`Client::oauth2()`](crate::Client::oauth2).
 pub struct Oauth2Api<'a> {
     client: &'a Client,
 }
 
 impl<'a> Oauth2Api<'a> {
     /// Create a new `Oauth2Api` view.
+    #[must_use]
     pub fn new(client: &'a Client) -> Self {
         Self { client }
     }
@@ -26,7 +27,7 @@ impl<'a> Oauth2Api<'a> {
         self.client
     }
 
-    /// ListOauth2 all of your Oauth2 Applications
+    /// `ListOauth2` all of your Oauth2 Applications
     pub async fn list_applications(
         &self,
         opt: ListOauth2Option,
@@ -42,7 +43,7 @@ impl<'a> Oauth2Api<'a> {
             .await
     }
 
-    /// CreateOauth2 create an Oauth2 Application and returns a completed Oauth2 object
+    /// `CreateOauth2` create an Oauth2 Application and returns a completed Oauth2 object
     pub async fn create_application(
         &self,
         opt: CreateOauth2Option,
@@ -59,7 +60,7 @@ impl<'a> Oauth2Api<'a> {
             .await
     }
 
-    /// GetOauth2 a specific Oauth2 Application by ID
+    /// `GetOauth2` a specific Oauth2 Application by ID
     pub async fn get_application(&self, id: i64) -> crate::Result<(Oauth2, Response)> {
         let path = format!("/user/applications/oauth2/{id}");
         self.client()
@@ -67,7 +68,7 @@ impl<'a> Oauth2Api<'a> {
             .await
     }
 
-    /// UpdateOauth2 a specific Oauth2 Application by ID and return a completed Oauth2 object
+    /// `UpdateOauth2` a specific Oauth2 Application by ID and return a completed Oauth2 object
     pub async fn update_application(
         &self,
         id: i64,
@@ -86,7 +87,7 @@ impl<'a> Oauth2Api<'a> {
             .await
     }
 
-    /// DeleteOauth2 delete an Oauth2 application by ID
+    /// `DeleteOauth2` delete an Oauth2 application by ID
     pub async fn delete_application(&self, id: i64) -> crate::Result<Response> {
         let path = format!("/user/applications/oauth2/{id}");
         self.client()

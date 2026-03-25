@@ -12,7 +12,7 @@ use crate::version::VERSION_1_23_0;
 impl<'a> super::ReposApi<'a> {
     // ── repo_tag_protection.go (5 methods) ────────────────────────
 
-    /// ListTagProtections list tag protections
+    /// `ListTagProtections` list tag protections
     pub async fn list_tag_protections(
         &self,
         owner: &str,
@@ -34,7 +34,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// GetTagProtection get a tag protection
+    /// `GetTagProtection` get a tag protection
     pub async fn get_tag_protection(
         &self,
         owner: &str,
@@ -48,7 +48,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// CreateTagProtection create a tag protection
+    /// `CreateTagProtection` create a tag protection
     pub async fn create_tag_protection(
         &self,
         owner: &str,
@@ -68,7 +68,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// EditTagProtection edit a tag protection
+    /// `EditTagProtection` edit a tag protection
     pub async fn edit_tag_protection(
         &self,
         owner: &str,
@@ -89,7 +89,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// DeleteTagProtection delete a tag protection
+    /// `DeleteTagProtection` delete a tag protection
     pub async fn delete_tag_protection(
         &self,
         owner: &str,

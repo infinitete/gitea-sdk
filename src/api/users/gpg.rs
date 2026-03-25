@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 
 use crate::Response;
+use crate::internal::query::build_query_string;
 use crate::internal::request::{json_body, json_header};
 use crate::options::user::*;
 use crate::pagination::QueryEncode;
@@ -13,31 +14,34 @@ use super::UsersApi;
 impl<'a> UsersApi<'a> {
     // ── user_gpgkey.go ─────────────────────────────────────────────────
 
-    /// ListGPGKeys list all the GPG keys of the user
+    /// `ListGPGKeys` list all the GPG keys of the user
     pub async fn list_gpg_keys(
         &self,
         user: &str,
         opt: ListGPGKeysOptions,
     ) -> crate::Result<(Vec<GPGKey>, Response)> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[user])?;
-        let path = format!("/users/{}/gpg_keys?{}", escaped[0], opt.query_encode());
+        let query = opt.query_encode();
+        let base_path = format!("/users/{}/gpg_keys", escaped[0]);
+        let path = build_query_string(&base_path, &query);
         self.client()
             .get_parsed_response(reqwest::Method::GET, &path, None, None::<&str>)
             .await
     }
 
-    /// ListMyGPGKeys list all the GPG keys of current user
+    /// `ListMyGPGKeys` list all the GPG keys of current user
     pub async fn list_my_gpg_keys(
         &self,
         opt: ListGPGKeysOptions,
     ) -> crate::Result<(Vec<GPGKey>, Response)> {
-        let path = format!("/user/gpg_keys?{}", opt.query_encode());
+        let query = opt.query_encode();
+        let path = build_query_string("/user/gpg_keys", &query);
         self.client()
             .get_parsed_response(reqwest::Method::GET, &path, None, None::<&str>)
             .await
     }
 
-    /// GetGPGKey get current user's GPG key by key id
+    /// `GetGPGKey` get current user's GPG key by key id
     pub async fn get_gpg_key(&self, key_id: i64) -> crate::Result<(GPGKey, Response)> {
         let path = format!("/user/gpg_keys/{key_id}");
         self.client()
@@ -45,7 +49,7 @@ impl<'a> UsersApi<'a> {
             .await
     }
 
-    /// CreateGPGKey create GPG key with options
+    /// `CreateGPGKey` create GPG key with options
     pub async fn create_gpg_key(
         &self,
         opt: CreateGPGKeyOption,
@@ -62,7 +66,7 @@ impl<'a> UsersApi<'a> {
             .await
     }
 
-    /// DeleteGPGKey delete GPG key with key id
+    /// `DeleteGPGKey` delete GPG key with key id
     pub async fn delete_gpg_key(&self, key_id: i64) -> crate::Result<Response> {
         let path = format!("/user/gpg_keys/{key_id}");
         self.client()
@@ -70,7 +74,7 @@ impl<'a> UsersApi<'a> {
             .await
     }
 
-    /// GetGPGKeyVerificationToken gets a verification token for adding a GPG key.
+    /// `GetGPGKeyVerificationToken` gets a verification token for adding a GPG key.
     /// API returns text/plain, not JSON.
     pub async fn get_gpg_key_verification_token(&self) -> crate::Result<(String, Response)> {
         let (body, response) = self
@@ -85,7 +89,7 @@ impl<'a> UsersApi<'a> {
         Ok((String::from_utf8_lossy(&body).to_string(), response))
     }
 
-    /// VerifyGPGKey verifies a GPG key by submitting a signed verification token.
+    /// `VerifyGPGKey` verifies a GPG key by submitting a signed verification token.
     pub async fn verify_gpg_key(
         &self,
         opt: VerifyGPGKeyOption,

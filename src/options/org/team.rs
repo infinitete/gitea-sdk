@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-use crate::pagination::{ListOptions, QueryEncode};
+use crate::pagination::{ListOptions, QueryEncode, push_query_segment};
 use crate::types::enums::{AccessMode, RepoUnitType};
 use crate::{Deserialize, Serialize};
 
@@ -31,11 +31,14 @@ pub struct SearchTeamsOptions {
 impl QueryEncode for SearchTeamsOptions {
     fn query_encode(&self) -> String {
         let mut out = self.list_options.query_encode();
-        out.push_str(&format!(
-            "&q={}&include_desc={}",
-            percent_encode(&self.query),
-            self.include_description
-        ));
+        push_query_segment(
+            &mut out,
+            &format!(
+                "q={}&include_desc={}",
+                percent_encode(&self.query),
+                self.include_description
+            ),
+        );
         out
     }
 }

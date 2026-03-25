@@ -2,8 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-//! Core repository types (repo.go, repo_collaborator.go, repo_mirror.go,
-//! repo_action_variable.go, git_hook.go).
+//! Core repository types (repo.go, `repo_collaborator.go`, `repo_mirror.go`,
+//! `repo_action_variable.go`, `git_hook.go`).
 
 use crate::{Deserialize, Serialize};
 use time::OffsetDateTime;
@@ -25,7 +25,7 @@ pub struct Permission {
     pub pull: bool,
 }
 
-/// InternalTracker represents settings for internal tracker
+/// `InternalTracker` represents settings for internal tracker
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Internal Tracker payload type.
 pub struct InternalTracker {
@@ -40,7 +40,7 @@ pub struct InternalTracker {
     pub enable_issue_dependencies: bool,
 }
 
-/// ExternalTracker represents settings for external tracker
+/// `ExternalTracker` represents settings for external tracker
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// External Tracker payload type.
 pub struct ExternalTracker {
@@ -55,7 +55,7 @@ pub struct ExternalTracker {
     pub external_tracker_style: String,
 }
 
-/// ExternalWiki represents setting for external wiki
+/// `ExternalWiki` represents setting for external wiki
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// External Wiki payload type.
 pub struct ExternalWiki {
@@ -64,7 +64,7 @@ pub struct ExternalWiki {
     pub external_wiki_url: String,
 }
 
-/// RepoTransfer represents a pending repository transfer
+/// `RepoTransfer` represents a pending repository transfer
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Repo Transfer payload type.
 pub struct RepoTransfer {

@@ -9,7 +9,7 @@ use crate::{Deserialize, Serialize};
 use super::serde_helpers::null_to_default;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-/// Global UISettings payload type.
+/// Global `UISettings` payload type.
 pub struct GlobalUISettings {
     #[serde(rename = "default_theme")]
     pub default_theme: String,
@@ -45,7 +45,7 @@ pub struct GlobalRepoSettings {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-/// Global APISettings payload type.
+/// Global `APISettings` payload type.
 pub struct GlobalAPISettings {
     #[serde(rename = "max_response_items")]
     pub max_response_items: i32,
@@ -109,7 +109,7 @@ mod tests {
             max_response_items: 50,
             default_paging_num: 30,
             default_git_trees_per_page: 1000,
-            default_max_blob_size: 10485760,
+            default_max_blob_size: 10_485_760,
         };
         let json = serde_json::to_string(&original).unwrap();
         let restored: GlobalAPISettings = serde_json::from_str(&json).unwrap();
@@ -122,7 +122,7 @@ mod tests {
         let original = GlobalAttachmentSettings {
             enabled: true,
             allowed_types: ".png,.jpg".to_string(),
-            max_size: 4194304,
+            max_size: 4_194_304,
             max_files: 5,
         };
         let json = serde_json::to_string(&original).unwrap();

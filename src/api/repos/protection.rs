@@ -12,7 +12,7 @@ use crate::version::VERSION_1_12_0;
 impl<'a> super::ReposApi<'a> {
     // ── repo_branch_protection.go (5 methods) ─────────────────────
 
-    /// ListBranchProtections list branch protections
+    /// `ListBranchProtections` list branch protections
     pub async fn list_branch_protections(
         &self,
         owner: &str,
@@ -34,7 +34,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// GetBranchProtection get a branch protection
+    /// `GetBranchProtection` get a branch protection
     pub async fn get_branch_protection(
         &self,
         owner: &str,
@@ -51,7 +51,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// CreateBranchProtection create a branch protection
+    /// `CreateBranchProtection` create a branch protection
     pub async fn create_branch_protection(
         &self,
         owner: &str,
@@ -71,7 +71,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// EditBranchProtection edit a branch protection
+    /// `EditBranchProtection` edit a branch protection
     pub async fn edit_branch_protection(
         &self,
         owner: &str,
@@ -95,7 +95,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// DeleteBranchProtection delete a branch protection
+    /// `DeleteBranchProtection` delete a branch protection
     pub async fn delete_branch_protection(
         &self,
         owner: &str,

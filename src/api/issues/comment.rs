@@ -14,7 +14,7 @@ impl<'a> IssuesApi<'a> {
     // ── issue_comment.go ──────────────────────────────────────────
     // CRUD methods
 
-    /// ListIssueComments list comments on an issue
+    /// `ListIssueComments` list comments on an issue
     pub async fn list_issue_comments(
         &self,
         owner: &str,
@@ -34,7 +34,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// ListRepoIssueComments list comments for a given repo
+    /// `ListRepoIssueComments` list comments for a given repo
     pub async fn list_repo_issue_comments(
         &self,
         owner: &str,
@@ -53,7 +53,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// GetIssueComment get a comment for a given repo by id
+    /// `GetIssueComment` get a comment for a given repo by id
     pub async fn get_issue_comment(
         &self,
         owner: &str,
@@ -67,7 +67,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// CreateIssueComment create comment on an issue
+    /// `CreateIssueComment` create comment on an issue
     pub async fn create_issue_comment(
         &self,
         owner: &str,
@@ -92,7 +92,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// EditIssueComment edits an issue comment
+    /// `EditIssueComment` edits an issue comment
     pub async fn edit_issue_comment(
         &self,
         owner: &str,
@@ -117,7 +117,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// DeleteIssueComment deletes an issue comment
+    /// `DeleteIssueComment` deletes an issue comment
     pub async fn delete_issue_comment(
         &self,
         owner: &str,

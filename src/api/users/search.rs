@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 
 use crate::Response;
+use crate::internal::query::build_query_string;
 use crate::options::user::SearchUsersOption;
 use crate::pagination::QueryEncode;
 use crate::types::User;
@@ -18,9 +19,10 @@ pub(crate) struct SearchUsersResponse {
 impl<'a> UsersApi<'a> {
     // ── user_search.go ─────────────────────────────────────────────────
 
-    /// SearchUsers finds users by query
+    /// `SearchUsers` finds users by query
     pub async fn search(&self, opt: SearchUsersOption) -> crate::Result<(Vec<User>, Response)> {
-        let path = format!("/users/search?{}", opt.query_encode());
+        let query = opt.query_encode();
+        let path = build_query_string("/users/search", &query);
         let (search_resp, response) = self
             .client()
             .get_parsed_response::<SearchUsersResponse, _>(

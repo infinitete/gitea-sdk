@@ -13,7 +13,7 @@ use crate::version::VERSION_1_15_0;
 impl<'a> super::ReposApi<'a> {
     // ── repo_collaborator.go (7 methods) ──────────────────────────
 
-    /// ListCollaborators list a repository's collaborators
+    /// `ListCollaborators` list a repository's collaborators
     pub async fn list_collaborators(
         &self,
         owner: &str,
@@ -32,7 +32,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// IsCollaborator check if a user is a collaborator of a repository
+    /// `IsCollaborator` check if a user is a collaborator of a repository
     pub async fn is_collaborator(
         &self,
         owner: &str,
@@ -52,7 +52,7 @@ impl<'a> super::ReposApi<'a> {
         Ok((status == 204, resp))
     }
 
-    /// GetCollaboratorPermission get collaborator permission of a repository
+    /// `GetCollaboratorPermission` get collaborator permission of a repository
     pub async fn get_collaborator_permission(
         &self,
         owner: &str,
@@ -94,7 +94,7 @@ impl<'a> super::ReposApi<'a> {
         }
     }
 
-    /// AddCollaborator add a user as a collaborator of a repository
+    /// `AddCollaborator` add a user as a collaborator of a repository
     pub async fn add_collaborator(
         &self,
         owner: &str,
@@ -120,7 +120,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// DeleteCollaborator remove a collaborator from a repository
+    /// `DeleteCollaborator` remove a collaborator from a repository
     pub async fn delete_collaborator(
         &self,
         owner: &str,
@@ -138,7 +138,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// GetReviewers get all users that can be requested to review in this repo
+    /// `GetReviewers` get all users that can be requested to review in this repo
     pub async fn get_reviewers(
         &self,
         owner: &str,
@@ -154,7 +154,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// GetAssignees get all users that have write access and can be assigned to issues
+    /// `GetAssignees` get all users that have write access and can be assigned to issues
     pub async fn get_assignees(
         &self,
         owner: &str,

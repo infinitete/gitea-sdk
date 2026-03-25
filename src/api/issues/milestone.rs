@@ -14,7 +14,7 @@ impl<'a> IssuesApi<'a> {
     // ── issue_milestone.go ────────────────────────────────────────
     // 8 methods
 
-    /// ListRepoMilestones list all the milestones of one repository
+    /// `ListRepoMilestones` list all the milestones of one repository
     pub async fn list_repo_milestones(
         &self,
         owner: &str,
@@ -33,7 +33,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// GetMilestone get one milestone by repo name and milestone id
+    /// `GetMilestone` get one milestone by repo name and milestone id
     pub async fn get_milestone(
         &self,
         owner: &str,
@@ -47,7 +47,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// GetMilestoneByName get one milestone by repo and milestone name
+    /// `GetMilestoneByName` get one milestone by repo and milestone name
     pub async fn get_milestone_by_name(
         &self,
         owner: &str,
@@ -64,7 +64,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// CreateMilestone create one milestone with options
+    /// `CreateMilestone` create one milestone with options
     pub async fn create_milestone(
         &self,
         owner: &str,
@@ -85,7 +85,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// EditMilestone modify milestone with options
+    /// `EditMilestone` modify milestone with options
     pub async fn edit_milestone(
         &self,
         owner: &str,
@@ -107,7 +107,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// EditMilestoneByName modify milestone with options
+    /// `EditMilestoneByName` modify milestone with options
     pub async fn edit_milestone_by_name(
         &self,
         owner: &str,
@@ -132,7 +132,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// DeleteMilestone delete one milestone by id
+    /// `DeleteMilestone` delete one milestone by id
     pub async fn delete_milestone(
         &self,
         owner: &str,
@@ -146,7 +146,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// DeleteMilestoneByName delete one milestone by name
+    /// `DeleteMilestoneByName` delete one milestone by name
     pub async fn delete_milestone_by_name(
         &self,
         owner: &str,

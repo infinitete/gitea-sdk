@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-//! Issue timeline and subscription types: TimelineComment, WatchInfo.
+//! Issue timeline and subscription types: `TimelineComment`, `WatchInfo`.
 
 use crate::{Deserialize, Serialize};
 use time::OffsetDateTime;
@@ -14,7 +14,7 @@ use crate::types::user::User;
 
 // ── issue_timeline.go ────────────────────────────────────────────
 
-/// TimelineComment represents a timeline comment on an issue
+/// `TimelineComment` represents a timeline comment on an issue
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Timeline Comment payload type.
 pub struct TimelineComment {
@@ -57,7 +57,7 @@ pub struct TimelineComment {
 
 // ── issue_subscription.go ────────────────────────────────────────
 
-/// WatchInfo represents the subscription state of an issue
+/// `WatchInfo` represents the subscription state of an issue
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Watch Info payload type.
 pub struct WatchInfo {

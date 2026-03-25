@@ -13,6 +13,7 @@ pub struct AdminApi<'a> {
 
 impl<'a> AdminApi<'a> {
     /// Create a new `AdminApi` view.
+    #[must_use]
     pub fn new(client: &'a Client) -> Self {
         Self { client }
     }

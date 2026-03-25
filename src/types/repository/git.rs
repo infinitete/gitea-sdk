@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-//! Git-related types (repo_tree.go, repo_refs.go, git_blob.go, repo_git_notes.go).
+//! Git-related types (`repo_tree.go`, `repo_refs.go`, `git_blob.go`, `repo_git_notes.go`).
 
 use crate::{Deserialize, Serialize};
 
@@ -11,7 +11,7 @@ use crate::types::serde_helpers::null_to_default;
 
 // ── repo_tree.go ────────────────────────────────────────────────
 
-/// GitEntry represents a git tree entry
+/// `GitEntry` represents a git tree entry
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Git Entry payload type.
 pub struct GitEntry {
@@ -24,7 +24,7 @@ pub struct GitEntry {
     pub url: String,
 }
 
-/// GitTreeResponse returns a git tree
+/// `GitTreeResponse` returns a git tree
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Git Tree Response payload type.
 pub struct GitTreeResponse {
@@ -40,7 +40,7 @@ pub struct GitTreeResponse {
 
 // ── repo_refs.go ────────────────────────────────────────────────
 
-/// GitObject represents a Git object
+/// `GitObject` represents a Git object
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Git Object payload type.
 pub struct GitObject {
@@ -63,7 +63,7 @@ pub struct Reference {
 
 // ── git_blob.go ─────────────────────────────────────────────────
 
-/// GitBlobResponse represents a git blob
+/// `GitBlobResponse` represents a git blob
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Git Blob Response payload type.
 pub struct GitBlobResponse {

@@ -12,7 +12,7 @@ use crate::version::{VERSION_1_13_0, VERSION_1_23_0};
 impl<'a> super::ReposApi<'a> {
     // ── repo_branch.go (5 methods) ────────────────────────────────
 
-    /// ListBranches list a repository's branches
+    /// `ListBranches` list a repository's branches
     pub async fn list_branches(
         &self,
         owner: &str,
@@ -31,7 +31,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// GetBranch get a single branch of a repository
+    /// `GetBranch` get a single branch of a repository
     pub async fn get_branch(
         &self,
         owner: &str,
@@ -49,7 +49,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// DeleteBranch delete a branch from a repository
+    /// `DeleteBranch` delete a branch from a repository
     pub async fn delete_branch(
         &self,
         owner: &str,
@@ -67,7 +67,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// UpdateBranch rename a branch in a repository
+    /// `UpdateBranch` rename a branch in a repository
     pub async fn update_branch(
         &self,
         owner: &str,
@@ -105,7 +105,7 @@ impl<'a> super::ReposApi<'a> {
         Ok((updated, resp))
     }
 
-    /// CreateBranch create a branch in a repository
+    /// `CreateBranch` create a branch in a repository
     pub async fn create_branch(
         &self,
         owner: &str,

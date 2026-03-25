@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 
 use crate::Response;
+use crate::internal::query::build_query_string;
 use crate::options::user::ListUserActivityFeedsOptions;
 use crate::pagination::QueryEncode;
 use crate::types::{Activity, UserHeatmapData};
@@ -12,7 +13,7 @@ use super::UsersApi;
 impl<'a> UsersApi<'a> {
     // ── user_heatmap.go ───────────────────────────────────────────────────
 
-    /// GetUserHeatmap gets a user's heatmap data.
+    /// `GetUserHeatmap` gets a user's heatmap data.
     pub async fn get_user_heatmap(
         &self,
         username: &str,
@@ -26,19 +27,16 @@ impl<'a> UsersApi<'a> {
 
     // ── user_activity_feeds.go ───────────────────────────────────────────
 
-    /// ListUserActivityFeeds lists a user's activity feeds.
+    /// `ListUserActivityFeeds` lists a user's activity feeds.
     pub async fn list_user_activity_feeds(
         &self,
         username: &str,
         opt: ListUserActivityFeedsOptions,
     ) -> crate::Result<(Vec<Activity>, Response)> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[username])?;
-        let mut path = format!("/users/{}/activities/feeds", escaped[0]);
         let query = opt.query_encode();
-        if !query.is_empty() {
-            path.push('?');
-            path.push_str(&query);
-        }
+        let base_path = format!("/users/{}/activities/feeds", escaped[0]);
+        let path = build_query_string(&base_path, &query);
         self.client()
             .get_parsed_response(reqwest::Method::GET, &path, None, None::<&str>)
             .await

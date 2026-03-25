@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-//! File-related types (repo_file.go, repo_file_ext.go).
+//! File-related types (`repo_file.go`, `repo_file_ext.go`).
 
 use crate::{Deserialize, Serialize};
 
@@ -12,7 +12,7 @@ use crate::types::serde_helpers::null_to_default;
 
 // ── repo_file.go ────────────────────────────────────────────────
 
-/// FileLinksResponse contains the links for a repo's file
+/// `FileLinksResponse` contains the links for a repo's file
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// File Links Response payload type.
 pub struct FileLinksResponse {
@@ -24,7 +24,7 @@ pub struct FileLinksResponse {
     pub html_url: Option<String>,
 }
 
-/// ContentsResponse contains information about a repo's entry's metadata and content
+/// `ContentsResponse` contains information about a repo's entry's metadata and content
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Contents Response payload type.
 pub struct ContentsResponse {
@@ -65,7 +65,7 @@ pub struct ContentsResponse {
     pub last_commit_sha: String,
 }
 
-/// FileCommitResponse contains information generated from a Git commit for a repo's file
+/// `FileCommitResponse` contains information generated from a Git commit for a repo's file
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// File Commit Response payload type.
 pub struct FileCommitResponse {
@@ -84,7 +84,7 @@ pub struct FileCommitResponse {
     pub tree: Option<CommitMeta>,
 }
 
-/// FileResponse contains information about a repo's file
+/// `FileResponse` contains information about a repo's file
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// File Response payload type.
 pub struct FileResponse {
@@ -98,7 +98,7 @@ pub struct FileResponse {
 
 // ── repo_file_ext.go ────────────────────────────────────────────
 
-/// ContentsExtResponse contains extended information about a repo's contents
+/// `ContentsExtResponse` contains extended information about a repo's contents
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Contents Ext Response payload type.
 pub struct ContentsExtResponse {

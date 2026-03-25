@@ -9,6 +9,7 @@ pub struct ReposApi<'a> {
 }
 
 impl<'a> ReposApi<'a> {
+    #[must_use]
     pub fn new(client: &'a Client) -> Self {
         Self { client }
     }

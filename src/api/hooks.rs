@@ -18,6 +18,7 @@ pub struct HooksApi<'a> {
 
 impl<'a> HooksApi<'a> {
     /// Create a new `HooksApi` view.
+    #[must_use]
     pub fn new(client: &'a Client) -> Self {
         Self { client }
     }
@@ -28,7 +29,7 @@ impl<'a> HooksApi<'a> {
 
     // ── org hooks ─────────────────────────────────────────────────────
 
-    /// ListOrgHooks list all the hooks of one organization
+    /// `ListOrgHooks` list all the hooks of one organization
     pub async fn list_org_hooks(
         &self,
         org: &str,
@@ -41,7 +42,7 @@ impl<'a> HooksApi<'a> {
             .await
     }
 
-    /// GetOrgHook get a hook of an organization
+    /// `GetOrgHook` get a hook of an organization
     pub async fn get_org_hook(&self, org: &str, id: i64) -> crate::Result<(Hook, Response)> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[org])?;
         let path = format!("/orgs/{}/hooks/{id}", escaped[0]);
@@ -50,7 +51,7 @@ impl<'a> HooksApi<'a> {
             .await
     }
 
-    /// CreateOrgHook create one hook for an organization, with options
+    /// `CreateOrgHook` create one hook for an organization, with options
     pub async fn create_org_hook(
         &self,
         org: &str,
@@ -70,7 +71,7 @@ impl<'a> HooksApi<'a> {
             .await
     }
 
-    /// EditOrgHook modify one hook of an organization, with hook id and options
+    /// `EditOrgHook` modify one hook of an organization, with hook id and options
     pub async fn edit_org_hook(
         &self,
         org: &str,
@@ -90,7 +91,7 @@ impl<'a> HooksApi<'a> {
             .await
     }
 
-    /// DeleteOrgHook delete one hook from an organization, with hook id
+    /// `DeleteOrgHook` delete one hook from an organization, with hook id
     pub async fn delete_org_hook(&self, org: &str, id: i64) -> crate::Result<Response> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[org])?;
         let path = format!("/orgs/{}/hooks/{id}", escaped[0]);
@@ -101,7 +102,7 @@ impl<'a> HooksApi<'a> {
 
     // ── repo hooks ────────────────────────────────────────────────────
 
-    /// ListRepoHooks list all the hooks of one repository
+    /// `ListRepoHooks` list all the hooks of one repository
     pub async fn list_repo_hooks(
         &self,
         owner: &str,
@@ -120,7 +121,7 @@ impl<'a> HooksApi<'a> {
             .await
     }
 
-    /// GetRepoHook get a hook of a repository
+    /// `GetRepoHook` get a hook of a repository
     pub async fn get_repo_hook(
         &self,
         owner: &str,
@@ -134,7 +135,7 @@ impl<'a> HooksApi<'a> {
             .await
     }
 
-    /// CreateRepoHook create one hook for a repository, with options
+    /// `CreateRepoHook` create one hook for a repository, with options
     pub async fn create_repo_hook(
         &self,
         owner: &str,
@@ -154,7 +155,7 @@ impl<'a> HooksApi<'a> {
             .await
     }
 
-    /// EditRepoHook modify one hook of a repository, with hook id and options
+    /// `EditRepoHook` modify one hook of a repository, with hook id and options
     pub async fn edit_repo_hook(
         &self,
         owner: &str,
@@ -175,7 +176,7 @@ impl<'a> HooksApi<'a> {
             .await
     }
 
-    /// DeleteRepoHook delete one hook from a repository, with hook id
+    /// `DeleteRepoHook` delete one hook from a repository, with hook id
     pub async fn delete_repo_hook(
         &self,
         owner: &str,
@@ -191,7 +192,7 @@ impl<'a> HooksApi<'a> {
 
     // ── user hooks ────────────────────────────────────────────────────
 
-    /// ListMyHooks list all the hooks of the authenticated user
+    /// `ListMyHooks` list all the hooks of the authenticated user
     pub async fn list_my_hooks(
         &self,
         opt: ListHooksOptions,
@@ -202,7 +203,7 @@ impl<'a> HooksApi<'a> {
             .await
     }
 
-    /// GetMyHook get a hook of the authenticated user
+    /// `GetMyHook` get a hook of the authenticated user
     pub async fn get_my_hook(&self, id: i64) -> crate::Result<(Hook, Response)> {
         let path = format!("/user/hooks/{id}");
         self.client()
@@ -210,7 +211,7 @@ impl<'a> HooksApi<'a> {
             .await
     }
 
-    /// CreateMyHook create one hook for the authenticated user, with options
+    /// `CreateMyHook` create one hook for the authenticated user, with options
     pub async fn create_my_hook(&self, opt: CreateHookOption) -> crate::Result<(Hook, Response)> {
         opt.validate()?;
         let body = json_body(&opt)?;
@@ -224,7 +225,7 @@ impl<'a> HooksApi<'a> {
             .await
     }
 
-    /// EditMyHook modify one hook of the authenticated user, with hook id and options
+    /// `EditMyHook` modify one hook of the authenticated user, with hook id and options
     pub async fn edit_my_hook(&self, id: i64, opt: EditHookOption) -> crate::Result<Response> {
         let body = json_body(&opt)?;
         let path = format!("/user/hooks/{id}");
@@ -238,7 +239,7 @@ impl<'a> HooksApi<'a> {
             .await
     }
 
-    /// DeleteMyHook delete one hook from the authenticated user, with hook id
+    /// `DeleteMyHook` delete one hook from the authenticated user, with hook id
     pub async fn delete_my_hook(&self, id: i64) -> crate::Result<Response> {
         let path = format!("/user/hooks/{id}");
         self.client()

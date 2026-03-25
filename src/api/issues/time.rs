@@ -14,7 +14,7 @@ impl<'a> IssuesApi<'a> {
     // ── issue_tracked_time.go ─────────────────────────────────────
     // 7 methods
 
-    /// ListRepoTrackedTimes list tracked times of a repository
+    /// `ListRepoTrackedTimes` list tracked times of a repository
     pub async fn list_repo_tracked_times(
         &self,
         owner: &str,
@@ -38,7 +38,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// ListMyTrackedTimes list tracked times of the current user with pagination and filtering
+    /// `ListMyTrackedTimes` list tracked times of the current user with pagination and filtering
     pub async fn list_my_tracked_times(
         &self,
         opt: ListTrackedTimesOptions,
@@ -54,7 +54,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// AddTime adds time to issue with the given index
+    /// `AddTime` adds time to issue with the given index
     pub async fn add_time(
         &self,
         owner: &str,
@@ -76,7 +76,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// ListIssueTrackedTimes list tracked times of a single issue
+    /// `ListIssueTrackedTimes` list tracked times of a single issue
     pub async fn list_issue_tracked_times(
         &self,
         owner: &str,
@@ -101,7 +101,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// ResetIssueTime reset tracked time of a single issue
+    /// `ResetIssueTime` reset tracked time of a single issue
     pub async fn reset_issue_time(
         &self,
         owner: &str,
@@ -120,7 +120,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// DeleteTime delete a specific tracked time by id
+    /// `DeleteTime` delete a specific tracked time by id
     pub async fn delete_time(
         &self,
         owner: &str,

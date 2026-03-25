@@ -3,12 +3,12 @@
 // license that can be found in the LICENSE file.
 
 use crate::internal::request::urlencoding;
-use crate::pagination::{ListOptions, QueryEncode};
+use crate::pagination::{ListOptions, QueryEncode, push_query_segment};
 use crate::{Deserialize, Serialize};
 
 // ── repo_mirror.go ──────────────────────────────────────────────
 
-/// CreatePushMirrorOption options for creating a push mirror
+/// `CreatePushMirrorOption` options for creating a push mirror
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Create Push Mirror Option.
 pub struct CreatePushMirrorOption {
@@ -23,7 +23,7 @@ pub struct CreatePushMirrorOption {
     pub sync_on_commit: bool,
 }
 
-/// ListPushMirrorOptions options for listing push mirrors
+/// `ListPushMirrorOptions` options for listing push mirrors
 #[derive(Debug, Clone, Default)]
 /// Options for List Push Mirror Option.
 pub struct ListPushMirrorOptions {
@@ -38,7 +38,7 @@ impl QueryEncode for ListPushMirrorOptions {
 
 // ── repo_topics.go ──────────────────────────────────────────────
 
-/// ListRepoTopicsOptions options for listing repo's topics
+/// `ListRepoTopicsOptions` options for listing repo's topics
 #[derive(Debug, Clone, Default)]
 /// Options for List Repo Topics Option.
 pub struct ListRepoTopicsOptions {
@@ -53,7 +53,7 @@ impl QueryEncode for ListRepoTopicsOptions {
 
 // ── repo_stars.go ───────────────────────────────────────────────
 
-/// ListStargazersOptions options for listing a repository's stargazers
+/// `ListStargazersOptions` options for listing a repository's stargazers
 #[derive(Debug, Clone, Default)]
 /// Options for List Stargazers Option.
 pub struct ListStargazersOptions {
@@ -68,7 +68,7 @@ impl QueryEncode for ListStargazersOptions {
 
 // ── repo_commit.go ──────────────────────────────────────────────
 
-/// ListCommitOptions list commit options
+/// `ListCommitOptions` list commit options
 #[derive(Debug, Clone, Default)]
 /// Options for List Commit Option.
 pub struct ListCommitOptions {
@@ -86,16 +86,16 @@ impl QueryEncode for ListCommitOptions {
         let mut out = self.list_options.query_encode();
 
         if !self.sha.is_empty() {
-            out.push_str(&format!("&sha={}", urlencoding(&self.sha)));
+            push_query_segment(&mut out, &format!("sha={}", urlencoding(&self.sha)));
         }
         if !self.path.is_empty() {
-            out.push_str(&format!("&path={}", urlencoding(&self.path)));
+            push_query_segment(&mut out, &format!("path={}", urlencoding(&self.path)));
         }
-        out.push_str(&format!("&stat={}", self.stat));
-        out.push_str(&format!("&verification={}", self.verification));
-        out.push_str(&format!("&files={}", self.files));
+        push_query_segment(&mut out, &format!("stat={}", self.stat));
+        push_query_segment(&mut out, &format!("verification={}", self.verification));
+        push_query_segment(&mut out, &format!("files={}", self.files));
         if !self.not.is_empty() {
-            out.push_str(&format!("&not={}", urlencoding(&self.not)));
+            push_query_segment(&mut out, &format!("not={}", urlencoding(&self.not)));
         }
 
         out
@@ -104,7 +104,7 @@ impl QueryEncode for ListCommitOptions {
 
 // ── repo_tree.go ────────────────────────────────────────────────
 
-/// ListTreeOptions options for listing repository tree
+/// `ListTreeOptions` options for listing repository tree
 #[derive(Debug, Clone, Default)]
 /// Options for List Tree Option.
 pub struct ListTreeOptions {
@@ -120,7 +120,7 @@ impl QueryEncode for ListTreeOptions {
         let mut out = self.list_options.query_encode();
 
         if self.recursive {
-            out.push_str("&recursive=1");
+            push_query_segment(&mut out, "recursive=1");
         }
 
         out
@@ -129,7 +129,7 @@ impl QueryEncode for ListTreeOptions {
 
 // ── fork.go ─────────────────────────────────────────────────────
 
-/// ListForksOptions options for listing repository's forks
+/// `ListForksOptions` options for listing repository's forks
 #[derive(Debug, Clone, Default)]
 /// Options for List Forks Option.
 pub struct ListForksOptions {
@@ -142,7 +142,7 @@ impl QueryEncode for ListForksOptions {
     }
 }
 
-/// CreateForkOption options for creating a fork
+/// `CreateForkOption` options for creating a fork
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Create Fork Option.
 pub struct CreateForkOption {
@@ -154,7 +154,7 @@ pub struct CreateForkOption {
 
 // ── git_hook.go ─────────────────────────────────────────────────
 
-/// ListRepoGitHooksOptions options for listing repository's githooks
+/// `ListRepoGitHooksOptions` options for listing repository's githooks
 #[derive(Debug, Clone, Default)]
 /// Options for List Repo Git Hooks Option.
 pub struct ListRepoGitHooksOptions {
@@ -167,7 +167,7 @@ impl QueryEncode for ListRepoGitHooksOptions {
     }
 }
 
-/// EditGitHookOption options when modifying one Git hook
+/// `EditGitHookOption` options when modifying one Git hook
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Edit Git Hook Option.
 pub struct EditGitHookOption {
@@ -176,7 +176,7 @@ pub struct EditGitHookOption {
 
 // ── repo_git_notes.go ───────────────────────────────────────────
 
-/// GetRepoNoteOptions options for getting a note
+/// `GetRepoNoteOptions` options for getting a note
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 /// Options for Get Repo Note Option.
 pub struct GetRepoNoteOptions {

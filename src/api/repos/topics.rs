@@ -10,7 +10,7 @@ use crate::pagination::QueryEncode;
 impl<'a> super::ReposApi<'a> {
     // ── repo_topics.go (4 methods) ────────────────────────────────
 
-    /// ListTopics list all repository's topics
+    /// `ListTopics` list all repository's topics
     pub async fn list_topics(
         &self,
         owner: &str,
@@ -36,7 +36,7 @@ impl<'a> super::ReposApi<'a> {
         Ok((list.topics, resp))
     }
 
-    /// SetTopics replace the list of a repository's topics
+    /// `SetTopics` replace the list of a repository's topics
     pub async fn set_topics(
         &self,
         owner: &str,
@@ -56,7 +56,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// AddTopic add a topic to a repository
+    /// `AddTopic` add a topic to a repository
     pub async fn add_topic(&self, owner: &str, repo: &str, topic: &str) -> crate::Result<Response> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[owner, repo, topic])?;
         let path = format!("/repos/{}/{}/topics/{}", escaped[0], escaped[1], escaped[2]);
@@ -65,7 +65,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// DeleteTopic delete a topic from a repository
+    /// `DeleteTopic` delete a topic from a repository
     pub async fn delete_topic(
         &self,
         owner: &str,

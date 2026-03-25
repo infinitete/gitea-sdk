@@ -6,7 +6,7 @@
 
 use crate::{Deserialize, Serialize};
 
-/// UserSettings represents user settings
+/// `UserSettings` represents user settings
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// User Settings payload type.
 pub struct UserSettings {

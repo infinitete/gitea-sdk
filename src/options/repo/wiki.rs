@@ -7,7 +7,7 @@ use crate::{Deserialize, Serialize};
 
 // ── repo_wiki.go ────────────────────────────────────────────────
 
-/// CreateWikiPageOptions options for creating or editing a wiki page
+/// `CreateWikiPageOptions` options for creating or editing a wiki page
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 /// Options for Create Wiki Page Option.
 pub struct CreateWikiPageOptions {
@@ -17,7 +17,7 @@ pub struct CreateWikiPageOptions {
     pub message: String,
 }
 
-/// ListWikiPagesOptions options for listing wiki pages
+/// `ListWikiPagesOptions` options for listing wiki pages
 #[derive(Debug, Clone, Default)]
 /// Options for List Wiki Pages Option.
 pub struct ListWikiPagesOptions {
@@ -30,7 +30,7 @@ impl QueryEncode for ListWikiPagesOptions {
     }
 }
 
-/// ListWikiPageRevisionsOptions options for listing wiki page revisions
+/// `ListWikiPageRevisionsOptions` options for listing wiki page revisions
 #[derive(Debug, Clone, Default)]
 /// Options for List Wiki Page Revisions Option.
 pub struct ListWikiPageRevisionsOptions {

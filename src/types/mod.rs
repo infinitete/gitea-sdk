@@ -4,104 +4,62 @@
 
 //! Entity types returned by the Gitea API, organized by resource.
 
-#[allow(unused_imports)]
 #[doc(hidden)]
-pub use action::{
-    ActionTask, ActionTaskResponse, ActionWorkflowJob, ActionWorkflowJobsResponse,
-    ActionWorkflowRun, ActionWorkflowRunsResponse, ActionWorkflowStep,
-};
-#[allow(unused_imports)]
+mod reexports {
+    pub use super::action::{
+        ActionTask, ActionTaskResponse, ActionWorkflowJob, ActionWorkflowJobsResponse,
+        ActionWorkflowRun, ActionWorkflowRunsResponse, ActionWorkflowStep,
+    };
+    pub use super::activity::Activity;
+    pub use super::badge::Badge;
+    pub use super::comment::Comment;
+    pub use super::cron_task::CronTask;
+    pub use super::hook::Hook;
+    pub use super::issue::{
+        Issue, IssueBlockedBy, IssueFormElement, IssueFormElementAttributes,
+        IssueFormElementValidations, IssueMeta, IssueTemplate, PullRequestMeta, RepositoryMeta,
+        StopWatch, TimelineComment, TrackedTime, WatchInfo,
+    };
+    pub use super::label::Label;
+    pub use super::license::{LicenseTemplateInfo, LicensesTemplateListEntry};
+    pub use super::milestone::Milestone;
+    pub use super::node_info::{
+        GitignoreTemplateInfo, LabelTemplate, NodeInfo, NodeInfoServices, NodeInfoSoftware,
+        NodeInfoUsage, NodeInfoUsageUsers,
+    };
+    pub use super::notification::{NotificationThread, NotifySubject};
+    pub use super::oauth2::Oauth2;
+    pub use super::organization::{OrgPermissions, Organization};
+    pub use super::package::{Package, PackageFile};
+    pub use super::pull_request::{
+        ChangedFile, PRBranchInfo, PRBranchInfoRepo, PullRequest, PullReview, PullReviewComment,
+    };
+    pub use super::reaction::Reaction;
+    pub use super::release::{Attachment, Release};
+    pub use super::repository::{
+        AnnotatedTag, AnnotatedTagObject, Branch, BranchProtection, CollaboratorPermissionResult,
+        Commit, CommitAffectedFiles, CommitDateOptions, CommitMeta, CommitStats, CommitUser,
+        Compare, ContentsExtResponse, ContentsResponse, DeployKey, ExternalTracker, ExternalWiki,
+        FileCommitResponse, FileLinksResponse, FileResponse, GitBlobResponse, GitEntry, GitHook,
+        GitObject, GitTreeResponse, Identity, InternalTracker, Note, PayloadCommit,
+        PayloadCommitVerification, PayloadUser, Permission, PushMirrorResponse, Reference,
+        RepoActionVariable, RepoTransfer, Repository, Tag, TagProtection, WikiCommit,
+        WikiCommitList, WikiPage, WikiPageMetaData,
+    };
+    pub use super::secret::Secret;
+    pub use super::settings::{
+        GlobalAPISettings, GlobalAttachmentSettings, GlobalRepoSettings, GlobalUISettings,
+    };
+    pub use super::status::{CombinedStatus, Status};
+    pub use super::team::Team;
+    pub use super::user::{
+        AccessToken, Email, GPGKey, GPGKeyEmail, PublicKey, User, UserHeatmapData,
+    };
+    pub use super::user_settings::UserSettings;
+}
+
 #[doc(hidden)]
-pub use activity::Activity;
-#[allow(unused_imports)]
-#[doc(hidden)]
-pub use badge::Badge;
-#[allow(unused_imports)]
-#[doc(hidden)]
-pub use comment::Comment;
-#[allow(unused_imports)]
-#[doc(hidden)]
-pub use cron_task::CronTask;
-#[allow(unused_imports)]
-#[doc(hidden)]
-pub use hook::Hook;
-#[allow(unused_imports)]
-#[doc(hidden)]
-pub use issue::{
-    Issue, IssueBlockedBy, IssueFormElement, IssueFormElementAttributes,
-    IssueFormElementValidations, IssueMeta, IssueTemplate, PullRequestMeta, RepositoryMeta,
-    StopWatch, TimelineComment, TrackedTime, WatchInfo,
-};
-#[allow(unused_imports)]
-#[doc(hidden)]
-pub use label::Label;
-#[allow(unused_imports)]
-#[doc(hidden)]
-pub use license::{LicenseTemplateInfo, LicensesTemplateListEntry};
-#[allow(unused_imports)]
-#[doc(hidden)]
-pub use milestone::Milestone;
-#[allow(unused_imports)]
-#[doc(hidden)]
-pub use node_info::{
-    GitignoreTemplateInfo, LabelTemplate, NodeInfo, NodeInfoServices, NodeInfoSoftware,
-    NodeInfoUsage, NodeInfoUsageUsers,
-};
-#[allow(unused_imports)]
-#[doc(hidden)]
-pub use notification::{NotificationThread, NotifySubject};
-#[allow(unused_imports)]
-#[doc(hidden)]
-pub use oauth2::Oauth2;
-#[allow(unused_imports)]
-#[doc(hidden)]
-pub use organization::{OrgPermissions, Organization};
-#[allow(unused_imports)]
-#[doc(hidden)]
-pub use package::{Package, PackageFile};
-#[allow(unused_imports)]
-#[doc(hidden)]
-pub use pull_request::{
-    ChangedFile, PRBranchInfo, PRBranchInfoRepo, PullRequest, PullReview, PullReviewComment,
-};
-#[allow(unused_imports)]
-#[doc(hidden)]
-pub use reaction::Reaction;
-#[allow(unused_imports)]
-#[doc(hidden)]
-pub use release::{Attachment, Release};
-#[allow(unused_imports)]
-#[doc(hidden)]
-pub use repository::{
-    AnnotatedTag, AnnotatedTagObject, Branch, BranchProtection, CollaboratorPermissionResult,
-    Commit, CommitAffectedFiles, CommitDateOptions, CommitMeta, CommitStats, CommitUser, Compare,
-    ContentsExtResponse, ContentsResponse, DeployKey, ExternalTracker, ExternalWiki,
-    FileCommitResponse, FileLinksResponse, FileResponse, GitBlobResponse, GitEntry, GitHook,
-    GitObject, GitTreeResponse, Identity, InternalTracker, Note, PayloadCommit,
-    PayloadCommitVerification, PayloadUser, Permission, PushMirrorResponse, Reference,
-    RepoActionVariable, RepoTransfer, Repository, Tag, TagProtection, WikiCommit, WikiCommitList,
-    WikiPage, WikiPageMetaData,
-};
-#[allow(unused_imports)]
-#[doc(hidden)]
-pub use secret::Secret;
-#[allow(unused_imports)]
-#[doc(hidden)]
-pub use settings::{
-    GlobalAPISettings, GlobalAttachmentSettings, GlobalRepoSettings, GlobalUISettings,
-};
-#[allow(unused_imports)]
-#[doc(hidden)]
-pub use status::{CombinedStatus, Status};
-#[allow(unused_imports)]
-#[doc(hidden)]
-pub use team::Team;
-#[allow(unused_imports)]
-#[doc(hidden)]
-pub use user::{AccessToken, Email, GPGKey, GPGKeyEmail, PublicKey, User, UserHeatmapData};
-#[allow(unused_imports)]
-#[doc(hidden)]
-pub use user_settings::UserSettings;
+pub use reexports::*;
 
 pub mod enums;
 pub mod serde_helpers;

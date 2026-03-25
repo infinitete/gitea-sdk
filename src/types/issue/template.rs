@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-//! Issue template types: IssueTemplate, IssueFormElement, IssueFormElementAttributes, IssueFormElementValidations.
+//! Issue template types: `IssueTemplate`, `IssueFormElement`, `IssueFormElementAttributes`, `IssueFormElementValidations`.
 
 use crate::{Deserialize, Serialize};
 
@@ -11,7 +11,7 @@ use crate::types::serde_helpers::null_to_default;
 
 // ── issue_template.go ────────────────────────────────────────────
 
-/// IssueTemplate provides metadata and content on an issue template.
+/// `IssueTemplate` provides metadata and content on an issue template.
 /// There are two types of issue templates: .Markdown- and .Form-based.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Issue Template payload type.
@@ -33,7 +33,7 @@ pub struct IssueTemplate {
     pub markdown_content: String,
 }
 
-/// IssueFormElement describes a part of a IssueTemplate form
+/// `IssueFormElement` describes a part of a `IssueTemplate` form
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Issue Form Element payload type.
 pub struct IssueFormElement {
@@ -44,7 +44,7 @@ pub struct IssueFormElement {
     pub validations: IssueFormElementValidations,
 }
 
-/// IssueFormElementAttributes contains the combined set of attributes available on all element types.
+/// `IssueFormElementAttributes` contains the combined set of attributes available on all element types.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Issue Form Element Attributes payload type.
 pub struct IssueFormElementAttributes {
@@ -70,7 +70,7 @@ pub struct IssueFormElementAttributes {
     pub multiple: bool,
 }
 
-/// IssueFormElementValidations contains the combined set of validations available on all element types.
+/// `IssueFormElementValidations` contains the combined set of validations available on all element types.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 /// Issue Form Element Validations payload type.
 pub struct IssueFormElementValidations {

@@ -10,7 +10,7 @@ use crate::types::ChangedFile;
 use crate::version::VERSION_1_14_0;
 
 impl<'a> super::PullsApi<'a> {
-    /// CreateReviewRequests create review requests to a pull request.
+    /// `CreateReviewRequests` create review requests to a pull request.
     pub async fn create_review_requests(
         &self,
         owner: &str,
@@ -37,7 +37,7 @@ impl<'a> super::PullsApi<'a> {
             .await
     }
 
-    /// DeleteReviewRequests delete review requests to a pull request.
+    /// `DeleteReviewRequests` delete review requests to a pull request.
     pub async fn delete_review_requests(
         &self,
         owner: &str,
@@ -64,7 +64,7 @@ impl<'a> super::PullsApi<'a> {
             .await
     }
 
-    /// ListPullRequestCommits list commits for a pull request
+    /// `ListPullRequestCommits` list commits for a pull request
     pub async fn list_commits(
         &self,
         owner: &str,
@@ -84,7 +84,7 @@ impl<'a> super::PullsApi<'a> {
             .await
     }
 
-    /// ListPullRequestFiles list changed files for a pull request
+    /// `ListPullRequestFiles` list changed files for a pull request
     pub async fn list_files(
         &self,
         owner: &str,
@@ -104,7 +104,7 @@ impl<'a> super::PullsApi<'a> {
             .await
     }
 
-    /// DismissPullReview dismiss a review for a pull request.
+    /// `DismissPullReview` dismiss a review for a pull request.
     pub async fn dismiss_review(
         &self,
         owner: &str,
@@ -132,7 +132,7 @@ impl<'a> super::PullsApi<'a> {
             .await
     }
 
-    /// UnDismissPullReview cancel to dismiss a review for a pull request.
+    /// `UnDismissPullReview` cancel to dismiss a review for a pull request.
     pub async fn undismiss_review(
         &self,
         owner: &str,
@@ -175,7 +175,7 @@ pub struct PullRequestCommit {
     pub parents: Vec<CommitMeta>,
 }
 
-/// CommitMeta contains meta information of a commit in Gitea format
+/// `CommitMeta` contains meta information of a commit in Gitea format
 #[derive(Debug, Clone, serde::Deserialize)]
 pub struct CommitMeta {
     #[serde(rename = "sha", default)]
@@ -188,7 +188,7 @@ pub struct CommitMeta {
     pub message: String,
 }
 
-/// CommitUser contains information of a user in a commit
+/// `CommitUser` contains information of a user in a commit
 #[derive(Debug, Clone, serde::Deserialize)]
 pub struct CommitUser {
     pub name: String,

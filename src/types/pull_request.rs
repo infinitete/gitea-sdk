@@ -17,9 +17,9 @@ use crate::types::enums::{ReviewStateType, StateType};
 
 // ── pull.go ─────────────────────────────────────────────────────
 
-/// PRBranchInfo information about a branch
+/// `PRBranchInfo` information about a branch
 #[derive(Debug, Clone, Serialize, Deserialize)]
-/// PRBranch Info payload type.
+/// `PRBranch` Info payload type.
 pub struct PRBranchInfo {
     #[serde(rename = "label")]
     pub name: String,
@@ -33,9 +33,9 @@ pub struct PRBranchInfo {
     pub repository: Option<Box<PRBranchInfoRepo>>,
 }
 
-/// PRBranchInfoRepo repository info embedded in PR branch info
+/// `PRBranchInfoRepo` repository info embedded in PR branch info
 #[derive(Debug, Clone, Serialize, Deserialize)]
-/// PRBranch Info Repo payload type.
+/// `PRBranch` Info Repo payload type.
 pub struct PRBranchInfoRepo {
     pub id: i64,
     pub name: String,
@@ -45,7 +45,7 @@ pub struct PRBranchInfoRepo {
     pub owner: Option<User>,
 }
 
-/// PullRequest represents a pull request
+/// `PullRequest` represents a pull request
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Pull Request payload type.
 pub struct PullRequest {
@@ -148,7 +148,7 @@ pub struct PullRequest {
     pub pin_order: i32,
 }
 
-/// ChangedFile is a changed file in a diff
+/// `ChangedFile` is a changed file in a diff
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Changed File payload type.
 pub struct ChangedFile {
@@ -169,7 +169,7 @@ pub struct ChangedFile {
 
 // ── pull_review.go ───────────────────────────────────────────────
 
-/// PullReview represents a pull request review
+/// `PullReview` represents a pull request review
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Pull Review payload type.
 pub struct PullReview {
@@ -202,7 +202,7 @@ pub struct PullReview {
     pub html_pull_url: String,
 }
 
-/// PullReviewComment represents a comment on a pull request review
+/// `PullReviewComment` represents a comment on a pull request review
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Pull Review Comment payload type.
 pub struct PullReviewComment {

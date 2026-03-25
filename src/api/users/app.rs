@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 
 use crate::Response;
+use crate::internal::query::build_query_string;
 use crate::internal::request::{json_body, json_header};
 use crate::options::user::*;
 use crate::pagination::QueryEncode;
@@ -13,7 +14,7 @@ use super::UsersApi;
 impl<'a> UsersApi<'a> {
     // ── user_app.go ────────────────────────────────────────────────────
 
-    /// ListAccessTokens lists all the access tokens of user (BasicAuth required).
+    /// `ListAccessTokens` lists all the access tokens of user (`BasicAuth` required).
     pub async fn list_access_tokens(
         &self,
         username: &str,
@@ -25,7 +26,9 @@ impl<'a> UsersApi<'a> {
             ));
         }
         let escaped = crate::internal::escape::validate_and_escape_segments(&[username])?;
-        let path = format!("/users/{}/tokens?{}", escaped[0], opt.query_encode());
+        let query = opt.query_encode();
+        let base_path = format!("/users/{}/tokens", escaped[0]);
+        let path = build_query_string(&base_path, &query);
         self.client()
             .get_parsed_response(
                 reqwest::Method::GET,
@@ -36,7 +39,7 @@ impl<'a> UsersApi<'a> {
             .await
     }
 
-    /// CreateAccessToken create one access token with options (BasicAuth required).
+    /// `CreateAccessToken` create one access token with options (`BasicAuth` required).
     pub async fn create_access_token(
         &self,
         username: &str,
@@ -61,7 +64,7 @@ impl<'a> UsersApi<'a> {
             .await
     }
 
-    /// DeleteAccessToken delete token by name (BasicAuth required).
+    /// `DeleteAccessToken` delete token by name (`BasicAuth` required).
     pub async fn delete_access_token(
         &self,
         username: &str,

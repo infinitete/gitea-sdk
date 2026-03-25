@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-//! Wiki-related types (repo_wiki.go).
+//! Wiki-related types (`repo_wiki.go`).
 
 use crate::{Deserialize, Serialize};
 
@@ -11,7 +11,7 @@ use crate::types::serde_helpers::null_to_default;
 
 // ── repo_wiki.go ────────────────────────────────────────────────
 
-/// WikiCommit represents a wiki commit/revision
+/// `WikiCommit` represents a wiki commit/revision
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Wiki Commit payload type.
 pub struct WikiCommit {
@@ -23,7 +23,7 @@ pub struct WikiCommit {
     pub commiter: Option<CommitUser>,
 }
 
-/// WikiPage represents a wiki page
+/// `WikiPage` represents a wiki page
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Wiki Page payload type.
 pub struct WikiPage {
@@ -42,7 +42,7 @@ pub struct WikiPage {
     pub last_commit: Option<WikiCommit>,
 }
 
-/// WikiPageMetaData represents metadata for a wiki page (without content)
+/// `WikiPageMetaData` represents metadata for a wiki page (without content)
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Wiki Page Meta Data payload type.
 pub struct WikiPageMetaData {
@@ -55,7 +55,7 @@ pub struct WikiPageMetaData {
     pub last_commit: Option<WikiCommit>,
 }
 
-/// WikiCommitList represents a list of wiki commits
+/// `WikiCommitList` represents a list of wiki commits
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Wiki Commit List payload type.
 pub struct WikiCommitList {

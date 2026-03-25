@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-//! Deploy key types (repo_key.go).
+//! Deploy key types (`repo_key.go`).
 
 use crate::{Deserialize, Serialize};
 use time::OffsetDateTime;
@@ -12,7 +12,7 @@ use super::core::Repository;
 
 // ── repo_key.go ─────────────────────────────────────────────────
 
-/// DeployKey a deploy key
+/// `DeployKey` a deploy key
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Deploy Key payload type.
 pub struct DeployKey {

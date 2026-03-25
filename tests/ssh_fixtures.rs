@@ -1,25 +1,31 @@
 use ssh_key::{HashAlg, PrivateKey};
 
+#[must_use]
 pub fn ed25519_private_key_bytes() -> &'static [u8] {
     include_bytes!("ssh_fixtures/id_ed25519_test")
 }
 
+#[must_use]
 pub fn rsa_private_key_bytes() -> &'static [u8] {
     include_bytes!("ssh_fixtures/id_rsa_test")
 }
 
+#[must_use]
 pub fn rsa_passphrase_private_key_bytes() -> &'static [u8] {
     include_bytes!("ssh_fixtures/id_rsa_passphrase_test")
 }
 
+#[must_use]
 pub fn rsa_passphrase() -> &'static str {
     "testpassphrase"
 }
 
+#[must_use]
 pub fn ed25519_public_key_bytes() -> &'static [u8] {
     include_bytes!("ssh_fixtures/id_ed25519_test.pub")
 }
 
+#[must_use]
 pub fn rsa_public_key_bytes() -> &'static [u8] {
     include_bytes!("ssh_fixtures/id_rsa_test.pub")
 }

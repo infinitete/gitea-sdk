@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-use crate::pagination::{ListOptions, QueryEncode};
+use crate::pagination::{ListOptions, QueryEncode, push_query_segment};
 use crate::types::enums::VisibleType;
 use crate::{Deserialize, Serialize};
 
@@ -118,7 +118,7 @@ impl QueryEncode for ListOrgActivityFeedsOptions {
     fn query_encode(&self) -> String {
         let mut out = self.list_options.query_encode();
         if let Some(date) = &self.date {
-            out.push_str(&format!("&date={}", percent_encode(date)));
+            push_query_segment(&mut out, &format!("date={}", percent_encode(date)));
         }
         out
     }
@@ -134,7 +134,7 @@ impl QueryEncode for ListTeamActivityFeedsOptions {
     fn query_encode(&self) -> String {
         let mut out = self.list_options.query_encode();
         if let Some(date) = &self.date {
-            out.push_str(&format!("&date={}", percent_encode(date)));
+            push_query_segment(&mut out, &format!("date={}", percent_encode(date)));
         }
         out
     }

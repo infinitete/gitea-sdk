@@ -24,7 +24,7 @@ struct TeamSearchResults {
 impl<'a> OrgsApi<'a> {
     // ── org_team.go ───────────────────────────────────────────────────────
 
-    /// ListOrgTeams lists all teams of an organization
+    /// `ListOrgTeams` lists all teams of an organization
     pub async fn list_org_teams(
         &self,
         org: &str,
@@ -37,7 +37,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// ListMyTeams lists all the teams of the current user
+    /// `ListMyTeams` lists all the teams of the current user
     pub async fn list_my_teams(
         &self,
         opt: ListTeamsOptions,
@@ -48,7 +48,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// GetTeam gets a team by ID
+    /// `GetTeam` gets a team by ID
     pub async fn get_team(&self, id: i64) -> crate::Result<(Team, Response)> {
         let path = format!("/teams/{id}");
         self.client()
@@ -56,7 +56,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// SearchOrgTeams search for teams in an org
+    /// `SearchOrgTeams` search for teams in an org
     pub async fn search_org_teams(
         &self,
         org: &str,
@@ -82,7 +82,7 @@ impl<'a> OrgsApi<'a> {
         Ok((result.data, response))
     }
 
-    /// CreateTeam creates a team for an organization
+    /// `CreateTeam` creates a team for an organization
     pub async fn create_team(
         &self,
         org: &str,
@@ -102,7 +102,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// EditTeam edits a team of an organization
+    /// `EditTeam` edits a team of an organization
     pub async fn edit_team(&self, id: i64, opt: EditTeamOption) -> crate::Result<Response> {
         opt.validate()?;
         let body = json_body(&opt)?;
@@ -117,7 +117,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// DeleteTeam deletes a team of an organization
+    /// `DeleteTeam` deletes a team of an organization
     pub async fn delete_team(&self, id: i64) -> crate::Result<Response> {
         let path = format!("/teams/{id}");
         self.client()

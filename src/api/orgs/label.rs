@@ -13,7 +13,7 @@ use super::OrgsApi;
 impl<'a> OrgsApi<'a> {
     // ── org_label.go ──────────────────────────────────────────────────────
 
-    /// ListOrgLabels returns the labels defined at the org level
+    /// `ListOrgLabels` returns the labels defined at the org level
     pub async fn list_org_labels(
         &self,
         org: &str,
@@ -31,7 +31,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// CreateOrgLabel creates a new label under an organization
+    /// `CreateOrgLabel` creates a new label under an organization
     pub async fn create_org_label(
         &self,
         org: &str,
@@ -51,7 +51,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// GetOrgLabel get one label of organization by org id
+    /// `GetOrgLabel` get one label of organization by org id
     pub async fn get_org_label(
         &self,
         org: &str,
@@ -64,7 +64,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// EditOrgLabel edits an existing org-level label by ID
+    /// `EditOrgLabel` edits an existing org-level label by ID
     pub async fn edit_org_label(
         &self,
         org: &str,
@@ -84,7 +84,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// DeleteOrgLabel deletes an org label by ID
+    /// `DeleteOrgLabel` deletes an org label by ID
     pub async fn delete_org_label(&self, org: &str, label_id: i64) -> crate::Result<Response> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[org])?;
         let path = format!("/orgs/{}/labels/{label_id}", escaped[0]);

@@ -11,7 +11,7 @@ use crate::types::repository::*;
 impl<'a> super::ReposApi<'a> {
     // ── repo_key.go (4 methods) ───────────────────────────────────
 
-    /// ListDeployKeys list deploy keys
+    /// `ListDeployKeys` list deploy keys
     pub async fn list_deploy_keys(
         &self,
         owner: &str,
@@ -30,7 +30,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// GetDeployKey get a deploy key
+    /// `GetDeployKey` get a deploy key
     pub async fn get_deploy_key(
         &self,
         owner: &str,
@@ -44,7 +44,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// CreateDeployKey create a deploy key
+    /// `CreateDeployKey` create a deploy key
     pub async fn create_deploy_key(
         &self,
         owner: &str,
@@ -64,7 +64,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// DeleteDeployKey delete a deploy key
+    /// `DeleteDeployKey` delete a deploy key
     pub async fn delete_deploy_key(
         &self,
         owner: &str,

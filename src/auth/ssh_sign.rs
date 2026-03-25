@@ -12,14 +12,11 @@ use sha2::{Digest as _, Sha256};
 use crate::auth::httpsig::{HttpSignature, SignedStringComponents};
 
 /// SSH signer mode: certificate-based or public-key-based authentication.
-#[allow(dead_code)]
 pub(crate) enum SshSigner {
     /// Certificate authentication with a principal name, private key, and
     /// optional raw OpenSSH certificate bytes (base64-encoded as
     /// `x-ssh-certificate` header).
     Cert {
-        /// The certificate's principal (username) as issued by the CA.
-        principal: String,
         /// The private key for signing.
         key: ssh_key::PrivateKey,
         /// Raw certificate bytes (OpenSSH wire format).
@@ -47,10 +44,10 @@ impl SshSigner {
     ///
     /// - `Pubkey` variant: bare fingerprint `"SHA256:<base64url>"` (matches Go SDK).
     /// - `Cert` variant: literal `"gitea"` (matches Go SDK).
-    pub(crate) fn key_id(&self) -> String {
+    pub(crate) fn key_id(&self) -> &str {
         match self {
-            SshSigner::Pubkey { fingerprint, .. } => fingerprint.clone(),
-            SshSigner::Cert { .. } => "gitea".to_string(),
+            SshSigner::Pubkey { fingerprint, .. } => fingerprint,
+            SshSigner::Cert { .. } => "gitea",
         }
     }
 
@@ -89,12 +86,13 @@ pub(crate) fn sign_request(
     signer: &SshSigner,
     use_legacy: bool,
 ) -> crate::Result<()> {
-    let url = req.url().clone();
+    let url = req.url();
     let method = req.method().as_str().to_string();
-    let path_and_query = url
-        .query()
-        .map(|q| format!("{}?{}", url.path(), q))
-        .unwrap_or_else(|| url.path().to_string());
+    let path_and_query = if let Some(query) = url.query() {
+        format!("{}?{}", url.path(), query)
+    } else {
+        url.path().to_string()
+    };
 
     let now = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
@@ -153,7 +151,7 @@ pub(crate) fn sign_request(
     let signature_b64 = base64::engine::general_purpose::STANDARD.encode(&signature_bytes);
 
     let http_sig = HttpSignature {
-        key_id: signer.key_id(),
+        key_id: signer.key_id().to_string(),
         algorithm: signer.algorithm().to_string(),
         headers: components.headers_list(),
         signature: signature_b64,
@@ -201,7 +199,7 @@ fn compute_digest(body: &reqwest::Body) -> crate::Result<Option<String>> {
 ///
 /// Returns the fingerprint in `SHA256:<base64url-encoded-hash>` format,
 /// matching the output of `ssh-keygen -lf`.
-#[allow(dead_code)]
+#[cfg(test)]
 pub(crate) fn fingerprint(key: &ssh_key::PublicKey) -> String {
     key.fingerprint(ssh_key::HashAlg::Sha256).to_string()
 }
@@ -424,14 +422,13 @@ mod tests {
     fn test_ssh_signer_cert_variant() {
         let key = ed25519_key();
         let signer = SshSigner::Cert {
-            principal: "test-user".to_string(),
             key,
             certificate_bytes: None,
         };
         match signer {
-            SshSigner::Cert { principal, .. } => {
-                assert_eq!(principal, "test-user");
-            }
+            SshSigner::Cert {
+                certificate_bytes, ..
+            } => assert!(certificate_bytes.is_none()),
             SshSigner::Pubkey { .. } => panic!("expected Cert variant"),
         }
     }
@@ -508,13 +505,12 @@ mod tests {
     fn ed25519_cert_signer() -> SshSigner {
         let key = ed25519_key();
         SshSigner::Cert {
-            principal: "test-user".to_string(),
             key,
             certificate_bytes: None,
         }
     }
 
-    /// Helper: build a basic reqwest::Request for testing.
+    /// Helper: build a basic `reqwest::Request` for testing.
     fn make_request(method: &str, url: &str) -> reqwest::Request {
         reqwest::Client::new()
             .request(
@@ -826,7 +822,6 @@ mod tests {
         let key = ed25519_key();
         let fake_cert = b"fake-cert-bytes-for-testing";
         let signer = SshSigner::Cert {
-            principal: "test-user".to_string(),
             key,
             certificate_bytes: Some(fake_cert.to_vec()),
         };

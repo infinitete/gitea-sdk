@@ -6,6 +6,7 @@
 
 use crate::Client;
 use crate::Response;
+use crate::internal::http::bytes_to_string_lossy;
 use crate::internal::request::{json_body, json_header};
 use crate::options::miscellaneous::*;
 use crate::types::{
@@ -25,6 +26,7 @@ pub struct ServerVersion {
 
 impl<'a> MiscApi<'a> {
     /// Create a new `MiscApi` view.
+    #[must_use]
     pub fn new(client: &'a Client) -> Self {
         Self { client }
     }
@@ -33,7 +35,7 @@ impl<'a> MiscApi<'a> {
         self.client
     }
 
-    /// RenderMarkdown renders a markdown document as HTML
+    /// `RenderMarkdown` renders a markdown document as HTML
     pub async fn render_markdown(&self, opt: MarkdownOption) -> crate::Result<(String, Response)> {
         let body = json_body(&opt)?;
         let (data, response) = self
@@ -45,10 +47,10 @@ impl<'a> MiscApi<'a> {
                 Some(body),
             )
             .await?;
-        Ok((String::from_utf8_lossy(&data).to_string(), response))
+        Ok((bytes_to_string_lossy(&data), response))
     }
 
-    /// RenderMarkdownRaw renders raw markdown as HTML
+    /// `RenderMarkdownRaw` renders raw markdown as HTML
     pub async fn render_markdown_raw(&self, markdown: &str) -> crate::Result<(String, Response)> {
         let mut headers = reqwest::header::HeaderMap::new();
         headers.insert(
@@ -64,10 +66,10 @@ impl<'a> MiscApi<'a> {
                 Some(markdown.to_string()),
             )
             .await?;
-        Ok((String::from_utf8_lossy(&data).to_string(), response))
+        Ok((bytes_to_string_lossy(&data), response))
     }
 
-    /// RenderMarkup renders a markup document as HTML
+    /// `RenderMarkup` renders a markup document as HTML
     pub async fn render_markup(&self, opt: MarkupOption) -> crate::Result<(String, Response)> {
         let body = json_body(&opt)?;
         let (data, response) = self
@@ -79,10 +81,10 @@ impl<'a> MiscApi<'a> {
                 Some(body),
             )
             .await?;
-        Ok((String::from_utf8_lossy(&data).to_string(), response))
+        Ok((bytes_to_string_lossy(&data), response))
     }
 
-    /// GetNodeInfo gets the nodeinfo of the Gitea application
+    /// `GetNodeInfo` gets the nodeinfo of the Gitea application
     pub async fn get_node_info(&self) -> crate::Result<(NodeInfo, Response)> {
         self.client()
             .get_parsed_response(
@@ -94,25 +96,25 @@ impl<'a> MiscApi<'a> {
             .await
     }
 
-    /// GetSigningKeyGPG gets the default GPG signing key
+    /// `GetSigningKeyGPG` gets the default GPG signing key
     pub async fn get_signing_key_gpg(&self) -> crate::Result<(String, Response)> {
         let (data, response) = self
             .client()
             .get_response(reqwest::Method::GET, "/signing-key.gpg", None, None::<&str>)
             .await?;
-        Ok((String::from_utf8_lossy(&data).to_string(), response))
+        Ok((bytes_to_string_lossy(&data), response))
     }
 
-    /// GetSigningKeySSH gets the default SSH signing key
+    /// `GetSigningKeySSH` gets the default SSH signing key
     pub async fn get_signing_key_ssh(&self) -> crate::Result<(String, Response)> {
         let (data, response) = self
             .client()
             .get_response(reqwest::Method::GET, "/signing-key.pub", None, None::<&str>)
             .await?;
-        Ok((String::from_utf8_lossy(&data).to_string(), response))
+        Ok((bytes_to_string_lossy(&data), response))
     }
 
-    /// ListGitignoresTemplates lists all gitignore templates
+    /// `ListGitignoresTemplates` lists all gitignore templates
     pub async fn list_gitignore_templates(&self) -> crate::Result<(Vec<String>, Response)> {
         self.client()
             .get_parsed_response(
@@ -124,7 +126,7 @@ impl<'a> MiscApi<'a> {
             .await
     }
 
-    /// GetGitignoreTemplateInfo gets information about a gitignore template
+    /// `GetGitignoreTemplateInfo` gets information about a gitignore template
     pub async fn get_gitignore_template(
         &self,
         name: &str,
@@ -141,7 +143,7 @@ impl<'a> MiscApi<'a> {
             .await
     }
 
-    /// ListLabelTemplates lists all label templates
+    /// `ListLabelTemplates` lists all label templates
     pub async fn list_label_templates(&self) -> crate::Result<(Vec<String>, Response)> {
         self.client()
             .get_parsed_response(
@@ -153,7 +155,7 @@ impl<'a> MiscApi<'a> {
             .await
     }
 
-    /// GetLabelTemplate gets all labels in a template
+    /// `GetLabelTemplate` gets all labels in a template
     pub async fn get_label_template(
         &self,
         name: &str,
@@ -170,7 +172,7 @@ impl<'a> MiscApi<'a> {
             .await
     }
 
-    /// ServerVersion returns the version of the server
+    /// `ServerVersion` returns the version of the server
     pub async fn get_version(&self) -> crate::Result<(String, Response)> {
         let (ver, resp) = self
             .client()
@@ -184,7 +186,7 @@ impl<'a> MiscApi<'a> {
         Ok((ver.version, resp))
     }
 
-    /// ListLicenseTemplates lists the available license templates
+    /// `ListLicenseTemplates` lists the available license templates
     pub async fn list_license_templates(
         &self,
     ) -> crate::Result<(Vec<LicensesTemplateListEntry>, Response)> {
@@ -198,7 +200,7 @@ impl<'a> MiscApi<'a> {
             .await
     }
 
-    /// GetLicenseTemplateInfo fetches a specific license template
+    /// `GetLicenseTemplateInfo` fetches a specific license template
     pub async fn get_license_template(
         &self,
         name: &str,

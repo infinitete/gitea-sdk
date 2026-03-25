@@ -12,7 +12,7 @@ use crate::types::repository::*;
 impl<'a> super::ReposApi<'a> {
     // ── repo_stars.go (6 methods) ─────────────────────────────────
 
-    /// ListStargazers list a repository's stargazers
+    /// `ListStargazers` list a repository's stargazers
     pub async fn list_stargazers(
         &self,
         owner: &str,
@@ -31,7 +31,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// GetStarredRepos list repos starred by a given user
+    /// `GetStarredRepos` list repos starred by a given user
     pub async fn get_starred_repos(
         &self,
         user: &str,
@@ -48,7 +48,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// GetMyStarredRepos list repos starred by the authenticated user
+    /// `GetMyStarredRepos` list repos starred by the authenticated user
     pub async fn get_my_starred_repos(&self) -> crate::Result<(Vec<Repository>, Response)> {
         self.client()
             .get_parsed_response(
@@ -60,7 +60,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// IsRepoStarring check if the authenticated user has starred the repo
+    /// `IsRepoStarring` check if the authenticated user has starred the repo
     pub async fn is_repo_starring(
         &self,
         owner: &str,
@@ -88,7 +88,7 @@ impl<'a> super::ReposApi<'a> {
         }
     }
 
-    /// StarRepo star a repository as the authenticated user
+    /// `StarRepo` star a repository as the authenticated user
     pub async fn star_repo(&self, owner: &str, repo: &str) -> crate::Result<Response> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[owner, repo])?;
         let path = format!("/user/starred/{}/{}", escaped[0], escaped[1]);
@@ -112,7 +112,7 @@ impl<'a> super::ReposApi<'a> {
         }
     }
 
-    /// UnstarRepo remove star from a repository as the authenticated user
+    /// `UnstarRepo` remove star from a repository as the authenticated user
     pub async fn unstar_repo(&self, owner: &str, repo: &str) -> crate::Result<Response> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[owner, repo])?;
         let path = format!("/user/starred/{}/{}", escaped[0], escaped[1]);

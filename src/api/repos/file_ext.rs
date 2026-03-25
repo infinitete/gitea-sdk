@@ -11,7 +11,7 @@ use crate::types::repository::*;
 impl<'a> super::ReposApi<'a> {
     // ── repo_file_ext.go (4 methods) ──────────────────────────────
 
-    /// GetContentsExt get extended contents of a repository
+    /// `GetContentsExt` get extended contents of a repository
     pub async fn get_contents_ext(
         &self,
         owner: &str,
@@ -64,7 +64,7 @@ impl<'a> super::ReposApi<'a> {
         Ok((ext, resp))
     }
 
-    /// GetEditorConfig get the editorconfig of a repository
+    /// `GetEditorConfig` get the editorconfig of a repository
     pub async fn get_editor_config(
         &self,
         owner: &str,
@@ -87,7 +87,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// GetRawFileOrLFS get raw file from a repository, following LFS redirects
+    /// `GetRawFileOrLFS` get raw file from a repository, following LFS redirects
     pub async fn get_raw_file_or_lfs(
         &self,
         owner: &str,
@@ -110,7 +110,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// GetRawFile get raw file from a repository
+    /// `GetRawFile` get raw file from a repository
     pub async fn get_raw_file(
         &self,
         owner: &str,

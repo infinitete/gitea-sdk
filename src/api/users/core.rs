@@ -10,7 +10,7 @@ use super::UsersApi;
 impl<'a> UsersApi<'a> {
     // ── user.go ────────────────────────────────────────────────────────
 
-    /// GetUserInfo get user info by user's name
+    /// `GetUserInfo` get user info by user's name
     pub async fn get(&self, username: &str) -> crate::Result<(User, Response)> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[username])?;
         let path = format!("/users/{}", escaped[0]);
@@ -19,14 +19,14 @@ impl<'a> UsersApi<'a> {
             .await
     }
 
-    /// GetMyUserInfo get user info of current user
+    /// `GetMyUserInfo` get user info of current user
     pub async fn get_my_info(&self) -> crate::Result<(User, Response)> {
         self.client()
             .get_parsed_response(reqwest::Method::GET, "/user", None, None::<&str>)
             .await
     }
 
-    /// GetUserByID returns user by a given user ID
+    /// `GetUserByID` returns user by a given user ID
     pub async fn get_by_id(&self, id: i64) -> crate::Result<(User, Response)> {
         if id < 0 {
             return Err(crate::Error::Validation(format!("invalid user id {id}")));

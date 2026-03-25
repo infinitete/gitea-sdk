@@ -3,14 +3,14 @@
 // license that can be found in the LICENSE file.
 
 use crate::internal::request::urlencoding;
-use crate::pagination::{ListOptions, QueryEncode};
+use crate::pagination::{ListOptions, QueryEncode, push_query_segment};
 use crate::types::enums::{MergeStyle, ProjectsMode, RepoType, TrustModel};
 use crate::types::repository::{ExternalTracker, ExternalWiki, InternalTracker};
 use crate::{Deserialize, Serialize};
 
 // ── repo.go ─────────────────────────────────────────────────────
 
-/// ListReposOptions options for listing repositories
+/// `ListReposOptions` options for listing repositories
 #[derive(Debug, Clone, Default)]
 /// Options for List Repos Option.
 pub struct ListReposOptions {
@@ -23,7 +23,7 @@ impl QueryEncode for ListReposOptions {
     }
 }
 
-/// ListOrgReposOptions options for a organization's repositories
+/// `ListOrgReposOptions` options for a organization's repositories
 #[derive(Debug, Clone, Default)]
 /// Options for List Org Repos Option.
 pub struct ListOrgReposOptions {
@@ -36,7 +36,7 @@ impl QueryEncode for ListOrgReposOptions {
     }
 }
 
-/// SearchRepoOptions options for searching repositories
+/// `SearchRepoOptions` options for searching repositories
 #[derive(Debug, Clone, Default)]
 /// Options for Search Repo Option.
 pub struct SearchRepoOptions {
@@ -53,6 +53,9 @@ pub struct SearchRepoOptions {
     pub sort: String,
     pub order: String,
     pub prioritized_by_owner_id: i64,
+    /// Back-compat fallback for callers that still populate `raw_query`.
+    ///
+    /// When `keyword` is empty, this value is encoded as `q=...`.
     pub raw_query: String,
 }
 
@@ -60,54 +63,59 @@ impl QueryEncode for SearchRepoOptions {
     fn query_encode(&self) -> String {
         let mut out = self.list_options.query_encode();
 
-        if !self.keyword.is_empty() {
-            out.push_str(&format!("&q={}", urlencoding(&self.keyword)));
+        let query = if self.keyword.is_empty() {
+            &self.raw_query
+        } else {
+            &self.keyword
+        };
+        if !query.is_empty() {
+            push_query_segment(&mut out, &format!("q={}", urlencoding(query)));
         }
         if self.keyword_is_topic {
-            out.push_str("&topic=true");
+            push_query_segment(&mut out, "topic=true");
         }
         if self.keyword_in_description {
-            out.push_str("&includeDesc=true");
+            push_query_segment(&mut out, "includeDesc=true");
         }
         if self.owner_id > 0 {
-            out.push_str(&format!("&uid={}", self.owner_id));
-            out.push_str("&exclusive=true");
+            push_query_segment(&mut out, &format!("uid={}", self.owner_id));
+            push_query_segment(&mut out, "exclusive=true");
         }
         if self.starred_by_user_id > 0 {
-            out.push_str(&format!("&starredBy={}", self.starred_by_user_id));
+            push_query_segment(&mut out, &format!("starredBy={}", self.starred_by_user_id));
         }
         if let Some(is_private) = self.is_private {
-            out.push_str(&format!("&is_private={}", is_private));
+            push_query_segment(&mut out, &format!("is_private={}", is_private));
         }
         if let Some(is_archived) = self.is_archived {
-            out.push_str(&format!("&archived={}", is_archived));
+            push_query_segment(&mut out, &format!("archived={}", is_archived));
         }
         if self.exclude_template {
-            out.push_str("&template=false");
+            push_query_segment(&mut out, "template=false");
         }
         if let Some(ref repo_type) = self.repo_type
             && !repo_type.as_ref().is_empty()
         {
-            out.push_str(&format!("&mode={}", repo_type.as_ref()));
+            push_query_segment(&mut out, &format!("mode={}", repo_type.as_ref()));
         }
         if !self.sort.is_empty() {
-            out.push_str(&format!("&sort={}", urlencoding(&self.sort)));
+            push_query_segment(&mut out, &format!("sort={}", urlencoding(&self.sort)));
         }
         if self.prioritized_by_owner_id > 0 {
-            out.push_str(&format!(
-                "&priority_owner_id={}",
-                self.prioritized_by_owner_id
-            ));
+            push_query_segment(
+                &mut out,
+                &format!("priority_owner_id={}", self.prioritized_by_owner_id),
+            );
         }
         if !self.order.is_empty() {
-            out.push_str(&format!("&order={}", urlencoding(&self.order)));
+            push_query_segment(&mut out, &format!("order={}", urlencoding(&self.order)));
         }
 
         out
     }
 }
 
-/// CreateRepoOption options when creating repository
+/// `CreateRepoOption` options when creating repository
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Create Repo Option.
 pub struct CreateRepoOption {
@@ -163,7 +171,7 @@ impl CreateRepoOption {
     }
 }
 
-/// EditRepoOption options when editing a repository's properties
+/// `EditRepoOption` options when editing a repository's properties
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Edit Repo Option.
 pub struct EditRepoOption {
@@ -303,7 +311,7 @@ pub struct EditRepoOption {
     pub default_delete_branch_after_merge: Option<bool>,
 }
 
-/// UpdateRepoAvatarOption options for updating repository avatar
+/// `UpdateRepoAvatarOption` options for updating repository avatar
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Update Repo Avatar Option.
 pub struct UpdateRepoAvatarOption {
@@ -447,5 +455,24 @@ mod tests {
             object_format_name: "sha256".to_string(),
         };
         assert!(opt.validate().is_ok());
+    }
+
+    #[test]
+    fn test_search_repo_options_query_encode_uses_raw_query_as_fallback() {
+        let opt = SearchRepoOptions {
+            raw_query: "rust sdk".to_string(),
+            ..Default::default()
+        };
+        assert_eq!(opt.query_encode(), "q=rust%20sdk");
+    }
+
+    #[test]
+    fn test_search_repo_options_query_encode_without_page_prefix() {
+        let opt = SearchRepoOptions {
+            keyword: "gitea".to_string(),
+            keyword_is_topic: true,
+            ..Default::default()
+        };
+        assert_eq!(opt.query_encode(), "q=gitea&topic=true");
     }
 }

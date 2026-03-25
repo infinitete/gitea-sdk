@@ -45,3 +45,14 @@ default = ["rustls-tls"]
 rustls-tls = ["reqwest/rustls-tls"]
 native-tls = ["reqwest/native-tls"]
 stream = ["reqwest/stream"]
+
+[lints.clippy]
+dbg_macro = "warn"
+todo = "warn"
+doc_markdown = "warn"
+must_use_candidate = "warn"
+return_self_not_must_use = "warn"
+ref_option = "warn"
+unnested_or_patterns = "warn"
+unreadable_literal = "warn"
+unused_async = "warn"

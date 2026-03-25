@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-//! Types for OAuth2 applications.
+//! Types for `OAuth2` applications.
 
 use crate::{Deserialize, Serialize};
 use time::OffsetDateTime;
@@ -12,7 +12,7 @@ use super::serde_helpers::null_to_default;
 
 /// Oauth2 represents an Oauth2 Application
 #[derive(Clone, Serialize, Deserialize)]
-/// OAuth2 payload type.
+/// `OAuth2` payload type.
 pub struct Oauth2 {
     pub id: i64,
     pub name: String,

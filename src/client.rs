@@ -117,6 +117,7 @@ impl Client {
     /// # Errors
     ///
     /// Returns [`Error::Url`] if `base_url` cannot be parsed.
+    #[must_use]
     pub fn builder(base_url: &str) -> ClientBuilder<'_> {
         ClientBuilder::new(base_url)
     }
@@ -163,6 +164,7 @@ impl Client {
     }
 
     /// Return the configured base URL (trailing slash stripped).
+    #[must_use]
     pub fn base_url(&self) -> String {
         self.inner.config.read().base_url.to_string()
     }
@@ -171,15 +173,8 @@ impl Client {
 // ── Internal helpers (crate-visible) ────────────────────────────────
 
 impl Client {
-    #[allow(private_interfaces)]
     pub(crate) fn read_config(&self) -> parking_lot::RwLockReadGuard<'_, ClientConfig> {
         self.inner.config.read()
-    }
-
-    /// Acquire a write lock on the configuration.
-    #[allow(dead_code)]
-    fn write_config(&self) -> parking_lot::RwLockWriteGuard<'_, ClientConfig> {
-        self.inner.config.write()
     }
 
     pub(crate) fn http_client(&self) -> reqwest::Client {
@@ -193,8 +188,8 @@ impl Client {
     }
 
     /// The version pre-set via [`ClientBuilder::gitea_version`], if any.
-    pub(crate) fn preset_version(&self) -> &Option<semver::Version> {
-        &self.inner.preset_version
+    pub(crate) fn preset_version(&self) -> Option<&semver::Version> {
+        self.inner.preset_version.as_ref()
     }
 
     /// Whether version compatibility checks should be skipped entirely.
@@ -239,81 +234,97 @@ impl Client {
 
 impl Client {
     /// Access repository API methods.
+    #[must_use]
     pub fn repos(&self) -> ReposApi<'_> {
         ReposApi::new(self)
     }
 
     /// Access issue API methods.
+    #[must_use]
     pub fn issues(&self) -> IssuesApi<'_> {
         IssuesApi::new(self)
     }
 
     /// Access pull request API methods.
+    #[must_use]
     pub fn pulls(&self) -> PullsApi<'_> {
         PullsApi::new(self)
     }
 
     /// Access organization API methods.
+    #[must_use]
     pub fn orgs(&self) -> OrgsApi<'_> {
         OrgsApi::new(self)
     }
 
     /// Access user API methods.
+    #[must_use]
     pub fn users(&self) -> UsersApi<'_> {
         UsersApi::new(self)
     }
 
     /// Access admin API methods.
+    #[must_use]
     pub fn admin(&self) -> AdminApi<'_> {
         AdminApi::new(self)
     }
 
     /// Access webhook API methods.
+    #[must_use]
     pub fn hooks(&self) -> HooksApi<'_> {
         HooksApi::new(self)
     }
 
     /// Access notification API methods.
+    #[must_use]
     pub fn notifications(&self) -> NotificationsApi<'_> {
         NotificationsApi::new(self)
     }
 
     /// Access actions API methods.
+    #[must_use]
     pub fn actions(&self) -> ActionsApi<'_> {
         ActionsApi::new(self)
     }
 
     /// Access release API methods.
+    #[must_use]
     pub fn releases(&self) -> ReleasesApi<'_> {
         ReleasesApi::new(self)
     }
 
     /// Access settings API methods.
+    #[must_use]
     pub fn settings(&self) -> SettingsApi<'_> {
         SettingsApi::new(self)
     }
 
-    /// Access OAuth2 application API methods.
+    /// Access `OAuth2` application API methods.
+    #[must_use]
     pub fn oauth2(&self) -> Oauth2Api<'_> {
         Oauth2Api::new(self)
     }
 
     /// Access package API methods.
+    #[must_use]
     pub fn packages(&self) -> PackagesApi<'_> {
         PackagesApi::new(self)
     }
 
     /// Access miscellaneous API methods.
+    #[must_use]
     pub fn miscellaneous(&self) -> MiscApi<'_> {
         MiscApi::new(self)
     }
 
-    /// Access ActivityPub API methods.
+    /// Access `ActivityPub` API methods.
+    #[must_use]
     pub fn activitypub(&self) -> ActivityPubApi<'_> {
         ActivityPubApi::new(self)
     }
 
     /// Access commit status API methods.
+    #[must_use]
     pub fn status(&self) -> StatusApi<'_> {
         StatusApi::new(self)
     }
@@ -368,6 +379,7 @@ impl<'a> ClientBuilder<'a> {
     /// Create a new builder for the given `base_url`.
     ///
     /// The URL is validated eagerly with [`url::Url::parse`].
+    #[must_use]
     pub fn new(base_url: &'a str) -> Self {
         Self {
             base_url,
@@ -391,12 +403,14 @@ impl<'a> ClientBuilder<'a> {
     }
 
     /// Set the bearer access token.
+    #[must_use]
     pub fn token(mut self, token: impl Into<String>) -> Self {
         self.access_token = Some(token.into());
         self
     }
 
     /// Set username and password for basic authentication.
+    #[must_use]
     pub fn basic_auth(mut self, username: impl Into<String>, password: impl Into<String>) -> Self {
         self.username = Some(username.into());
         self.password = Some(password.into());
@@ -404,18 +418,21 @@ impl<'a> ClientBuilder<'a> {
     }
 
     /// Set the one-time password for 2FA.
+    #[must_use]
     pub fn otp(mut self, otp: impl Into<String>) -> Self {
         self.otp = Some(otp.into());
         self
     }
 
     /// Set the username to impersonate via the Sudo header.
+    #[must_use]
     pub fn sudo(mut self, sudo: impl Into<String>) -> Self {
         self.sudo = Some(sudo.into());
         self
     }
 
     /// Set the User-Agent header sent with every request.
+    #[must_use]
     pub fn user_agent(mut self, agent: impl Into<String>) -> Self {
         self.user_agent = Some(agent.into());
         self
@@ -427,6 +444,7 @@ impl<'a> ClientBuilder<'a> {
     ///   checks (equivalent to Go's `SetGiteaVersion("")`).
     /// * **Non-empty string** — parsed as a semantic version and used in
     ///   place of the version discovered from the server.
+    #[must_use]
     pub fn gitea_version(mut self, version: &str) -> Self {
         if version.is_empty() {
             self.ignore_version = true;
@@ -441,6 +459,7 @@ impl<'a> ClientBuilder<'a> {
     }
 
     /// Enable or disable debug logging.
+    #[must_use]
     pub fn debug(mut self, enabled: bool) -> Self {
         self.debug = enabled;
         self
@@ -449,6 +468,7 @@ impl<'a> ClientBuilder<'a> {
     /// Provide a custom [`reqwest::Client`].
     ///
     /// If not called, a default client is created by [`build()`](Self::build).
+    #[must_use]
     pub fn http_client(mut self, client: reqwest::Client) -> Self {
         self.http_client = Some(client);
         self
@@ -457,6 +477,7 @@ impl<'a> ClientBuilder<'a> {
     /// Set the request timeout for the HTTP client.
     ///
     /// If not set, defaults to 30 seconds. Set to `None` to disable timeouts.
+    #[must_use]
     pub fn timeout(mut self, timeout: std::time::Duration) -> Self {
         self.timeout = Some(timeout);
         self
@@ -465,6 +486,7 @@ impl<'a> ClientBuilder<'a> {
     /// Set the connection timeout for establishing TCP connections.
     ///
     /// If not set, defaults to 10 seconds.
+    #[must_use]
     pub fn connect_timeout(mut self, timeout: std::time::Duration) -> Self {
         self.connect_timeout = Some(timeout);
         self
@@ -473,6 +495,7 @@ impl<'a> ClientBuilder<'a> {
     /// Set the TCP keepalive interval for detecting dead connections.
     ///
     /// If not set, defaults to 60 seconds.
+    #[must_use]
     pub fn tcp_keepalive(mut self, timeout: std::time::Duration) -> Self {
         self.tcp_keepalive = Some(timeout);
         self
@@ -481,6 +504,7 @@ impl<'a> ClientBuilder<'a> {
     /// Set the maximum number of idle connections per host in the connection pool.
     ///
     /// If not set, defaults to 10.
+    #[must_use]
     pub fn pool_max_idle_per_host(mut self, max: usize) -> Self {
         self.pool_max_idle_per_host = Some(max);
         self
@@ -497,13 +521,12 @@ impl<'a> ClientBuilder<'a> {
     /// Returns [`Error::SshSign`] if the key file cannot be read, parsed, or decrypted.
     pub fn ssh_cert<P: AsRef<std::path::Path>>(
         mut self,
-        principal: impl Into<String>,
+        _principal: impl Into<String>,
         key_path: P,
         passphrase: Option<&str>,
     ) -> crate::Result<Self> {
         let key = crate::auth::ssh_sign::load_private_key(key_path.as_ref(), passphrase)?;
         self.ssh_signer = Some(crate::auth::ssh_sign::SshSigner::Cert {
-            principal: principal.into(),
             key,
             certificate_bytes: None,
         });
@@ -521,7 +544,7 @@ impl<'a> ClientBuilder<'a> {
     /// Returns [`Error::SshSign`] if the key or certificate file cannot be read.
     pub fn ssh_cert_with_certificate<P1, P2>(
         mut self,
-        principal: impl Into<String>,
+        _principal: impl Into<String>,
         key_path: P1,
         cert_path: P2,
         passphrase: Option<&str>,
@@ -538,7 +561,6 @@ impl<'a> ClientBuilder<'a> {
             ))
         })?;
         self.ssh_signer = Some(crate::auth::ssh_sign::SshSigner::Cert {
-            principal: principal.into(),
             key,
             certificate_bytes: Some(cert_bytes),
         });

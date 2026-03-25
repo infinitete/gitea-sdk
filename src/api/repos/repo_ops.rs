@@ -18,7 +18,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// GetRepoLanguages get languages of a repository
+    /// `GetRepoLanguages` get languages of a repository
     pub async fn get_repo_languages(
         &self,
         owner: &str,
@@ -34,7 +34,7 @@ impl<'a> super::ReposApi<'a> {
         Ok((langs, resp))
     }
 
-    /// GetArchive get an archive of a repository
+    /// `GetArchive` get an archive of a repository
     pub async fn get_archive(
         &self,
         owner: &str,
@@ -52,7 +52,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// GetArchiveReader get an archive streaming reader of a repository
+    /// `GetArchiveReader` get an archive streaming reader of a repository
     pub async fn get_archive_reader(
         &self,
         owner: &str,
@@ -70,7 +70,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// UpdateRepoAvatar update the avatar of a repository
+    /// `UpdateRepoAvatar` update the avatar of a repository
     pub async fn update_repo_avatar(
         &self,
         owner: &str,
@@ -88,7 +88,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// DeleteRepoAvatar delete the avatar of a repository
+    /// `DeleteRepoAvatar` delete the avatar of a repository
     pub async fn delete_repo_avatar(&self, owner: &str, repo: &str) -> crate::Result<Response> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[owner, repo])?;
         let path = format!("/repos/{}/{}/avatar", escaped[0], escaped[1]);

@@ -11,7 +11,7 @@ use crate::types::repository::*;
 impl<'a> super::ReposApi<'a> {
     // ── repo.go (16 methods) ─────────────────────────────────────
 
-    /// ListMyRepos list all repositories of the authenticated user
+    /// `ListMyRepos` list all repositories of the authenticated user
     pub async fn list_my_repos(
         &self,
         opt: ListReposOptions,
@@ -22,7 +22,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// ListUserRepos list repositories of a user
+    /// `ListUserRepos` list repositories of a user
     pub async fn list_user_repos(
         &self,
         user: &str,
@@ -35,7 +35,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// CreateRepo create a repository
+    /// `CreateRepo` create a repository
     pub async fn create_repo(
         &self,
         opt: CreateRepoOption,
@@ -52,7 +52,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// GetRepo get a repository
+    /// `GetRepo` get a repository
     pub async fn get_repo(&self, owner: &str, repo: &str) -> crate::Result<(Repository, Response)> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[owner, repo])?;
         let path = format!("/repos/{}/{}", escaped[0], escaped[1]);
@@ -61,7 +61,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// GetRepoByID get a repository by id
+    /// `GetRepoByID` get a repository by id
     pub async fn get_repo_by_id(&self, id: i64) -> crate::Result<(Repository, Response)> {
         let path = format!("/repositories/{id}");
         self.client()
@@ -69,7 +69,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// EditRepo edit repository properties
+    /// `EditRepo` edit repository properties
     pub async fn edit_repo(
         &self,
         owner: &str,
@@ -89,7 +89,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// DeleteRepo delete a repository
+    /// `DeleteRepo` delete a repository
     pub async fn delete_repo(&self, owner: &str, repo: &str) -> crate::Result<Response> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[owner, repo])?;
         let path = format!("/repos/{}/{}", escaped[0], escaped[1]);

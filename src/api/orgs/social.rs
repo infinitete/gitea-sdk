@@ -13,7 +13,7 @@ use super::OrgsApi;
 impl<'a> OrgsApi<'a> {
     // ── org_social.go ─────────────────────────────────────────────────────
 
-    /// UpdateOrgAvatar updates the organization's avatar
+    /// `UpdateOrgAvatar` updates the organization's avatar
     pub async fn update_org_avatar(
         &self,
         org: &str,
@@ -41,7 +41,7 @@ impl<'a> OrgsApi<'a> {
         Ok(response)
     }
 
-    /// DeleteOrgAvatar deletes the organization's avatar
+    /// `DeleteOrgAvatar` deletes the organization's avatar
     pub async fn delete_org_avatar(&self, org: &str) -> crate::Result<Response> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[org])?;
         let path = format!("/orgs/{}/avatar", escaped[0]);
@@ -63,7 +63,7 @@ impl<'a> OrgsApi<'a> {
         Ok(response)
     }
 
-    /// RenameOrg renames an organization
+    /// `RenameOrg` renames an organization
     pub async fn rename_org(&self, org: &str, opt: RenameOrgOption) -> crate::Result<Response> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[org])?;
         let body = json_body(&opt)?;
@@ -86,7 +86,7 @@ impl<'a> OrgsApi<'a> {
         Ok(response)
     }
 
-    /// ListOrgActivityFeeds lists the organization's activity feeds
+    /// `ListOrgActivityFeeds` lists the organization's activity feeds
     pub async fn list_org_activity_feeds(
         &self,
         org: &str,
@@ -108,7 +108,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// ListTeamActivityFeeds lists the team's activity feeds
+    /// `ListTeamActivityFeeds` lists the team's activity feeds
     pub async fn list_team_activity_feeds(
         &self,
         team_id: i64,

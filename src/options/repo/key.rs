@@ -3,12 +3,12 @@
 // license that can be found in the LICENSE file.
 
 use crate::internal::request::urlencoding;
-use crate::pagination::{ListOptions, QueryEncode};
+use crate::pagination::{ListOptions, QueryEncode, push_query_segment};
 use crate::{Deserialize, Serialize};
 
 // ── repo_key.go ─────────────────────────────────────────────────
 
-/// ListDeployKeysOptions options for listing a repository's deploy keys
+/// `ListDeployKeysOptions` options for listing a repository's deploy keys
 #[derive(Debug, Clone, Default)]
 /// Options for List Deploy Keys Option.
 pub struct ListDeployKeysOptions {
@@ -22,17 +22,20 @@ impl QueryEncode for ListDeployKeysOptions {
         let mut out = self.list_options.query_encode();
 
         if self.key_id > 0 {
-            out.push_str(&format!("&key_id={}", self.key_id));
+            push_query_segment(&mut out, &format!("key_id={}", self.key_id));
         }
         if !self.fingerprint.is_empty() {
-            out.push_str(&format!("&fingerprint={}", urlencoding(&self.fingerprint)));
+            push_query_segment(
+                &mut out,
+                &format!("fingerprint={}", urlencoding(&self.fingerprint)),
+            );
         }
 
         out
     }
 }
 
-/// CreateKeyOption options when creating a deploy key
+/// `CreateKeyOption` options when creating a deploy key
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Create Key Option.
 pub struct CreateKeyOption {

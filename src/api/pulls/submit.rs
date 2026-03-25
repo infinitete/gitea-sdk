@@ -9,7 +9,7 @@ use crate::types::PullReview;
 use crate::version::VERSION_1_12_0;
 
 impl<'a> super::PullsApi<'a> {
-    /// CreatePullReview create a review to a pull request.
+    /// `CreatePullReview` create a review to a pull request.
     pub async fn create_review(
         &self,
         owner: &str,
@@ -34,7 +34,7 @@ impl<'a> super::PullsApi<'a> {
             .await
     }
 
-    /// SubmitPullReview submit a pending review to a pull request.
+    /// `SubmitPullReview` submit a pending review to a pull request.
     pub async fn submit_review(
         &self,
         owner: &str,

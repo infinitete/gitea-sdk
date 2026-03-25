@@ -14,7 +14,7 @@ impl<'a> IssuesApi<'a> {
     // ── issue.go ──────────────────────────────────────────────────
     // 6 methods
 
-    /// ListIssues returns all issues assigned the authenticated user
+    /// `ListIssues` returns all issues assigned the authenticated user
     pub async fn list_issues(&self, opt: ListIssueOption) -> crate::Result<(Vec<Issue>, Response)> {
         let path = format!("/repos/issues/search?{}", opt.query_encode());
         self.client()
@@ -22,7 +22,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// ListRepoIssues returns all issues for a given repository
+    /// `ListRepoIssues` returns all issues for a given repository
     pub async fn list_repo_issues(
         &self,
         owner: &str,
@@ -41,7 +41,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// GetIssue returns a single issue for a given repository
+    /// `GetIssue` returns a single issue for a given repository
     pub async fn get_issue(
         &self,
         owner: &str,
@@ -55,7 +55,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// CreateIssue create a new issue for a given repository
+    /// `CreateIssue` create a new issue for a given repository
     pub async fn create_issue(
         &self,
         owner: &str,
@@ -76,7 +76,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// EditIssue modify an existing issue for a given repository
+    /// `EditIssue` modify an existing issue for a given repository
     pub async fn edit_issue(
         &self,
         owner: &str,
@@ -98,7 +98,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// DeleteIssue delete an issue from a repository
+    /// `DeleteIssue` delete an issue from a repository
     pub async fn delete_issue(&self, owner: &str, repo: &str, id: i64) -> crate::Result<Response> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[owner, repo])?;
         let path = format!("/repos/{}/{}/issues/{id}", escaped[0], escaped[1]);

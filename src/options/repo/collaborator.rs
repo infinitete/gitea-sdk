@@ -8,7 +8,7 @@ use crate::{Deserialize, Serialize};
 
 // ── repo_collaborator.go ────────────────────────────────────────
 
-/// ListCollaboratorsOptions options for listing a repository's collaborators
+/// `ListCollaboratorsOptions` options for listing a repository's collaborators
 #[derive(Debug, Clone, Default)]
 /// Options for List Collaborators Option.
 pub struct ListCollaboratorsOptions {
@@ -21,7 +21,7 @@ impl QueryEncode for ListCollaboratorsOptions {
     }
 }
 
-/// AddCollaboratorOption options when adding a user as a collaborator
+/// `AddCollaboratorOption` options when adding a user as a collaborator
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Add Collaborator Option.
 pub struct AddCollaboratorOption {

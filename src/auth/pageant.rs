@@ -387,6 +387,10 @@ async fn sign_data_pageant(_key_blob: &[u8], _data: &[u8], _flags: u32) -> crate
 
 /// Not available on non-Windows platforms.
 #[cfg(not(windows))]
+#[expect(
+    clippy::unused_async,
+    reason = "keeps the cross-platform async API surface consistent"
+)]
 pub async fn list_identities() -> crate::Result<Vec<(Vec<u8>, String)>> {
     Err(crate::Error::SshSign(
         "SSH agent identity listing is not supported on this platform".into(),
@@ -395,6 +399,10 @@ pub async fn list_identities() -> crate::Result<Vec<(Vec<u8>, String)>> {
 
 /// Not available on non-Windows platforms.
 #[cfg(not(windows))]
+#[expect(
+    clippy::unused_async,
+    reason = "keeps the cross-platform async API surface consistent"
+)]
 pub async fn sign_data(_key_blob: &[u8], _data: &[u8], _flags: u32) -> crate::Result<Vec<u8>> {
     Err(crate::Error::SshSign(
         "SSH agent signing is not supported on this platform".into(),

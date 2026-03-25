@@ -4,7 +4,7 @@
 
 //! Request option types for notification API endpoints.
 
-use crate::pagination::ListOptions;
+use crate::pagination::{ListOptions, push_query_segment};
 use crate::types::enums::{NotifyStatus, NotifySubjectType};
 use time::OffsetDateTime;
 
@@ -24,18 +24,18 @@ impl crate::pagination::QueryEncode for ListNotificationOptions {
         if let Some(since) = self.since
             && let Ok(formatted) = since.format(&time::format_description::well_known::Rfc3339)
         {
-            out.push_str(&format!("&since={formatted}"));
+            push_query_segment(&mut out, &format!("since={formatted}"));
         }
         if let Some(before) = self.before
             && let Ok(formatted) = before.format(&time::format_description::well_known::Rfc3339)
         {
-            out.push_str(&format!("&before={formatted}"));
+            push_query_segment(&mut out, &format!("before={formatted}"));
         }
         for s in &self.status {
-            out.push_str(&format!("&status-types={}", s.as_ref()));
+            push_query_segment(&mut out, &format!("status-types={}", s.as_ref()));
         }
         for s in &self.subject_types {
-            out.push_str(&format!("&subject-type={}", s.as_ref()));
+            push_query_segment(&mut out, &format!("subject-type={}", s.as_ref()));
         }
         out
     }

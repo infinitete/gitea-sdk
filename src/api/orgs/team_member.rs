@@ -10,7 +10,7 @@ use crate::types::User;
 use super::OrgsApi;
 
 impl<'a> OrgsApi<'a> {
-    /// ListTeamMembers lists all members of a team
+    /// `ListTeamMembers` lists all members of a team
     pub async fn list_team_members(
         &self,
         id: i64,
@@ -22,7 +22,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// GetTeamMember gets a member of a team
+    /// `GetTeamMember` gets a member of a team
     pub async fn get_team_member(&self, id: i64, user: &str) -> crate::Result<(User, Response)> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[user])?;
         let path = format!("/teams/{}/members/{}", id, escaped[0]);
@@ -31,7 +31,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// AddTeamMember adds a member to a team
+    /// `AddTeamMember` adds a member to a team
     pub async fn add_team_member(&self, id: i64, user: &str) -> crate::Result<Response> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[user])?;
         let path = format!("/teams/{}/members/{}", id, escaped[0]);
@@ -40,7 +40,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// RemoveTeamMember removes a member from a team
+    /// `RemoveTeamMember` removes a member from a team
     pub async fn remove_team_member(&self, id: i64, user: &str) -> crate::Result<Response> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[user])?;
         let path = format!("/teams/{}/members/{}", id, escaped[0]);

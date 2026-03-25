@@ -7,7 +7,7 @@ use crate::{Deserialize, Serialize};
 
 // ── repo_migrate.go ─────────────────────────────────────────────
 
-/// MigrateRepoOption options for migrating a repository from an external service
+/// `MigrateRepoOption` options for migrating a repository from an external service
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Migrate Repo Option.
 pub struct MigrateRepoOption {
@@ -15,7 +15,7 @@ pub struct MigrateRepoOption {
     pub repo_name: String,
     #[serde(rename = "repo_owner")]
     pub repo_owner: String,
-    /// deprecated use RepoOwner
+    /// deprecated use `RepoOwner`
     pub uid: i64,
     #[serde(rename = "clone_addr")]
     pub clone_addr: String,
@@ -88,7 +88,7 @@ impl MigrateRepoOption {
 
 // ── repo_transfer.go ────────────────────────────────────────────
 
-/// TransferRepoOption options when transfer a repository's ownership
+/// `TransferRepoOption` options when transfer a repository's ownership
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Transfer Repo Option.
 pub struct TransferRepoOption {
@@ -100,7 +100,7 @@ pub struct TransferRepoOption {
 
 // ── repo_template.go ────────────────────────────────────────────
 
-/// CreateRepoFromTemplateOption options when creating repository using a template
+/// `CreateRepoFromTemplateOption` options when creating repository using a template
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Create Repo From Template Option.
 pub struct CreateRepoFromTemplateOption {

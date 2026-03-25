@@ -13,7 +13,7 @@ use bytes::Bytes;
 impl<'a> super::ReposApi<'a> {
     // ── repo_commit.go (4 methods) ────────────────────────────────
 
-    /// GetSingleCommit get a single commit of a repository
+    /// `GetSingleCommit` get a single commit of a repository
     pub async fn get_single_commit(
         &self,
         owner: &str,
@@ -27,7 +27,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// ListCommits list commits of a repository
+    /// `ListCommits` list commits of a repository
     pub async fn list_commits(
         &self,
         owner: &str,
@@ -46,7 +46,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// GetCommitDiff get the diff of a commit
+    /// `GetCommitDiff` get the diff of a commit
     pub async fn get_commit_diff(
         &self,
         owner: &str,
@@ -66,7 +66,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// GetCommitPatch get the patch of a commit
+    /// `GetCommitPatch` get the patch of a commit
     pub async fn get_commit_patch(
         &self,
         owner: &str,
@@ -88,7 +88,7 @@ impl<'a> super::ReposApi<'a> {
 
     // ── repo_compare.go (1 method) ────────────────────────────────
 
-    /// CompareCommits compare two commits
+    /// `CompareCommits` compare two commits
     pub async fn compare_commits(
         &self,
         owner: &str,
@@ -109,7 +109,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// GetRepoNote get a note for a specific commit
+    /// `GetRepoNote` get a note for a specific commit
     pub async fn get_repo_note(
         &self,
         owner: &str,

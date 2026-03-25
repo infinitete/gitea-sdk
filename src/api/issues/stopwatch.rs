@@ -13,7 +13,7 @@ impl<'a> IssuesApi<'a> {
     // ── issue_stopwatch.go ────────────────────────────────────────
     // 4 methods
 
-    /// ListMyStopwatches list all stopwatches with pagination
+    /// `ListMyStopwatches` list all stopwatches with pagination
     pub async fn list_my_stopwatches(
         &self,
         opt: ListStopwatchesOptions,
@@ -24,7 +24,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// DeleteIssueStopwatch delete / cancel a specific stopwatch
+    /// `DeleteIssueStopwatch` delete / cancel a specific stopwatch
     pub async fn delete_issue_stopwatch(
         &self,
         owner: &str,
@@ -41,7 +41,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// StartIssueStopWatch starts a stopwatch for an existing issue
+    /// `StartIssueStopWatch` starts a stopwatch for an existing issue
     pub async fn start_issue_stopwatch(
         &self,
         owner: &str,
@@ -58,7 +58,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// StopIssueStopWatch stops an existing stopwatch for an issue
+    /// `StopIssueStopWatch` stops an existing stopwatch for an issue
     pub async fn stop_issue_stopwatch(
         &self,
         owner: &str,

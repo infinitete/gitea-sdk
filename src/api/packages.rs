@@ -17,6 +17,7 @@ pub struct PackagesApi<'a> {
 
 impl<'a> PackagesApi<'a> {
     /// Create a new `PackagesApi` view.
+    #[must_use]
     pub fn new(client: &'a Client) -> Self {
         Self { client }
     }
@@ -25,7 +26,7 @@ impl<'a> PackagesApi<'a> {
         self.client
     }
 
-    /// ListPackages lists all the packages owned by a given owner.
+    /// `ListPackages` lists all the packages owned by a given owner.
     pub async fn list_packages(
         &self,
         owner: &str,
@@ -38,7 +39,7 @@ impl<'a> PackagesApi<'a> {
             .await
     }
 
-    /// GetPackage gets the details of a specific package version.
+    /// `GetPackage` gets the details of a specific package version.
     pub async fn get_package(
         &self,
         owner: &str,
@@ -61,7 +62,7 @@ impl<'a> PackagesApi<'a> {
             .await
     }
 
-    /// DeletePackage deletes a specific package version.
+    /// `DeletePackage` deletes a specific package version.
     pub async fn delete_package(
         &self,
         owner: &str,
@@ -84,7 +85,7 @@ impl<'a> PackagesApi<'a> {
             .await
     }
 
-    /// ListPackageFiles lists the files within a package.
+    /// `ListPackageFiles` lists the files within a package.
     pub async fn list_package_files(
         &self,
         owner: &str,
@@ -107,7 +108,7 @@ impl<'a> PackagesApi<'a> {
             .await
     }
 
-    /// GetLatestPackage gets the latest version details of a package.
+    /// `GetLatestPackage` gets the latest version details of a package.
     pub async fn get_latest_package(
         &self,
         owner: &str,
@@ -125,7 +126,7 @@ impl<'a> PackagesApi<'a> {
             .await
     }
 
-    /// LinkPackage links a package to a repository.
+    /// `LinkPackage` links a package to a repository.
     pub async fn link_package(
         &self,
         owner: &str,
@@ -148,7 +149,7 @@ impl<'a> PackagesApi<'a> {
             .await
     }
 
-    /// UnlinkPackage unlinks a package from a repository.
+    /// `UnlinkPackage` unlinks a package from a repository.
     pub async fn unlink_package(
         &self,
         owner: &str,

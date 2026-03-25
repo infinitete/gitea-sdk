@@ -7,7 +7,7 @@ use crate::{Deserialize, Serialize};
 
 // ── repo_label.go ───────────────────────────────────────────────
 
-/// ListLabelsOptions options for listing repository's labels
+/// `ListLabelsOptions` options for listing repository's labels
 #[derive(Debug, Clone, Default)]
 /// Options for List Labels Option.
 pub struct ListLabelsOptions {
@@ -20,7 +20,7 @@ impl QueryEncode for ListLabelsOptions {
     }
 }
 
-/// CreateLabelOption options for creating a label
+/// `CreateLabelOption` options for creating a label
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Create Label Option.
 pub struct CreateLabelOption {
@@ -48,7 +48,7 @@ impl CreateLabelOption {
     }
 }
 
-/// EditLabelOption options for editing a label
+/// `EditLabelOption` options for editing a label
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Edit Label Option.
 pub struct EditLabelOption {

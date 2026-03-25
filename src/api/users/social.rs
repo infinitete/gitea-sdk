@@ -11,7 +11,7 @@ use super::UsersApi;
 impl<'a> UsersApi<'a> {
     // ── user_social.go ─────────────────────────────────────────────────
 
-    /// UpdateUserAvatar updates the authenticated user's avatar
+    /// `UpdateUserAvatar` updates the authenticated user's avatar
     pub async fn update_avatar(&self, opt: UpdateUserAvatarOption) -> crate::Result<Response> {
         opt.validate()?;
         let body = json_body(&opt)?;
@@ -33,7 +33,7 @@ impl<'a> UsersApi<'a> {
         Ok(response)
     }
 
-    /// DeleteUserAvatar deletes the authenticated user's avatar
+    /// `DeleteUserAvatar` deletes the authenticated user's avatar
     pub async fn delete_avatar(&self) -> crate::Result<Response> {
         let (status, response) = self
             .client()

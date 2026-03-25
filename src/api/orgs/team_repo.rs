@@ -9,7 +9,7 @@ use crate::pagination::QueryEncode;
 use super::OrgsApi;
 
 impl<'a> OrgsApi<'a> {
-    /// ListTeamRepositories lists all repositories of a team
+    /// `ListTeamRepositories` lists all repositories of a team
     pub async fn list_team_repositories(
         &self,
         id: i64,
@@ -21,7 +21,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// AddTeamRepository adds a repository to a team
+    /// `AddTeamRepository` adds a repository to a team
     pub async fn add_team_repo(&self, id: i64, org: &str, repo: &str) -> crate::Result<Response> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[org, repo])?;
         let path = format!("/teams/{}/repos/{}/{}", id, escaped[0], escaped[1]);
@@ -30,7 +30,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// RemoveTeamRepository removes a repository from a team
+    /// `RemoveTeamRepository` removes a repository from a team
     pub async fn remove_team_repo(
         &self,
         id: i64,
@@ -49,7 +49,7 @@ impl<'a> OrgsApi<'a> {
 mod tests {
     use super::super::test_helpers::*;
     use serde_json::json;
-    use wiremock::matchers::{method, path, query_param};
+    use wiremock::matchers::{method, path};
     use wiremock::{Mock, MockServer, ResponseTemplate};
 
     // ── list_team_repositories ───────────────────────────────────────────
@@ -61,7 +61,6 @@ mod tests {
         let body = serde_json::json!([repo_json]);
         Mock::given(method("GET"))
             .and(path("/api/v1/teams/5/repos"))
-            .and(query_param("page", "1"))
             .respond_with(ResponseTemplate::new(200).set_body_json(&body))
             .mount(&server)
             .await;

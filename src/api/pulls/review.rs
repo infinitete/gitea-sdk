@@ -12,7 +12,7 @@ use crate::version::VERSION_1_12_0;
 // ── pull_review.go ─────────────────────────────────────────────
 
 impl<'a> super::PullsApi<'a> {
-    /// ListPullReviews lists all reviews of a pull request.
+    /// `ListPullReviews` lists all reviews of a pull request.
     pub async fn list_reviews(
         &self,
         owner: &str,
@@ -40,7 +40,7 @@ impl<'a> super::PullsApi<'a> {
             .await
     }
 
-    /// GetPullReview gets a specific review of a pull request.
+    /// `GetPullReview` gets a specific review of a pull request.
     pub async fn get_review(
         &self,
         owner: &str,
@@ -66,7 +66,7 @@ impl<'a> super::PullsApi<'a> {
             .await
     }
 
-    /// ListPullReviewComments lists all comments of a pull request review.
+    /// `ListPullReviewComments` lists all comments of a pull request review.
     pub async fn list_review_comments(
         &self,
         owner: &str,
@@ -92,7 +92,7 @@ impl<'a> super::PullsApi<'a> {
             .await
     }
 
-    /// DeletePullReview delete a specific review from a pull request.
+    /// `DeletePullReview` delete a specific review from a pull request.
     pub async fn delete_review(
         &self,
         owner: &str,

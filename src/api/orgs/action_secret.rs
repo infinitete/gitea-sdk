@@ -9,7 +9,7 @@ use crate::options::org::*;
 use super::OrgsApi;
 
 impl<'a> OrgsApi<'a> {
-    /// CreateOrgActionSecret creates a secret for the specified organization
+    /// `CreateOrgActionSecret` creates a secret for the specified organization
     pub async fn create_org_action_secret(
         &self,
         org: &str,

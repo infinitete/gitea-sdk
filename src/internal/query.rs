@@ -8,7 +8,6 @@
 ///
 /// When `query` is non-empty, returns `base_path?query`.
 /// When `query` is empty, returns `base_path` unchanged.
-#[allow(dead_code)]
 pub(crate) fn build_query_string(base_path: &str, query: &str) -> String {
     if query.is_empty() {
         base_path.to_string()

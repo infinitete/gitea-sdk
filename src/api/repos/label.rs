@@ -11,7 +11,7 @@ use crate::types::Label;
 impl<'a> super::ReposApi<'a> {
     // ── repo_label.go (5 methods) ─────────────────────────────────
 
-    /// ListLabels list repository's labels
+    /// `ListLabels` list repository's labels
     pub async fn list_labels(
         &self,
         owner: &str,
@@ -30,7 +30,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// GetLabel get a single label
+    /// `GetLabel` get a single label
     pub async fn get_label(
         &self,
         owner: &str,
@@ -44,7 +44,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// CreateLabel create a label
+    /// `CreateLabel` create a label
     pub async fn create_label(
         &self,
         owner: &str,
@@ -65,7 +65,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// EditLabel edit a label
+    /// `EditLabel` edit a label
     pub async fn edit_label(
         &self,
         owner: &str,
@@ -87,7 +87,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// DeleteLabel delete a label
+    /// `DeleteLabel` delete a label
     pub async fn delete_label(&self, owner: &str, repo: &str, id: i64) -> crate::Result<Response> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[owner, repo])?;
         let path = format!("/repos/{}/{}/labels/{id}", escaped[0], escaped[1]);

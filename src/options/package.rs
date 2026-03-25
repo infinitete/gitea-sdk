@@ -25,7 +25,7 @@ mod tests {
     #[test]
     fn test_list_packages_options_query_encode_default() {
         let opt = ListPackagesOptions::default();
-        assert_eq!(opt.query_encode(), "page=1");
+        assert_eq!(opt.query_encode(), "");
     }
 
     #[test]

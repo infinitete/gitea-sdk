@@ -11,7 +11,7 @@ use crate::types::repository::*;
 impl<'a> super::ReposApi<'a> {
     // ── repo_tree.go (1 method) ───────────────────────────────────
 
-    /// GetTrees get a git tree of a repository
+    /// `GetTrees` get a git tree of a repository
     pub async fn get_trees(
         &self,
         owner: &str,
@@ -34,7 +34,7 @@ impl<'a> super::ReposApi<'a> {
 
     // ── repo_migrate.go (1 method) ────────────────────────────────
 
-    /// MigrateRepo migrate a repository from an external service
+    /// `MigrateRepo` migrate a repository from an external service
     pub async fn migrate_repo(
         &self,
         opt: MigrateRepoOption,
@@ -53,7 +53,7 @@ impl<'a> super::ReposApi<'a> {
 
     // ── repo_transfer.go (3 methods) ──────────────────────────────
 
-    /// TransferRepo transfer a repository to a new owner
+    /// `TransferRepo` transfer a repository to a new owner
     pub async fn transfer_repo(
         &self,
         owner: &str,
@@ -73,7 +73,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// AcceptRepoTransfer accept a repository transfer
+    /// `AcceptRepoTransfer` accept a repository transfer
     pub async fn accept_repo_transfer(
         &self,
         owner: &str,
@@ -86,7 +86,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// RejectRepoTransfer reject a repository transfer
+    /// `RejectRepoTransfer` reject a repository transfer
     pub async fn reject_repo_transfer(
         &self,
         owner: &str,
@@ -101,7 +101,7 @@ impl<'a> super::ReposApi<'a> {
 
     // ── fork.go (2 methods) ───────────────────────────────────────
 
-    /// ListForks list repository's forks
+    /// `ListForks` list repository's forks
     pub async fn list_forks(
         &self,
         owner: &str,
@@ -120,7 +120,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// CreateFork create a fork of a repository
+    /// `CreateFork` create a fork of a repository
     pub async fn create_fork(
         &self,
         owner: &str,

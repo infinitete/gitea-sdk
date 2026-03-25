@@ -12,7 +12,7 @@ impl<'a> IssuesApi<'a> {
     // ── issue_pin.go ──────────────────────────────────────────────
     // 4 methods
 
-    /// ListRepoPinnedIssues lists a repo's pinned issues
+    /// `ListRepoPinnedIssues` lists a repo's pinned issues
     pub async fn list_repo_pinned_issues(
         &self,
         owner: &str,
@@ -30,7 +30,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// PinIssue pins an issue
+    /// `PinIssue` pins an issue
     pub async fn pin_issue(&self, owner: &str, repo: &str, index: i64) -> crate::Result<Response> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[owner, repo])?;
         let path = format!("/repos/{}/{}/issues/{index}/pin", escaped[0], escaped[1]);
@@ -52,7 +52,7 @@ impl<'a> IssuesApi<'a> {
         Ok(resp)
     }
 
-    /// UnpinIssue unpins an issue
+    /// `UnpinIssue` unpins an issue
     pub async fn unpin_issue(
         &self,
         owner: &str,
@@ -79,7 +79,7 @@ impl<'a> IssuesApi<'a> {
         Ok(resp)
     }
 
-    /// MoveIssuePin moves a pinned issue to the given position
+    /// `MoveIssuePin` moves a pinned issue to the given position
     pub async fn move_issue_pin(
         &self,
         owner: &str,

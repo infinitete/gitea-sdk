@@ -27,7 +27,7 @@ pub struct Organization {
     pub repo_admin_change_team_access: bool,
 }
 
-/// OrgPermissions represents the permissions for a user in an organization
+/// `OrgPermissions` represents the permissions for a user in an organization
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Org Permissions payload type.
 pub struct OrgPermissions {

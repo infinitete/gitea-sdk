@@ -11,7 +11,7 @@ use crate::types::repository::*;
 impl<'a> super::ReposApi<'a> {
     // ── repo_file.go (7 methods) ──────────────────────────────────
 
-    /// GetFile download a file from a repository
+    /// `GetFile` download a file from a repository
     pub async fn get_file(
         &self,
         owner: &str,
@@ -39,7 +39,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// GetFileReader get a streaming reader for a file from a repository
+    /// `GetFileReader` get a streaming reader for a file from a repository
     pub async fn get_file_reader(
         &self,
         owner: &str,
@@ -62,7 +62,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// GetContents get the metadata and contents of a file in a repository
+    /// `GetContents` get the metadata and contents of a file in a repository
     pub async fn get_contents(
         &self,
         owner: &str,
@@ -75,7 +75,7 @@ impl<'a> super::ReposApi<'a> {
         Ok((cr, resp))
     }
 
-    /// ListContents get a list of entries in a directory
+    /// `ListContents` get a list of entries in a directory
     pub async fn list_contents(
         &self,
         owner: &str,

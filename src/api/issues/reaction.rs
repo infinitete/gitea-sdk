@@ -13,7 +13,7 @@ impl<'a> IssuesApi<'a> {
     // ── issue_reaction.go ─────────────────────────────────────────
     // 6 methods (excluding deprecated GetIssueReactions)
 
-    /// ListIssueReactions get a list of reactions for an issue with pagination
+    /// `ListIssueReactions` get a list of reactions for an issue with pagination
     pub async fn list_issue_reactions(
         &self,
         owner: &str,
@@ -33,7 +33,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// GetIssueCommentReactions get a list of reactions from a comment of an issue
+    /// `GetIssueCommentReactions` get a list of reactions from a comment of an issue
     pub async fn get_issue_comment_reactions(
         &self,
         owner: &str,
@@ -50,7 +50,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// PostIssueReaction add a reaction to an issue
+    /// `PostIssueReaction` add a reaction to an issue
     pub async fn post_issue_reaction(
         &self,
         owner: &str,
@@ -80,7 +80,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// DeleteIssueReaction remove a reaction from an issue
+    /// `DeleteIssueReaction` remove a reaction from an issue
     pub async fn delete_issue_reaction(
         &self,
         owner: &str,
@@ -110,7 +110,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// PostIssueCommentReaction add a reaction to a comment of an issue
+    /// `PostIssueCommentReaction` add a reaction to a comment of an issue
     pub async fn post_issue_comment_reaction(
         &self,
         owner: &str,
@@ -140,7 +140,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// DeleteIssueCommentReaction remove a reaction from a comment of an issue
+    /// `DeleteIssueCommentReaction` remove a reaction from a comment of an issue
     pub async fn delete_issue_comment_reaction(
         &self,
         owner: &str,

@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 
 use crate::Response;
+use crate::internal::query::build_query_string;
 use crate::internal::request::{json_body, json_header};
 use crate::options::user::*;
 use crate::pagination::QueryEncode;
@@ -13,18 +14,19 @@ use super::UsersApi;
 impl<'a> UsersApi<'a> {
     // ── user_email.go ──────────────────────────────────────────────────
 
-    /// ListEmails all the email addresses of user
+    /// `ListEmails` all the email addresses of user
     pub async fn list_emails(
         &self,
         opt: ListEmailsOptions,
     ) -> crate::Result<(Vec<Email>, Response)> {
-        let path = format!("/user/emails?{}", opt.query_encode());
+        let query = opt.query_encode();
+        let path = build_query_string("/user/emails", &query);
         self.client()
             .get_parsed_response(reqwest::Method::GET, &path, None, None::<&str>)
             .await
     }
 
-    /// AddEmail add one email to current user with options
+    /// `AddEmail` add one email to current user with options
     pub async fn add_email(&self, opt: CreateEmailOption) -> crate::Result<(Vec<Email>, Response)> {
         opt.validate()?;
         let body = json_body(&opt)?;
@@ -38,7 +40,7 @@ impl<'a> UsersApi<'a> {
             .await
     }
 
-    /// DeleteEmail delete one email of current users
+    /// `DeleteEmail` delete one email of current users
     pub async fn delete_email(&self, opt: DeleteEmailOption) -> crate::Result<Response> {
         opt.validate()?;
         let body = json_body(&opt)?;

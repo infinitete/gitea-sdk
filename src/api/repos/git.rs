@@ -11,7 +11,7 @@ use crate::types::repository::*;
 impl<'a> super::ReposApi<'a> {
     // ── git_blob.go (1 method) ────────────────────────────────────
 
-    /// GetBlob get a blob of a repository
+    /// `GetBlob` get a blob of a repository
     pub async fn get_blob(
         &self,
         owner: &str,
@@ -27,7 +27,7 @@ impl<'a> super::ReposApi<'a> {
 
     // ── git_hook.go (4 methods) ───────────────────────────────────
 
-    /// ListGitHooks list git hooks
+    /// `ListGitHooks` list git hooks
     pub async fn list_git_hooks(
         &self,
         owner: &str,
@@ -46,7 +46,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// GetGitHook get a git hook
+    /// `GetGitHook` get a git hook
     pub async fn get_git_hook(
         &self,
         owner: &str,
@@ -60,7 +60,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// EditGitHook edit a git hook
+    /// `EditGitHook` edit a git hook
     pub async fn edit_git_hook(
         &self,
         owner: &str,
@@ -81,7 +81,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// DeleteGitHook delete a git hook
+    /// `DeleteGitHook` delete a git hook
     pub async fn delete_git_hook(
         &self,
         owner: &str,
@@ -97,7 +97,7 @@ impl<'a> super::ReposApi<'a> {
 
     // ── repo_refs.go (3 methods) ──────────────────────────────────
 
-    /// GetRepoRef get one ref's information of one repository
+    /// `GetRepoRef` get one ref's information of one repository
     pub async fn get_repo_ref(
         &self,
         owner: &str,
@@ -130,7 +130,7 @@ impl<'a> super::ReposApi<'a> {
         }
     }
 
-    /// GetRepoRefs get list of ref's information of one repository
+    /// `GetRepoRefs` get list of ref's information of one repository
     pub async fn get_repo_refs(
         &self,
         owner: &str,
@@ -157,7 +157,7 @@ impl<'a> super::ReposApi<'a> {
         }
     }
 
-    /// ListAllGitRefs get all refs from a repository
+    /// `ListAllGitRefs` get all refs from a repository
     pub async fn list_all_git_refs(
         &self,
         owner: &str,

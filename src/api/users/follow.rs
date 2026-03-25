@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 
 use crate::Response;
+use crate::internal::query::build_query_string;
 use crate::options::user::*;
 use crate::pagination::QueryEncode;
 use crate::types::User;
@@ -26,63 +27,71 @@ impl<'a> UsersApi<'a> {
                     })
                 }
             }
-            Err(crate::Error::Api { status: 404, .. })
-            | Err(crate::Error::UnknownApi { status: 404, .. }) => Ok(false),
+            Err(
+                crate::Error::Api { status: 404, .. }
+                | crate::Error::UnknownApi { status: 404, .. },
+            ) => Ok(false),
             Err(err) => Err(err),
         }
     }
 
     // ── user_follow.go ─────────────────────────────────────────────────
 
-    /// ListMyFollowers list all the followers of current user
+    /// `ListMyFollowers` list all the followers of current user
     pub async fn list_my_followers(
         &self,
         opt: ListFollowersOptions,
     ) -> crate::Result<(Vec<User>, Response)> {
-        let path = format!("/user/followers?{}", opt.query_encode());
+        let query = opt.query_encode();
+        let path = build_query_string("/user/followers", &query);
         self.client()
             .get_parsed_response(reqwest::Method::GET, &path, None, None::<&str>)
             .await
     }
 
-    /// ListFollowers list all the followers of one user
+    /// `ListFollowers` list all the followers of one user
     pub async fn list_followers(
         &self,
         user: &str,
         opt: ListFollowersOptions,
     ) -> crate::Result<(Vec<User>, Response)> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[user])?;
-        let path = format!("/users/{}/followers?{}", escaped[0], opt.query_encode());
+        let query = opt.query_encode();
+        let base_path = format!("/users/{}/followers", escaped[0]);
+        let path = build_query_string(&base_path, &query);
         self.client()
             .get_parsed_response(reqwest::Method::GET, &path, None, None::<&str>)
             .await
     }
 
-    /// ListMyFollowing list all the users current user followed
+    /// `ListMyFollowing` list all the users current user followed
     pub async fn list_my_following(
         &self,
         opt: ListFollowingOptions,
     ) -> crate::Result<(Vec<User>, Response)> {
-        let path = format!("/user/following?{}", opt.query_encode());
+        let query = opt.query_encode();
+        let path = build_query_string("/user/following", &query);
         self.client()
             .get_parsed_response(reqwest::Method::GET, &path, None, None::<&str>)
             .await
     }
 
-    /// ListFollowing list all the users the user followed
+    /// `ListFollowing` list all the users the user followed
     pub async fn list_following(
         &self,
         user: &str,
         opt: ListFollowingOptions,
     ) -> crate::Result<(Vec<User>, Response)> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[user])?;
-        let path = format!("/users/{}/following?{}", escaped[0], opt.query_encode());
+        let query = opt.query_encode();
+        let base_path = format!("/users/{}/following", escaped[0]);
+        let path = build_query_string(&base_path, &query);
         self.client()
             .get_parsed_response(reqwest::Method::GET, &path, None, None::<&str>)
             .await
     }
 
-    /// IsFollowing if current user followed the target.
+    /// `IsFollowing` if current user followed the target.
     /// Unlike Go SDK, this always propagates errors via Result.
     pub async fn is_following(&self, target: &str) -> crate::Result<bool> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[target])?;
@@ -90,7 +99,7 @@ impl<'a> UsersApi<'a> {
         self.get_following_state(&path).await
     }
 
-    /// IsUserFollowing if the user followed the target.
+    /// `IsUserFollowing` if the user followed the target.
     /// Unlike Go SDK, this always propagates errors via Result.
     pub async fn is_user_following(&self, user: &str, target: &str) -> crate::Result<bool> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[user, target])?;

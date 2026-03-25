@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 
 use crate::Response;
+use crate::internal::query::build_query_string;
 use crate::internal::request::json_header;
 use crate::options::user::ListUserBlocksOptions;
 use crate::pagination::QueryEncode;
@@ -13,12 +14,13 @@ use super::UsersApi;
 impl<'a> UsersApi<'a> {
     // ── user_block.go ──────────────────────────────────────────────────
 
-    /// ListMyBlocks lists users blocked by the authenticated user
+    /// `ListMyBlocks` lists users blocked by the authenticated user
     pub async fn list_my_blocks(
         &self,
         opt: ListUserBlocksOptions,
     ) -> crate::Result<(Vec<User>, Response)> {
-        let path = format!("/user/blocks?{}", opt.query_encode());
+        let query = opt.query_encode();
+        let path = build_query_string("/user/blocks", &query);
         self.client()
             .get_parsed_response(
                 reqwest::Method::GET,
@@ -29,7 +31,7 @@ impl<'a> UsersApi<'a> {
             .await
     }
 
-    /// CheckUserBlock checks if a user is blocked by the authenticated user
+    /// `CheckUserBlock` checks if a user is blocked by the authenticated user
     pub async fn check_user_block(&self, username: &str) -> crate::Result<(bool, Response)> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[username])?;
         let path = format!("/user/blocks/{}", escaped[0]);
@@ -45,7 +47,7 @@ impl<'a> UsersApi<'a> {
         Ok((status == 204, response))
     }
 
-    /// BlockUser blocks a user
+    /// `BlockUser` blocks a user
     pub async fn block_user(&self, username: &str) -> crate::Result<Response> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[username])?;
         let path = format!("/user/blocks/{}", escaped[0]);
@@ -67,7 +69,7 @@ impl<'a> UsersApi<'a> {
         Ok(response)
     }
 
-    /// UnblockUser unblocks a user
+    /// `UnblockUser` unblocks a user
     pub async fn unblock_user(&self, username: &str) -> crate::Result<Response> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[username])?;
         let path = format!("/user/blocks/{}", escaped[0]);

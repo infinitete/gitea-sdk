@@ -14,7 +14,7 @@ impl<'a> IssuesApi<'a> {
     // ── issue_ext.go ──────────────────────────────────────────────
     // blocks & dependencies
 
-    /// ListIssueBlocks lists issues that are blocked by the specified issue
+    /// `ListIssueBlocks` lists issues that are blocked by the specified issue
     pub async fn list_issue_blocks(
         &self,
         owner: &str,
@@ -39,7 +39,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// CreateIssueBlocking blocks an issue with another issue
+    /// `CreateIssueBlocking` blocks an issue with another issue
     pub async fn create_issue_blocking(
         &self,
         owner: &str,
@@ -60,7 +60,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// RemoveIssueBlocking removes an issue block
+    /// `RemoveIssueBlocking` removes an issue block
     pub async fn remove_issue_blocking(
         &self,
         owner: &str,
@@ -81,7 +81,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// ListIssueDependencies lists issues that block the specified issue (its dependencies)
+    /// `ListIssueDependencies` lists issues that block the specified issue (its dependencies)
     pub async fn list_issue_dependencies(
         &self,
         owner: &str,
@@ -106,7 +106,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// CreateIssueDependency creates a new issue dependency
+    /// `CreateIssueDependency` creates a new issue dependency
     pub async fn create_issue_dependency(
         &self,
         owner: &str,
@@ -130,7 +130,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// RemoveIssueDependency removes an issue dependency
+    /// `RemoveIssueDependency` removes an issue dependency
     pub async fn remove_issue_dependency(
         &self,
         owner: &str,

@@ -33,7 +33,7 @@ pub struct Status {
     pub updated: OffsetDateTime,
 }
 
-/// CombinedStatus holds the combined state of several statuses for a single commit
+/// `CombinedStatus` holds the combined state of several statuses for a single commit
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Combined Status payload type.
 pub struct CombinedStatus {

@@ -11,7 +11,7 @@ use crate::types::repository::*;
 impl<'a> super::ReposApi<'a> {
     // ── repo_wiki.go (6 methods) ──────────────────────────────────
 
-    /// CreateWikiPage create a wiki page
+    /// `CreateWikiPage` create a wiki page
     pub async fn create_wiki_page(
         &self,
         owner: &str,
@@ -31,7 +31,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// GetWikiPage get a wiki page
+    /// `GetWikiPage` get a wiki page
     pub async fn get_wiki_page(
         &self,
         owner: &str,
@@ -48,7 +48,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// EditWikiPage edit a wiki page
+    /// `EditWikiPage` edit a wiki page
     pub async fn edit_wiki_page(
         &self,
         owner: &str,
@@ -72,7 +72,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// DeleteWikiPage delete a wiki page
+    /// `DeleteWikiPage` delete a wiki page
     pub async fn delete_wiki_page(
         &self,
         owner: &str,
@@ -89,7 +89,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// ListWikiPages list wiki pages
+    /// `ListWikiPages` list wiki pages
     pub async fn list_wiki_pages(
         &self,
         owner: &str,
@@ -108,7 +108,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// GetWikiRevisions get wiki page revisions
+    /// `GetWikiRevisions` get wiki page revisions
     pub async fn get_wiki_revisions(
         &self,
         owner: &str,

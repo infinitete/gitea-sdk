@@ -23,6 +23,7 @@ pub struct ActionsApi<'a> {
 
 impl<'a> ActionsApi<'a> {
     /// Create a new `ActionsApi` view.
+    #[must_use]
     pub fn new(client: &'a Client) -> Self {
         Self { client }
     }
@@ -31,7 +32,7 @@ impl<'a> ActionsApi<'a> {
         self.client
     }
 
-    /// ListRepoActionRuns lists workflow runs for a repository
+    /// `ListRepoActionRuns` lists workflow runs for a repository
     pub async fn list_repo_action_runs(
         &self,
         owner: &str,
@@ -55,7 +56,7 @@ impl<'a> ActionsApi<'a> {
             .await
     }
 
-    /// GetRepoActionRun gets a single workflow run
+    /// `GetRepoActionRun` gets a single workflow run
     pub async fn get_repo_action_run(
         &self,
         owner: &str,
@@ -74,7 +75,7 @@ impl<'a> ActionsApi<'a> {
             .await
     }
 
-    /// DeleteRepoActionRun deletes a workflow run
+    /// `DeleteRepoActionRun` deletes a workflow run
     pub async fn delete_repo_action_run(
         &self,
         owner: &str,
@@ -93,7 +94,7 @@ impl<'a> ActionsApi<'a> {
             .await
     }
 
-    /// ListRepoActionRunJobs lists jobs for a workflow run
+    /// `ListRepoActionRunJobs` lists jobs for a workflow run
     pub async fn list_repo_action_run_jobs(
         &self,
         owner: &str,
@@ -118,7 +119,7 @@ impl<'a> ActionsApi<'a> {
             .await
     }
 
-    /// ListRepoActionTasks lists workflow tasks for a repository (older Gitea)
+    /// `ListRepoActionTasks` lists workflow tasks for a repository (older Gitea)
     pub async fn list_repo_action_tasks(
         &self,
         owner: &str,
@@ -142,7 +143,7 @@ impl<'a> ActionsApi<'a> {
             .await
     }
 
-    /// ListRepoActionJobs lists all jobs for a repository
+    /// `ListRepoActionJobs` lists all jobs for a repository
     pub async fn list_repo_action_jobs(
         &self,
         owner: &str,
@@ -166,7 +167,7 @@ impl<'a> ActionsApi<'a> {
             .await
     }
 
-    /// GetRepoActionJob gets a single job
+    /// `GetRepoActionJob` gets a single job
     pub async fn get_repo_action_job(
         &self,
         owner: &str,
@@ -185,7 +186,7 @@ impl<'a> ActionsApi<'a> {
             .await
     }
 
-    /// GetRepoActionJobLogs gets the logs for a specific job
+    /// `GetRepoActionJobLogs` gets the logs for a specific job
     pub async fn get_repo_action_job_logs(
         &self,
         owner: &str,

@@ -7,24 +7,55 @@
 /// Options for Gitea API pagination.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct ListOptions {
-    /// Page number. None=server default, Some(0)=disable pagination, Some(n)=explicit page (n >= 1)
+    /// Page number. `None` omits the page parameter, `Some(0)` disables pagination,
+    /// and positive values request an explicit page.
     pub page: Option<i32>,
-    /// Page size. None=server default
+    /// Page size. `None` omits the limit parameter.
     pub page_size: Option<i32>,
 }
 
 impl ListOptions {
-    /// Apply defaults and return a new value. Idempotent.
-    pub fn with_defaults(&self) -> Self {
-        let page = match self.page {
-            None => Some(1),
-            Some(-1) => Some(0),
-            Some(n) => Some(n),
-        };
-        Self {
-            page,
-            page_size: self.page_size,
+    /// Validate pagination inputs before sending them to the server.
+    ///
+    /// Non-positive `page_size` values are only valid when pagination is being
+    /// explicitly disabled via a non-positive `page`.
+    pub fn validate(&self) -> crate::Result<()> {
+        if self.page_size.is_some_and(|size| size <= 0) && self.page.is_none_or(|page| page > 0) {
+            return Err(crate::Error::Validation(
+                "page_size must be positive unless pagination is disabled".to_string(),
+            ));
         }
+        Ok(())
+    }
+
+    /// Normalize pagination values into the wire format expected by Gitea.
+    ///
+    /// Non-positive page numbers are normalized to `page=0`.
+    ///
+    /// When callers also provide a positive `page_size`, that explicit limit is
+    /// preserved. Non-positive page sizes are still coerced to `limit=0`.
+    #[must_use]
+    pub fn with_defaults(&self) -> Self {
+        if self.page_size.is_some_and(|size| size <= 0) {
+            return Self {
+                page: Some(0),
+                page_size: Some(0),
+            };
+        }
+
+        let page = if self.page.is_some_and(|page| page <= 0) {
+            Some(0)
+        } else {
+            self.page
+        };
+
+        let page_size = if page == Some(0) {
+            self.page_size.or(Some(0))
+        } else {
+            self.page_size
+        };
+
+        Self { page, page_size }
     }
 }
 
@@ -34,31 +65,30 @@ pub trait QueryEncode {
     fn query_encode(&self) -> String;
 }
 
+pub(crate) fn push_query_segment(query: &mut String, segment: &str) {
+    if segment.is_empty() {
+        return;
+    }
+    if !query.is_empty() {
+        query.push('&');
+    }
+    query.push_str(segment);
+}
+
 impl QueryEncode for ListOptions {
     fn query_encode(&self) -> String {
         let defaulted = self.with_defaults();
         let mut out = String::new();
-        if defaulted.page == Some(0) {
-            out.push_str("page=0&limit=0");
-        } else if let Some(page) = defaulted.page {
-            out.push_str(&format!("page={page}"));
+        if let Some(page) = defaulted.page {
+            push_query_segment(&mut out, &format!("page={page}"));
             if let Some(size) = defaulted.page_size {
-                out.push_str(&format!("&limit={size}"));
+                push_query_segment(&mut out, &format!("limit={size}"));
             }
+        } else if let Some(size) = defaulted.page_size {
+            push_query_segment(&mut out, &format!("limit={size}"));
         }
         out
     }
-}
-
-/// Trait for types that carry pagination options.
-///
-/// Extended `ListXxxOptions` (Phase 1b) will implement this.
-#[allow(dead_code)]
-pub trait PaginationOptions: QueryEncode {
-    /// Apply defaults, returning a new value without mutation. Idempotent.
-    fn with_defaults(self) -> Self
-    where
-        Self: Sized;
 }
 
 #[cfg(test)]
@@ -98,7 +128,7 @@ mod tests {
             opts.with_defaults(),
             ListOptions {
                 page: Some(0),
-                page_size: None,
+                page_size: Some(0),
             }
         );
     }
@@ -112,7 +142,7 @@ mod tests {
         assert_eq!(
             opts.with_defaults(),
             ListOptions {
-                page: Some(1),
+                page: None,
                 page_size: Some(20),
             }
         );
@@ -154,6 +184,63 @@ mod tests {
     #[test]
     fn test_query_encode_empty() {
         let opts = ListOptions::default();
-        assert_eq!(opts.query_encode(), "page=1");
+        assert_eq!(opts.query_encode(), "");
+    }
+
+    #[test]
+    fn test_query_encode_page_size_only() {
+        let opts = ListOptions {
+            page: None,
+            page_size: Some(25),
+        };
+        assert_eq!(opts.query_encode(), "limit=25");
+    }
+
+    #[test]
+    fn test_query_encode_negative_page_disables_pagination() {
+        let opts = ListOptions {
+            page: Some(-2),
+            page_size: Some(25),
+        };
+        assert_eq!(opts.query_encode(), "page=0&limit=25");
+    }
+
+    #[test]
+    fn test_query_encode_non_positive_page_size_disables_pagination() {
+        let opts = ListOptions {
+            page: Some(2),
+            page_size: Some(0),
+        };
+        assert_eq!(opts.query_encode(), "page=0&limit=0");
+
+        let opts = ListOptions {
+            page: None,
+            page_size: Some(-5),
+        };
+        assert_eq!(opts.query_encode(), "page=0&limit=0");
+    }
+
+    #[test]
+    fn test_validate_rejects_non_positive_page_size_without_disabled_pagination() {
+        let opts = ListOptions {
+            page: Some(2),
+            page_size: Some(0),
+        };
+        assert!(opts.validate().is_err());
+
+        let opts = ListOptions {
+            page: None,
+            page_size: Some(-5),
+        };
+        assert!(opts.validate().is_err());
+    }
+
+    #[test]
+    fn test_validate_allows_non_positive_page_size_when_pagination_disabled() {
+        let opts = ListOptions {
+            page: Some(0),
+            page_size: Some(0),
+        };
+        assert!(opts.validate().is_ok());
     }
 }

@@ -13,7 +13,7 @@ use super::OrgsApi;
 impl<'a> OrgsApi<'a> {
     // ── org_block.go ──────────────────────────────────────────────────────
 
-    /// ListOrgBlocks lists users blocked by the organization
+    /// `ListOrgBlocks` lists users blocked by the organization
     pub async fn list_org_blocks(
         &self,
         org: &str,
@@ -31,7 +31,7 @@ impl<'a> OrgsApi<'a> {
             .await
     }
 
-    /// CheckOrgBlock checks if a user is blocked by the organization
+    /// `CheckOrgBlock` checks if a user is blocked by the organization
     pub async fn check_org_block(
         &self,
         org: &str,
@@ -51,7 +51,7 @@ impl<'a> OrgsApi<'a> {
         Ok((status == 204, response))
     }
 
-    /// BlockOrgUser blocks a user from the organization
+    /// `BlockOrgUser` blocks a user from the organization
     pub async fn block_org_user(&self, org: &str, username: &str) -> crate::Result<Response> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[org, username])?;
         let path = format!("/orgs/{}/blocks/{}", escaped[0], escaped[1]);
@@ -73,7 +73,7 @@ impl<'a> OrgsApi<'a> {
         Ok(response)
     }
 
-    /// UnblockOrgUser unblocks a user from the organization
+    /// `UnblockOrgUser` unblocks a user from the organization
     pub async fn unblock_org_user(&self, org: &str, username: &str) -> crate::Result<Response> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[org, username])?;
         let path = format!("/orgs/{}/blocks/{}", escaped[0], escaped[1]);

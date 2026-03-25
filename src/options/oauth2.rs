@@ -2,12 +2,12 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-//! Request option types for OAuth2 application API endpoints.
+//! Request option types for `OAuth2` application API endpoints.
 
 use crate::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-/// Options for Create OAuth2 Option.
+/// Options for Create `OAuth2` Option.
 pub struct CreateOauth2Option {
     pub name: String,
     #[serde(rename = "confidential_client", default)]
@@ -21,7 +21,7 @@ pub struct CreateOauth2Option {
 }
 
 #[derive(Debug, Clone, Default)]
-/// Options for List OAuth2 Option.
+/// Options for List `OAuth2` Option.
 pub struct ListOauth2Option {
     pub list_options: crate::pagination::ListOptions,
 }

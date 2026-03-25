@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 
 use crate::Response;
+use crate::internal::query::build_query_string;
 use crate::internal::request::{json_body, json_header};
 use crate::options::user::*;
 use crate::pagination::QueryEncode;
@@ -13,31 +14,34 @@ use super::UsersApi;
 impl<'a> UsersApi<'a> {
     // ── user_key.go ────────────────────────────────────────────────────
 
-    /// ListPublicKeys list all the public keys of the user
+    /// `ListPublicKeys` list all the public keys of the user
     pub async fn list_public_keys(
         &self,
         user: &str,
         opt: ListPublicKeysOptions,
     ) -> crate::Result<(Vec<PublicKey>, Response)> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[user])?;
-        let path = format!("/users/{}/keys?{}", escaped[0], opt.query_encode());
+        let query = opt.query_encode();
+        let base_path = format!("/users/{}/keys", escaped[0]);
+        let path = build_query_string(&base_path, &query);
         self.client()
             .get_parsed_response(reqwest::Method::GET, &path, None, None::<&str>)
             .await
     }
 
-    /// ListMyPublicKeys list all the public keys of current user
+    /// `ListMyPublicKeys` list all the public keys of current user
     pub async fn list_my_public_keys(
         &self,
         opt: ListPublicKeysOptions,
     ) -> crate::Result<(Vec<PublicKey>, Response)> {
-        let path = format!("/user/keys?{}", opt.query_encode());
+        let query = opt.query_encode();
+        let path = build_query_string("/user/keys", &query);
         self.client()
             .get_parsed_response(reqwest::Method::GET, &path, None, None::<&str>)
             .await
     }
 
-    /// GetPublicKey get current user's public key by key id
+    /// `GetPublicKey` get current user's public key by key id
     pub async fn get_public_key(&self, key_id: i64) -> crate::Result<(PublicKey, Response)> {
         let path = format!("/user/keys/{key_id}");
         self.client()
@@ -45,7 +49,7 @@ impl<'a> UsersApi<'a> {
             .await
     }
 
-    /// CreatePublicKey create public key with options
+    /// `CreatePublicKey` create public key with options
     pub async fn create_public_key(
         &self,
         opt: CreateKeyOption,
@@ -62,7 +66,7 @@ impl<'a> UsersApi<'a> {
             .await
     }
 
-    /// DeletePublicKey delete public key with key id
+    /// `DeletePublicKey` delete public key with key id
     pub async fn delete_public_key(&self, key_id: i64) -> crate::Result<Response> {
         let path = format!("/user/keys/{key_id}");
         self.client()

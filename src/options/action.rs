@@ -4,7 +4,7 @@
 
 //! Request option types for CI/CD action API endpoints.
 
-use crate::pagination::{ListOptions, QueryEncode};
+use crate::pagination::{ListOptions, QueryEncode, push_query_segment};
 
 #[derive(Debug, Clone, Default)]
 /// Options for List Repo Action Runs Option.
@@ -21,19 +21,19 @@ impl QueryEncode for ListRepoActionRunsOptions {
     fn query_encode(&self) -> String {
         let mut out = self.list_options.query_encode();
         if let Some(ref branch) = self.branch {
-            out.push_str(&format!("&branch={branch}"));
+            push_query_segment(&mut out, &format!("branch={branch}"));
         }
         if let Some(ref event) = self.event {
-            out.push_str(&format!("&event={event}"));
+            push_query_segment(&mut out, &format!("event={event}"));
         }
         if let Some(ref status) = self.status {
-            out.push_str(&format!("&status={status}"));
+            push_query_segment(&mut out, &format!("status={status}"));
         }
         if let Some(ref actor) = self.actor {
-            out.push_str(&format!("&actor={actor}"));
+            push_query_segment(&mut out, &format!("actor={actor}"));
         }
         if let Some(ref head_sha) = self.head_sha {
-            out.push_str(&format!("&head_sha={head_sha}"));
+            push_query_segment(&mut out, &format!("head_sha={head_sha}"));
         }
         out
     }
@@ -50,7 +50,7 @@ impl QueryEncode for ListRepoActionJobsOptions {
     fn query_encode(&self) -> String {
         let mut out = self.list_options.query_encode();
         if let Some(ref status) = self.status {
-            out.push_str(&format!("&status={status}"));
+            push_query_segment(&mut out, &format!("status={status}"));
         }
         out
     }

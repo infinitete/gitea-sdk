@@ -10,7 +10,7 @@ use time::OffsetDateTime;
 use super::serde_helpers::{null_to_default, nullable_rfc3339};
 use crate::types::enums::AccessTokenScope;
 
-/// AccessToken represents an API access token
+/// `AccessToken` represents an API access token
 #[derive(Clone, Serialize, Deserialize)]
 /// Access Token payload type.
 pub struct AccessToken {
@@ -50,7 +50,7 @@ impl std::fmt::Debug for AccessToken {
     }
 }
 
-/// UserHeatmapData represents the data needed to render a user's contribution heatmap.
+/// `UserHeatmapData` represents the data needed to render a user's contribution heatmap.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// User Heatmap Data payload type.
 pub struct UserHeatmapData {
@@ -71,7 +71,7 @@ pub struct Email {
     pub username: Option<String>,
 }
 
-/// PublicKey represents a user key to push code to repository
+/// `PublicKey` represents a user key to push code to repository
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Public Key payload type.
 pub struct PublicKey {
@@ -104,17 +104,17 @@ pub struct PublicKey {
     pub key_type: Option<String>,
 }
 
-/// GPGKeyEmail represents an email attached to a GPGKey
+/// `GPGKeyEmail` represents an email attached to a `GPGKey`
 #[derive(Debug, Clone, Serialize, Deserialize)]
-/// GPGKey Email payload type.
+/// `GPGKey` Email payload type.
 pub struct GPGKeyEmail {
     pub email: String,
     pub verified: bool,
 }
 
-/// GPGKey represents a user GPG key to sign commit and tag in repository
+/// `GPGKey` represents a user GPG key to sign commit and tag in repository
 #[derive(Debug, Clone, Serialize, Deserialize)]
-/// GPGKey payload type.
+/// `GPGKey` payload type.
 pub struct GPGKey {
     pub id: i64,
     #[serde(rename = "primary_key_id")]
@@ -159,7 +159,7 @@ pub struct User {
     /// the user's username
     #[serde(rename = "login")]
     pub user_name: String,
-    /// The login_name of non local users (e.g. LDAP / OAuth / SMTP)
+    /// The `login_name` of non local users (e.g. LDAP / OAuth / SMTP)
     #[serde(rename = "login_name")]
     pub login_name: String,
     /// The ID of the Authentication Source for non local users

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-//! Commit-related types (repo_commit.go, repo_compare.go).
+//! Commit-related types (`repo_commit.go`, `repo_compare.go`).
 
 use crate::{Deserialize, Serialize};
 use time::OffsetDateTime;
@@ -22,7 +22,7 @@ pub struct Identity {
     pub email: String,
 }
 
-/// CommitMeta contains meta information of a commit in terms of API
+/// `CommitMeta` contains meta information of a commit in terms of API
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Commit Meta payload type.
 pub struct CommitMeta {
@@ -32,7 +32,7 @@ pub struct CommitMeta {
     pub created: OffsetDateTime,
 }
 
-/// CommitUser contains information of a user in the context of a commit
+/// `CommitUser` contains information of a user in the context of a commit
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Commit User payload type.
 pub struct CommitUser {
@@ -41,7 +41,7 @@ pub struct CommitUser {
     pub date: String,
 }
 
-/// RepoCommit contains information of a commit in the context of a repository
+/// `RepoCommit` contains information of a commit in the context of a repository
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Repo Commit payload type.
 pub struct RepoCommit {
@@ -57,7 +57,7 @@ pub struct RepoCommit {
     pub verification: Option<PayloadCommitVerification>,
 }
 
-/// CommitStats contains stats from a Git commit
+/// `CommitStats` contains stats from a Git commit
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Commit Stats payload type.
 pub struct CommitStats {
@@ -66,14 +66,14 @@ pub struct CommitStats {
     pub deletions: i32,
 }
 
-/// CommitAffectedFiles store information about files affected by the commit
+/// `CommitAffectedFiles` store information about files affected by the commit
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Commit Affected Files payload type.
 pub struct CommitAffectedFiles {
     pub filename: String,
 }
 
-/// CommitDateOptions store dates for GIT_AUTHOR_DATE and GIT_COMMITTER_DATE
+/// `CommitDateOptions` store dates for `GIT_AUTHOR_DATE` and `GIT_COMMITTER_DATE`
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Commit Date Options payload type.
 pub struct CommitDateOptions {

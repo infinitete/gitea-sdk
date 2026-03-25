@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-//! Branch-related types (repo_branch.go, repo_branch_protection.go).
+//! Branch-related types (`repo_branch.go`, `repo_branch_protection.go`).
 
 use crate::{Deserialize, Serialize};
 use time::OffsetDateTime;
@@ -12,7 +12,7 @@ use crate::types::serde_helpers::null_to_default;
 
 // ── repo_branch.go ──────────────────────────────────────────────
 
-/// PayloadUser represents the author or committer of a commit
+/// `PayloadUser` represents the author or committer of a commit
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Payload User payload type.
 pub struct PayloadUser {
@@ -22,7 +22,7 @@ pub struct PayloadUser {
     pub username: String,
 }
 
-/// PayloadCommitVerification represents the GPG verification of a commit
+/// `PayloadCommitVerification` represents the GPG verification of a commit
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Payload Commit Verification payload type.
 pub struct PayloadCommitVerification {
@@ -32,7 +32,7 @@ pub struct PayloadCommitVerification {
     pub payload: String,
 }
 
-/// PayloadCommit represents a commit
+/// `PayloadCommit` represents a commit
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Payload Commit payload type.
 pub struct PayloadCommit {
@@ -84,7 +84,7 @@ pub struct Branch {
 
 // ── repo_branch_protection.go ───────────────────────────────────
 
-/// BranchProtection represents a branch protection for a repository
+/// `BranchProtection` represents a branch protection for a repository
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Branch Protection payload type.
 pub struct BranchProtection {

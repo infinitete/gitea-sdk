@@ -13,7 +13,7 @@ impl<'a> IssuesApi<'a> {
     // ── issue_subscription.go ─────────────────────────────────────
     // 7 methods (excluding deprecated GetIssueSubscribers)
 
-    /// ListIssueSubscribers get list of users who subscribed on an issue with pagination
+    /// `ListIssueSubscribers` get list of users who subscribed on an issue with pagination
     pub async fn list_issue_subscribers(
         &self,
         owner: &str,
@@ -33,7 +33,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// AddIssueSubscription subscribe user to issue
+    /// `AddIssueSubscription` subscribe user to issue
     pub async fn add_issue_subscription(
         &self,
         owner: &str,
@@ -62,7 +62,7 @@ impl<'a> IssuesApi<'a> {
         })
     }
 
-    /// DeleteIssueSubscription unsubscribe user from issue
+    /// `DeleteIssueSubscription` unsubscribe user from issue
     pub async fn delete_issue_subscription(
         &self,
         owner: &str,
@@ -91,7 +91,7 @@ impl<'a> IssuesApi<'a> {
         })
     }
 
-    /// CheckIssueSubscription check if current user is subscribed to an issue
+    /// `CheckIssueSubscription` check if current user is subscribed to an issue
     pub async fn check_issue_subscription(
         &self,
         owner: &str,
@@ -108,7 +108,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// IssueSubscribe subscribe current user to an issue
+    /// `IssueSubscribe` subscribe current user to an issue
     pub async fn issue_subscribe(
         &self,
         owner: &str,
@@ -120,7 +120,7 @@ impl<'a> IssuesApi<'a> {
             .await
     }
 
-    /// IssueUnsubscribe unsubscribe current user from an issue
+    /// `IssueUnsubscribe` unsubscribe current user from an issue
     pub async fn issue_unsubscribe(
         &self,
         owner: &str,

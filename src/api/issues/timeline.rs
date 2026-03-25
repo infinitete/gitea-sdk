@@ -13,7 +13,7 @@ impl<'a> IssuesApi<'a> {
     // ── issue_timeline.go ─────────────────────────────────────────
     // 1 method
 
-    /// ListIssueTimeline list timeline on an issue
+    /// `ListIssueTimeline` list timeline on an issue
     pub async fn list_issue_timeline(
         &self,
         owner: &str,

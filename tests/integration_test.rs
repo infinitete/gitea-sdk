@@ -382,7 +382,7 @@ fn test_page_links_clone() {
 
 #[test]
 fn test_pagination_query_encode_default() {
-    assert_eq!(ListOptions::default().query_encode(), "page=1");
+    assert_eq!(ListOptions::default().query_encode(), "");
 }
 
 #[test]
@@ -419,6 +419,15 @@ fn test_pagination_with_defaults_negative_page() {
     let defaulted = opts.with_defaults();
     assert_eq!(defaulted.page, Some(0));
     assert_eq!(defaulted.page_size, Some(10));
+}
+
+#[test]
+fn test_pagination_query_encode_limit_only() {
+    let opts = ListOptions {
+        page: None,
+        page_size: Some(25),
+    };
+    assert_eq!(opts.query_encode(), "limit=25");
 }
 
 // ── Client Builder ─────────────────────────────────────────────────

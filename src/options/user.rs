@@ -5,7 +5,7 @@
 //! Request option types for user API endpoints.
 
 use crate::internal::request::urlencoding;
-use crate::pagination::{ListOptions, QueryEncode};
+use crate::pagination::{ListOptions, QueryEncode, push_query_segment};
 use crate::types::enums::AccessTokenScope;
 use crate::{Deserialize, Serialize};
 
@@ -209,21 +209,12 @@ pub struct SearchUsersOption {
 
 impl QueryEncode for SearchUsersOption {
     fn query_encode(&self) -> String {
-        let mut out = String::new();
-        let defaulted = self.list_options.with_defaults();
-        if defaulted.page == Some(0) {
-            out.push_str("page=0&limit=0");
-        } else if let Some(page) = defaulted.page {
-            out.push_str(&format!("page={page}"));
-            if let Some(size) = defaulted.page_size {
-                out.push_str(&format!("&limit={size}"));
-            }
-        }
+        let mut out = self.list_options.query_encode();
         if !self.key_word.is_empty() {
-            out.push_str(&format!("&q={}", urlencoding(&self.key_word)));
+            push_query_segment(&mut out, &format!("q={}", urlencoding(&self.key_word)));
         }
         if self.uid > 0 {
-            out.push_str(&format!("&uid={}", self.uid));
+            push_query_segment(&mut out, &format!("uid={}", self.uid));
         }
         out
     }
@@ -241,18 +232,17 @@ impl QueryEncode for ListUserActivityFeedsOptions {
     fn query_encode(&self) -> String {
         let mut query = self.list_options.query_encode();
         if self.only_performed_by {
-            query.push_str("&only-performed-by=true");
+            push_query_segment(&mut query, "only-performed-by=true");
         }
         if !self.date.is_empty() {
-            query.push_str("&date=");
-            query.push_str(&urlencoding(&self.date));
+            push_query_segment(&mut query, &format!("date={}", urlencoding(&self.date)));
         }
         query
     }
 }
 
 #[derive(Debug, Clone, Default)]
-/// Options for List GPGKeys Option.
+/// Options for List `GPGKeys` Option.
 pub struct ListGPGKeysOptions {
     pub list_options: ListOptions,
 }
@@ -264,7 +254,7 @@ impl QueryEncode for ListGPGKeysOptions {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-/// Options for Create GPGKey Option.
+/// Options for Create `GPGKey` Option.
 pub struct CreateGPGKeyOption {
     /// An armored GPG key to add
     #[serde(rename = "armored_public_key")]
@@ -287,7 +277,7 @@ impl CreateGPGKeyOption {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-/// Options for Verify GPGKey Option.
+/// Options for Verify `GPGKey` Option.
 pub struct VerifyGPGKeyOption {
     #[serde(rename = "key_id")]
     pub key_id: String,
@@ -482,5 +472,27 @@ mod tests {
             image: String::new(),
         };
         assert!(opt.validate().is_err());
+    }
+
+    #[test]
+    fn test_search_users_query_encode_without_page_prefix() {
+        let opt = SearchUsersOption {
+            key_word: "alice".to_string(),
+            ..Default::default()
+        };
+        assert_eq!(opt.query_encode(), "q=alice");
+    }
+
+    #[test]
+    fn test_list_user_activity_feeds_query_encode_without_page_prefix() {
+        let opt = ListUserActivityFeedsOptions {
+            only_performed_by: true,
+            date: "2026-03-25".to_string(),
+            ..Default::default()
+        };
+        assert_eq!(
+            opt.query_encode(),
+            "only-performed-by=true&date=2026%2D03%2D25"
+        );
     }
 }

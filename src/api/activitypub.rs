@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-//! ActivityPub API endpoints for Gitea federation and ActivityStreams protocol.
+//! `ActivityPub` API endpoints for Gitea federation and `ActivityStreams` protocol.
 
 use bytes::Bytes;
 
@@ -10,13 +10,14 @@ use crate::Client;
 use crate::Response;
 use crate::internal::request::json_header;
 
-/// API methods for ActivityPub. Access via [`Client::activitypub()`](crate::Client::activitypub).
+/// API methods for `ActivityPub`. Access via [`Client::activitypub()`](crate::Client::activitypub).
 pub struct ActivityPubApi<'a> {
     client: &'a Client,
 }
 
 impl<'a> ActivityPubApi<'a> {
     /// Create a new `ActivityPubApi` view.
+    #[must_use]
     pub fn new(client: &'a Client) -> Self {
         Self { client }
     }
@@ -25,7 +26,7 @@ impl<'a> ActivityPubApi<'a> {
         self.client
     }
 
-    /// GetActivityPubPerson returns the Person actor for a user
+    /// `GetActivityPubPerson` returns the Person actor for a user
     pub async fn get_person(&self, user_id: i64) -> crate::Result<(serde_json::Value, Response)> {
         let path = format!("/activitypub/user-id/{user_id}");
         self.client()
@@ -38,7 +39,7 @@ impl<'a> ActivityPubApi<'a> {
             .await
     }
 
-    /// SendActivityPubInbox sends an ActivityPub message to a user's inbox.
+    /// `SendActivityPubInbox` sends an `ActivityPub` message to a user's inbox.
     pub async fn send_inbox(
         &self,
         user_id: i64,
@@ -66,7 +67,7 @@ impl<'a> ActivityPubApi<'a> {
         }
     }
 
-    /// GetActivityPubPersonResponse returns the raw ActivityPub Person response.
+    /// `GetActivityPubPersonResponse` returns the raw `ActivityPub` Person response.
     pub async fn get_person_response(&self, user_id: i64) -> crate::Result<(Bytes, Response)> {
         let path = format!("/activitypub/user-id/{user_id}");
         self.client()
@@ -79,7 +80,7 @@ impl<'a> ActivityPubApi<'a> {
             .await
     }
 
-    /// GetActivityPubRepository returns the Repository actor for a repo
+    /// `GetActivityPubRepository` returns the Repository actor for a repo
     pub async fn get_repository(
         &self,
         owner: &str,
@@ -97,7 +98,7 @@ impl<'a> ActivityPubApi<'a> {
             .await
     }
 
-    /// GetActivityPubFollowers returns the followers collection for a repo
+    /// `GetActivityPubFollowers` returns the followers collection for a repo
     pub async fn get_followers(
         &self,
         owner: &str,

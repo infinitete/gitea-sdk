@@ -12,14 +12,14 @@ use super::UsersApi;
 impl<'a> UsersApi<'a> {
     // ── user_settings.go ───────────────────────────────────────────────
 
-    /// GetUserSettings returns user settings
+    /// `GetUserSettings` returns user settings
     pub async fn get_settings(&self) -> crate::Result<(UserSettings, Response)> {
         self.client()
             .get_parsed_response(reqwest::Method::GET, "/user/settings", None, None::<&str>)
             .await
     }
 
-    /// UpdateUserSettings returns user settings
+    /// `UpdateUserSettings` returns user settings
     pub async fn update_settings(
         &self,
         opt: UserSettingsOptions,

@@ -8,7 +8,7 @@ use crate::types::repository::*;
 impl<'a> super::ReposApi<'a> {
     // ── repo_watch.go (5 methods) ─────────────────────────────────
 
-    /// GetWatchedRepos list all the watched repos of user
+    /// `GetWatchedRepos` list all the watched repos of user
     pub async fn get_watched_repos(
         &self,
         user: &str,
@@ -20,7 +20,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// GetMyWatchedRepos list repositories watched by the authenticated user
+    /// `GetMyWatchedRepos` list repositories watched by the authenticated user
     pub async fn get_my_watched_repos(&self) -> crate::Result<(Vec<Repository>, Response)> {
         self.client()
             .get_parsed_response(
@@ -32,7 +32,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// CheckRepoWatch check if the current user is watching a repo
+    /// `CheckRepoWatch` check if the current user is watching a repo
     pub async fn check_repo_watch(
         &self,
         owner: &str,
@@ -55,7 +55,7 @@ impl<'a> super::ReposApi<'a> {
         }
     }
 
-    /// WatchRepo start to watch a repository
+    /// `WatchRepo` start to watch a repository
     pub async fn watch_repo(&self, owner: &str, repo: &str) -> crate::Result<Response> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[owner, repo])?;
         let path = format!("/repos/{}/{}/subscription", escaped[0], escaped[1]);
@@ -74,7 +74,7 @@ impl<'a> super::ReposApi<'a> {
         }
     }
 
-    /// UnWatchRepo stop to watch a repository
+    /// `UnWatchRepo` stop to watch a repository
     pub async fn unwatch_repo(&self, owner: &str, repo: &str) -> crate::Result<Response> {
         let escaped = crate::internal::escape::validate_and_escape_segments(&[owner, repo])?;
         let path = format!("/repos/{}/{}/subscription", escaped[0], escaped[1]);

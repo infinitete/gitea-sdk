@@ -7,7 +7,7 @@ use crate::{Deserialize, Serialize};
 
 // ── repo_file.go ────────────────────────────────────────────────
 
-/// FileOptions options for all file APIs
+/// `FileOptions` options for all file APIs
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for File Option.
 pub struct FileOptions {
@@ -22,7 +22,7 @@ pub struct FileOptions {
     pub signoff: bool,
 }
 
-/// CreateFileOptions options for creating files
+/// `CreateFileOptions` options for creating files
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Create File Option.
 pub struct CreateFileOptions {
@@ -32,7 +32,7 @@ pub struct CreateFileOptions {
     pub content: String,
 }
 
-/// DeleteFileOptions options for deleting files
+/// `DeleteFileOptions` options for deleting files
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Delete File Option.
 pub struct DeleteFileOptions {
@@ -42,7 +42,7 @@ pub struct DeleteFileOptions {
     pub sha: String,
 }
 
-/// UpdateFileOptions options for updating files
+/// `UpdateFileOptions` options for updating files
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Options for Update File Option.
 pub struct UpdateFileOptions {
@@ -58,7 +58,7 @@ pub struct UpdateFileOptions {
 
 // ── repo_file_ext.go ────────────────────────────────────────────
 
-/// GetContentsExtOptions options for getting extended contents
+/// `GetContentsExtOptions` options for getting extended contents
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 /// Options for Get Contents Ext Option.
 pub struct GetContentsExtOptions {

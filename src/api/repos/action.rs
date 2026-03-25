@@ -12,7 +12,7 @@ use crate::types::repository::*;
 impl<'a> super::ReposApi<'a> {
     // ── repo_action.go (8 methods) ────────────────────────────────
 
-    /// ListActionSecrets list a repository's secrets
+    /// `ListActionSecrets` list a repository's secrets
     pub async fn list_action_secrets(
         &self,
         owner: &str,
@@ -36,7 +36,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// ListActionVariables list a repository's action variables
+    /// `ListActionVariables` list a repository's action variables
     pub async fn list_action_variables(
         &self,
         owner: &str,
@@ -60,7 +60,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// CreateActionSecret create a secret for a repository
+    /// `CreateActionSecret` create a secret for a repository
     pub async fn create_action_secret(
         &self,
         owner: &str,
@@ -84,7 +84,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// DeleteActionSecret delete a secret from a repository
+    /// `DeleteActionSecret` delete a secret from a repository
     pub async fn delete_action_secret(
         &self,
         owner: &str,
@@ -101,7 +101,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// GetActionVariable get a repository action variable
+    /// `GetActionVariable` get a repository action variable
     pub async fn get_action_variable(
         &self,
         owner: &str,
@@ -118,7 +118,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// CreateActionVariable create a repository action variable
+    /// `CreateActionVariable` create a repository action variable
     pub async fn create_action_variable(
         &self,
         owner: &str,
@@ -142,7 +142,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// UpdateActionVariable update a repository action variable
+    /// `UpdateActionVariable` update a repository action variable
     pub async fn update_action_variable(
         &self,
         owner: &str,
@@ -166,7 +166,7 @@ impl<'a> super::ReposApi<'a> {
             .await
     }
 
-    /// DeleteActionVariable delete a repository action variable
+    /// `DeleteActionVariable` delete a repository action variable
     pub async fn delete_action_variable(
         &self,
         owner: &str,

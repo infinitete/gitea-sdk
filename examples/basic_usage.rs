@@ -1,7 +1,7 @@
 //! Basic usage example for the Gitea SDK.
 //!
 //! Run with:
-//!   cargo run --example basic_usage
+//!   cargo run --example `basic_usage`
 
 use gitea_sdk_rs::options::repo::ListReposOptions;
 

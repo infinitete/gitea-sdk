@@ -23,6 +23,7 @@ struct NewNotificationCount {
 
 impl<'a> NotificationsApi<'a> {
     /// Create a new `NotificationsApi` view.
+    #[must_use]
     pub fn new(client: &'a Client) -> Self {
         Self { client }
     }
@@ -31,7 +32,7 @@ impl<'a> NotificationsApi<'a> {
         self.client
     }
 
-    /// CheckNotifications list users's notification threads
+    /// `CheckNotifications` list users's notification threads
     pub async fn check_notifications(&self) -> crate::Result<(i64, Response)> {
         let (count, resp) = self
             .client()
@@ -45,7 +46,7 @@ impl<'a> NotificationsApi<'a> {
         Ok((count.new, resp))
     }
 
-    /// GetNotification get notification thread by ID
+    /// `GetNotification` get notification thread by ID
     pub async fn get_notification(&self, id: i64) -> crate::Result<(NotificationThread, Response)> {
         let path = format!("/notifications/threads/{id}");
         self.client()
@@ -53,7 +54,7 @@ impl<'a> NotificationsApi<'a> {
             .await
     }
 
-    /// ReadNotification mark notification thread as read by ID
+    /// `ReadNotification` mark notification thread as read by ID
     pub async fn read_notification(
         &self,
         id: i64,
@@ -64,7 +65,7 @@ impl<'a> NotificationsApi<'a> {
             .await
     }
 
-    /// ListNotifications list users's notification threads
+    /// `ListNotifications` list users's notification threads
     pub async fn list_notifications(
         &self,
         opt: ListNotificationOptions,
@@ -75,7 +76,7 @@ impl<'a> NotificationsApi<'a> {
             .await
     }
 
-    /// ReadNotifications mark notification threads as read
+    /// `ReadNotifications` mark notification threads as read
     pub async fn read_notifications(
         &self,
         opt: MarkNotificationOptions,
@@ -86,7 +87,7 @@ impl<'a> NotificationsApi<'a> {
             .await
     }
 
-    /// ListRepoNotifications list users's notification threads on a specific repo
+    /// `ListRepoNotifications` list users's notification threads on a specific repo
     pub async fn list_repo_notifications(
         &self,
         owner: &str,
@@ -105,7 +106,7 @@ impl<'a> NotificationsApi<'a> {
             .await
     }
 
-    /// ReadRepoNotifications mark notification threads as read on a specific repo
+    /// `ReadRepoNotifications` mark notification threads as read on a specific repo
     pub async fn read_repo_notifications(
         &self,
         owner: &str,

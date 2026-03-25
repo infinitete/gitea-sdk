@@ -18,6 +18,7 @@ pub struct SettingsApi<'a> {
 
 impl<'a> SettingsApi<'a> {
     /// Create a new `SettingsApi` view.
+    #[must_use]
     pub fn new(client: &'a Client) -> Self {
         Self { client }
     }
@@ -26,7 +27,7 @@ impl<'a> SettingsApi<'a> {
         self.client
     }
 
-    /// GetGlobalUISettings get global ui settings witch are exposed by API
+    /// `GetGlobalUISettings` get global ui settings witch are exposed by API
     pub async fn get_ui_settings(&self) -> crate::Result<(GlobalUISettings, Response)> {
         self.client()
             .get_parsed_response(
@@ -38,7 +39,7 @@ impl<'a> SettingsApi<'a> {
             .await
     }
 
-    /// GetGlobalRepoSettings get global repository settings witch are exposed by API
+    /// `GetGlobalRepoSettings` get global repository settings witch are exposed by API
     pub async fn get_repo_settings(&self) -> crate::Result<(GlobalRepoSettings, Response)> {
         self.client()
             .get_parsed_response(
@@ -50,7 +51,7 @@ impl<'a> SettingsApi<'a> {
             .await
     }
 
-    /// GetGlobalAPISettings get global api settings witch are exposed by it
+    /// `GetGlobalAPISettings` get global api settings witch are exposed by it
     pub async fn get_api_settings(&self) -> crate::Result<(GlobalAPISettings, Response)> {
         self.client()
             .get_parsed_response(
@@ -62,7 +63,7 @@ impl<'a> SettingsApi<'a> {
             .await
     }
 
-    /// GetGlobalAttachmentSettings get global repository settings witch are exposed by API
+    /// `GetGlobalAttachmentSettings` get global repository settings witch are exposed by API
     pub async fn get_attachment_settings(
         &self,
     ) -> crate::Result<(GlobalAttachmentSettings, Response)> {
@@ -176,7 +177,7 @@ mod tests {
                 "max_response_items": 50,
                 "default_paging_num": 30,
                 "default_git_trees_per_page": 1000,
-                "default_max_blob_size": 10485760
+                "default_max_blob_size": 10_485_760
             })))
             .mount(&server)
             .await;
@@ -186,7 +187,7 @@ mod tests {
         assert_eq!(settings.max_response_items, 50);
         assert_eq!(settings.default_paging_num, 30);
         assert_eq!(settings.default_git_trees_per_page, 1000);
-        assert_eq!(settings.default_max_blob_size, 10485760);
+        assert_eq!(settings.default_max_blob_size, 10_485_760);
         assert_eq!(resp.status, 200);
     }
 
@@ -214,7 +215,7 @@ mod tests {
             .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
                 "enabled": true,
                 "allowed_types": ".png,.jpg,.jpeg",
-                "max_size": 4194304,
+                "max_size": 4_194_304,
                 "max_files": 5
             })))
             .mount(&server)
@@ -224,7 +225,7 @@ mod tests {
         let (settings, resp) = client.settings().get_attachment_settings().await.unwrap();
         assert!(settings.enabled);
         assert_eq!(settings.allowed_types, ".png,.jpg,.jpeg");
-        assert_eq!(settings.max_size, 4194304);
+        assert_eq!(settings.max_size, 4_194_304);
         assert_eq!(settings.max_files, 5);
         assert_eq!(resp.status, 200);
     }

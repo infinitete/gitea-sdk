@@ -9,6 +9,7 @@ use reqwest::header::HeaderMap;
 
 use crate::Client;
 use crate::Response;
+use crate::internal::query::build_query_string;
 use crate::response::response_from_reqwest;
 
 // ── HTTP request pipeline (mirrors go-sdk/gitea/client.go) ─────────
@@ -25,22 +26,13 @@ impl Client {
         headers: Option<&HeaderMap>,
     ) -> crate::Result<(reqwest::Client, reqwest::RequestBuilder, String, bool)> {
         let http_client = self.http_client();
-
-        let (base_url, access_token, otp, username, password, sudo, user_agent, debug) = {
-            let config = self.read_config();
-            (
-                config.base_url.clone(),
-                config.access_token.clone(),
-                config.otp.clone(),
-                config.username.clone(),
-                config.password.clone(),
-                config.sudo.clone(),
-                config.user_agent.clone(),
-                config.debug,
-            )
+        let config = self.read_config();
+        let normalized_path = if let Some((base_path, query)) = path.split_once('?') {
+            build_query_string(base_path, query)
+        } else {
+            path.to_string()
         };
-
-        let url = format!("{base_url}/api/v1{path}");
+        let url = format!("{}/api/v1{normalized_path}", config.base_url);
 
         let mut req = http_client
             .request(method.clone(), &url)
@@ -48,25 +40,28 @@ impl Client {
 
         // Auth header injection — exact order from Go SDK doRequest:
         // 1. Token → Authorization: token {access_token}
-        if !access_token.is_empty() {
-            req = req.header("Authorization", format!("token {access_token}"));
+        if !config.access_token.is_empty() {
+            req = req.header("Authorization", format!("token {}", config.access_token));
         }
         // 2. OTP → X-GITEA-OTP
-        if !otp.is_empty() {
-            req = req.header("X-GITEA-OTP", &*otp);
+        if !config.otp.is_empty() {
+            req = req.header("X-GITEA-OTP", &*config.otp);
         }
         // 3. Basic Auth
-        if !username.is_empty() {
-            req = req.basic_auth(&*username, Some(&*password));
+        if !config.username.is_empty() {
+            req = req.basic_auth(&*config.username, Some(&*config.password));
         }
         // 4. Sudo
-        if !sudo.is_empty() {
-            req = req.header("Sudo", &*sudo);
+        if !config.sudo.is_empty() {
+            req = req.header("Sudo", &*config.sudo);
         }
         // 5. User-Agent
-        if !user_agent.is_empty() {
-            req = req.header("User-Agent", &*user_agent);
+        if !config.user_agent.is_empty() {
+            req = req.header("User-Agent", &*config.user_agent);
         }
+
+        let debug = config.debug;
+        drop(config);
 
         if let Some(hdrs) = headers {
             for (k, v) in hdrs.iter() {
@@ -267,8 +262,15 @@ fn status_code_to_err(status: u16, body: &[u8]) -> crate::Result<()> {
 
     Err(crate::Error::UnknownApi {
         status,
-        body: String::from_utf8_lossy(body).to_string(),
+        body: bytes_to_string_lossy(body),
     })
+}
+
+pub(crate) fn bytes_to_string_lossy(bytes: &[u8]) -> String {
+    match std::str::from_utf8(bytes) {
+        Ok(valid) => valid.to_owned(),
+        Err(_) => String::from_utf8_lossy(bytes).into_owned(),
+    }
 }
 
 // ── Tests ───────────────────────────────────────────────────────────
@@ -276,6 +278,72 @@ fn status_code_to_err(status: u16, body: &[u8]) -> crate::Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_bytes_to_string_lossy_handles_invalid_utf8() {
+        let valid = b"hello";
+        assert_eq!(bytes_to_string_lossy(valid), "hello");
+
+        let invalid = &[0xff, 0xfe];
+        assert_eq!(
+            bytes_to_string_lossy(invalid),
+            String::from_utf8_lossy(invalid).into_owned()
+        );
+    }
+
+    #[test]
+    fn test_prepare_request_uses_latest_config() {
+        let client = crate::Client::builder("https://example.com")
+            .build()
+            .expect("build should succeed");
+
+        client.set_token("first-token");
+
+        let (_, builder, _, _) = client
+            .prepare_request(&reqwest::Method::GET, "/test", None)
+            .expect("prepare_request should succeed");
+
+        let req = builder.build().expect("request build should succeed");
+        let header = req
+            .headers()
+            .get("Authorization")
+            .expect("Authorization header should be present")
+            .to_str()
+            .expect("header should be valid UTF-8");
+        assert_eq!(header, "token first-token");
+
+        client.set_token("second-token");
+
+        let (_, builder, _, _) = client
+            .prepare_request(&reqwest::Method::GET, "/test", None)
+            .expect("prepare_request should succeed");
+
+        let req = builder.build().expect("request build should succeed");
+        let header = req
+            .headers()
+            .get("Authorization")
+            .expect("Authorization header should be present")
+            .to_str()
+            .expect("header should be valid UTF-8");
+        assert_eq!(header, "token second-token");
+    }
+
+    #[test]
+    fn test_prepare_request_strips_empty_query_suffix() {
+        let client = crate::Client::builder("https://example.com")
+            .build()
+            .expect("build should succeed");
+
+        let (_, builder, url, _) = client
+            .prepare_request(&reqwest::Method::GET, "/user/repos?", None)
+            .expect("prepare_request should succeed");
+
+        assert_eq!(url, "https://example.com/api/v1/user/repos");
+
+        let req = builder.build().expect("request build should succeed");
+        assert_eq!(req.url().as_str(), "https://example.com/api/v1/user/repos");
+        assert_eq!(req.url().query(), None);
+    }
 
     #[test]
     fn test_status_code_to_err_success() {

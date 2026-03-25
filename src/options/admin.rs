@@ -4,7 +4,7 @@
 
 //! Request option types for admin API endpoints.
 
-use crate::pagination::{ListOptions, QueryEncode};
+use crate::pagination::{ListOptions, QueryEncode, push_query_segment};
 use crate::types::enums::{HookType, VisibleType};
 use crate::{Deserialize, Serialize};
 
@@ -64,6 +64,7 @@ impl QueryEncode for AdminListUsersOptions {
         if let Some(v) = self.is_prohibit_login {
             parts.push(format!("is_prohibit_login={v}"));
         }
+        parts.retain(|part| !part.is_empty());
         parts.join("&")
     }
 }
@@ -178,7 +179,7 @@ impl QueryEncode for ListUnadoptedReposOptions {
     fn query_encode(&self) -> String {
         let mut out = self.list_options.query_encode();
         if !self.pattern.is_empty() {
-            out.push_str(&format!("&pattern={}", self.pattern));
+            push_query_segment(&mut out, &format!("pattern={}", self.pattern));
         }
         out
     }
@@ -228,7 +229,7 @@ impl QueryEncode for ListAdminHooksOptions {
     fn query_encode(&self) -> String {
         let mut out = self.list_options.query_encode();
         if !self.hook_type.is_empty() {
-            out.push_str(&format!("&type={}", self.hook_type));
+            push_query_segment(&mut out, &format!("type={}", self.hook_type));
         }
         out
     }
@@ -307,7 +308,7 @@ impl QueryEncode for SearchAdminEmailsOptions {
     fn query_encode(&self) -> String {
         let mut out = self.list_options.query_encode();
         if !self.query.is_empty() {
-            out.push_str(&format!("&q={}", self.query));
+            push_query_segment(&mut out, &format!("q={}", self.query));
         }
         out
     }
